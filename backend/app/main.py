@@ -44,9 +44,10 @@ def metadata_options():
             {"value": "Agribalyse Core", "label": "Agribalyse Core", "note": "Free core release with ecoinvent background datasets removed; some supply chains may need relinking."},
             {"value": "EXIOBASE", "label": "EXIOBASE", "note": "Input-output database; commercial use may require a separate EXIOBASE agreement."},
             {"value": "ecoinvent BYOL private import", "label": "ecoinvent BYOL private import", "note": "Client-owned private import only; never a shared hosted index."},
+            {"value": "India_GHG_Factors", "label": "India GHG Factors (v6)", "note": "60 verified India-specific direct emission factors covering Scope 1, 2, and 3 GHG Protocol categories. Provenance-tagged: clean / uplifted / proxy / placeholder."},
         ],
-        "system_models": ["Cut-off", "APOS", "Consequential", "Input-output"],
-        "units": ["kg", "g", "lb", "t", "oz", "kWh", "MJ", "kJ", "km", "mi", "tkm", "ton-mile", "unit"],
+        "system_models": ["Cut-off", "APOS", "Consequential", "Input-output", "Direct Factor"],
+        "units": ["kg", "g", "lb", "t", "oz", "kWh", "MJ", "kJ", "km", "mi", "tkm", "ton-mile", "unit", "L", "Liters", "m3", "scm", "p-km", "INR", "night", "Nights", "unit sold", "franchise", "INR invested", "tCO2e reported"],
     }
 
 
@@ -163,7 +164,23 @@ def match_bom_line(payload: BomLineMatch, db: Session = Depends(get_db)):
     db.add(audit)
     db.commit()
     db.refresh(audit)
-    return audit
+    # Compute result_tco2e from matched process emission_factor
+    result_tco2e = None
+    if matched and matched.emission_factor is not None and converted.quantity is not None:
+        result_tco2e = (float(converted.quantity) * matched.emission_factor) / 1000.0
+    return {
+        **{col.name: getattr(audit, col.name) for col in audit.__table__.columns},
+        "result_tco2e": result_tco2e,
+        "data_quality_status": matched.data_quality_status if matched else None,
+        "emission_factor": matched.emission_factor if matched else None,
+        "emission_factor_source": matched.emission_factor_source if matched else None,
+        "candidates": result.get("candidates", []),
+        "placeholder_warning": (
+            f"⚠️ Placeholder factor — result_tco2e is not valid pending real data for '{matched.process_name}'"
+            if matched and matched.data_quality_status == "placeholder" and float(payload.quantity or 0) > 0
+            else None
+        ),
+    }
 
 
 @app.get("/bom/audits/{project_id}")
@@ -173,7 +190,25 @@ def list_audits(project_id: str, audit_risk_level: str | None = None, db: Sessio
         query = query.filter(BomMappingAudit.audit_risk_level == audit_risk_level)
     order = {"HIGH": 0, "MEDIUM": 1, "LOW": 2}
     rows = query.all()
-    return sorted(rows, key=lambda row: (order.get(row.audit_risk_level or "", 9), row.created_at))
+    enriched = []
+    for row in sorted(rows, key=lambda r: (order.get(r.audit_risk_level or "", 9), r.created_at)):
+        matched_proc = db.get(LciProcess, row.matched_process_id) if row.matched_process_id else None
+        result_tco2e = None
+        if matched_proc and matched_proc.emission_factor is not None and row.converted_quantity is not None:
+            result_tco2e = (float(row.converted_quantity) * matched_proc.emission_factor) / 1000.0
+        enriched.append({
+            **{col.name: getattr(row, col.name) for col in row.__table__.columns},
+            "result_tco2e": result_tco2e,
+            "data_quality_status": matched_proc.data_quality_status if matched_proc else None,
+            "emission_factor": matched_proc.emission_factor if matched_proc else None,
+            "emission_factor_source": matched_proc.emission_factor_source if matched_proc else None,
+            "placeholder_warning": (
+                f"⚠️ Placeholder factor — result not valid for '{matched_proc.process_name}'"
+                if matched_proc and matched_proc.data_quality_status == "placeholder" and float(row.converted_quantity or 0) > 0
+                else None
+            ),
+        })
+    return enriched
 
 
 @app.post("/bom/audits/{audit_id}/approve")
@@ -204,13 +239,28 @@ def override(audit_id: str, payload: OverrideRequest, db: Session = Depends(get_
     audit.matched_process_id = process.id
     audit.matched_process_uuid = process.process_uuid
     audit.matched_process_name = process.process_name
-    audit.is_human_approved = True
+    # Any candidate switch resets approval — must be freshly signed off
+    audit.is_human_approved = False
     audit.reviewed_by_user_id = payload.user_id if db.get(User, payload.user_id) else None
     audit.human_review_notes = payload.notes
     audit.reviewed_at = now_utc()
     db.commit()
     db.refresh(audit)
-    return audit
+    result_tco2e = None
+    if process.emission_factor is not None and audit.converted_quantity is not None:
+        result_tco2e = (float(audit.converted_quantity) * process.emission_factor) / 1000.0
+    return {
+        **{col.name: getattr(audit, col.name) for col in audit.__table__.columns},
+        "result_tco2e": result_tco2e,
+        "data_quality_status": process.data_quality_status,
+        "emission_factor": process.emission_factor,
+        "emission_factor_source": process.emission_factor_source,
+        "placeholder_warning": (
+            f"⚠️ Placeholder factor — result not valid for '{process.process_name}'"
+            if process.data_quality_status == "placeholder" and float(audit.converted_quantity or 0) > 0
+            else None
+        ),
+    }
 
 
 @app.post("/bom/audits/{audit_id}/reject")
@@ -237,7 +287,26 @@ def export(project_id: str, format: str = "json", db: Session = Depends(get_db))
     rows = db.query(BomMappingAudit).filter(BomMappingAudit.project_id == project_id).all()
     if any(not row.is_human_approved for row in rows):
         raise HTTPException(409, "Export blocked until every row is approved or overridden")
-    data = [{"raw_bom_input": row.raw_bom_input, "quantity": float(row.converted_quantity or row.raw_bom_quantity), "unit": row.converted_unit or row.raw_bom_unit, "process_uuid": row.matched_process_uuid, "process_name": row.matched_process_name, "risk": row.audit_risk_level, "review_notes": row.human_review_notes} for row in rows if row.matched_process_uuid]
+    data = []
+    for row in rows:
+        if not row.matched_process_uuid:
+            continue
+        matched_proc = db.get(LciProcess, row.matched_process_id) if row.matched_process_id else None
+        result_tco2e = None
+        if matched_proc and matched_proc.emission_factor is not None and row.converted_quantity is not None:
+            result_tco2e = (float(row.converted_quantity) * matched_proc.emission_factor) / 1000.0
+        data.append({
+            "raw_bom_input": row.raw_bom_input,
+            "quantity": float(row.converted_quantity or row.raw_bom_quantity),
+            "unit": row.converted_unit or row.raw_bom_unit,
+            "process_uuid": row.matched_process_uuid,
+            "process_name": row.matched_process_name,
+            "emission_factor": matched_proc.emission_factor if matched_proc else None,
+            "result_tco2e": result_tco2e,
+            "data_quality_status": matched_proc.data_quality_status if matched_proc else None,
+            "risk": row.audit_risk_level,
+            "review_notes": row.human_review_notes,
+        })
     if format == "csv":
         df = pd.DataFrame(data)
         return Response(df.to_csv(index=False), media_type="text/csv")

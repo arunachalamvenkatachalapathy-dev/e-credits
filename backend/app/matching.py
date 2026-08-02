@@ -77,8 +77,28 @@ def dqr_disambiguate(raw_bom: str, target_geo: str, target_year: int, candidates
         proxy_subs.append({"dimension": "geography", "requested": target_geo, "used": top.geography})
     risk = "HIGH" if requires_chaining or geo_score >= 4 or tech_score >= 4 else "MEDIUM" if geo_score == 3 or temporal_score >= 3 else "LOW"
     warning = "Transformation/forming process may need to be chained." if requires_chaining else None
+    candidates_list = [
+        {
+            "process_id": c["process"].id,
+            "process_name": c["process"].process_name,
+            "process_uuid": c["process"].process_uuid,
+            "similarity_score": c["similarity_score"],
+            "data_quality_status": c["process"].data_quality_status,
+            "emission_factor": c["process"].emission_factor,
+        }
+        for c in candidates
+    ]
     return {
-        "selected_primary_candidate": {"process_name": top.process_name, "process_uuid": top.process_uuid, "vector_similarity_score": candidates[0]["similarity_score"]},
+        "selected_primary_candidate": {
+            "process_id": top.id,
+            "process_name": top.process_name,
+            "process_uuid": top.process_uuid,
+            "vector_similarity_score": candidates[0]["similarity_score"],
+            "data_quality_status": top.data_quality_status,
+            "emission_factor": top.emission_factor,
+            "emission_factor_source": top.emission_factor_source,
+        },
+        "candidates": candidates_list,
         "requires_process_chaining": requires_chaining,
         "secondary_chained_candidate_needed": "forming or manufacturing process" if requires_chaining else None,
         "dqr_scores": {"technological_representativeness_score": tech_score, "geographical_representativeness_score": geo_score, "temporal_representativeness_score": temporal_score},

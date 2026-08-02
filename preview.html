@@ -683,8 +683,56 @@
               <option value="USLCI">USLCI — US National LCI Database</option>
               <option value="ELCD">ELCD — European Reference Data</option>
               <option value="Agribalyse">Agribalyse — Agri-food Database</option>
+              <option value="India_GHG_Factors">🇮🇳 India GHG Factors (v6) — 60 Verified India Factors</option>
             </select>
             <span class="form-hint">Source of emission factors for material matching</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inventory Setup — GHG Protocol Cover_Boundary fields -->
+      <div class="card" style="margin-top:20px;">
+        <div class="card-title">📋 Inventory Setup <span style="font-size:12px;font-weight:500;color:var(--text-muted);margin-left:8px;">GHG Protocol Boundary</span></div>
+        <div class="card-subtitle">Define your organizational boundary, base year, and reporting method per the GHG Protocol Corporate Standard.</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Organizational Boundary Approach</label>
+            <select class="form-select" id="orgBoundary">
+              <option value="">— Select one —</option>
+              <option value="Operational Control">Operational Control</option>
+              <option value="Financial Control">Financial Control</option>
+              <option value="Equity Share">Equity Share</option>
+            </select>
+            <span class="form-hint">Determines which facilities/entities are consolidated into this inventory (GHG Protocol Ch.3)</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Base Year</label>
+            <input class="form-input" id="baseYear" type="number" placeholder="e.g. 2019" min="2000" max="2030">
+            <span class="form-hint">Historical reference year for tracking emissions over time</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Materiality Threshold (%)</label>
+            <input class="form-input" id="materialityThreshold" type="number" placeholder="e.g. 5" min="0" max="100" step="0.1">
+            <span class="form-hint">Sources below this % of total may be excluded (document exclusions)</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Scope 2 Dual-Reporting Method</label>
+            <select class="form-select" id="scope2Method">
+              <option value="">— Select one —</option>
+              <option value="Location-Based">Location-Based (grid average EF)</option>
+              <option value="Market-Based">Market-Based (supplier/residual mix)</option>
+              <option value="Both">Both (Dual Reporting per GHG Protocol Scope 2 Guidance)</option>
+            </select>
+            <span class="form-hint">GHG Protocol Scope 2 Guidance requires dual reporting where feasible</span>
+          </div>
+        </div>
+        <div style="margin-top:14px;padding:12px 16px;background:var(--indigo-dim);border:1px solid rgba(99,102,241,0.25);border-radius:var(--radius-md);">
+          <div style="display:flex;gap:8px;align-items:flex-start;">
+            <span style="font-size:16px;margin-top:1px;">ℹ️</span>
+            <div style="font-size:13px;color:var(--text-secondary);line-height:1.6;">
+              <strong style="color:var(--text-primary);">India GHG Factors v6</strong> covers Scope 1 (stationary/mobile/fugitive/process), Scope 2 (CEA grid, market-based, steam), and Scope 3 (all 15 GHG Protocol categories). Select the database above to activate India-specific factors with provenance tagging.
+              <button class="btn" style="margin-top:8px;height:30px;font-size:12px;padding:0 12px;" onclick="showGHGViewer()">📊 View India GHG Factor Table</button>
+            </div>
           </div>
         </div>
       </div>
@@ -694,6 +742,7 @@
         <button class="btn btn-primary btn-lg" onclick="goToStep(2)">Continue to Import Data →</button>
       </div>
     </div>
+
 
     <!-- ============================================================
          STEP 2: IMPORT DATA
@@ -1030,6 +1079,84 @@
 
       // --- WATER ---
       { name: "Water supply (tap)", keywords: ["water","tap water","mains water","municipal water","h2o"], factor: 0.000344, unit: "kg", category: "Utility", processName: "tap water production" },
+
+      // --- INDIA GHG FACTORS (v6) — Source: GHG_Calculator_RECTIFIED_v6.xlsx DB_Master ---
+      // Scope 1: Stationary Combustion
+      { name: "Diesel Generator (DG Sets)", keywords: ["diesel","dg set","generator","diesel generator","diesel fuel"], factor: 2.6558, unit: "Liters", category: "India_GHG_Factors", processName: "Diesel_Fuel", dqStatus: "uplifted", dqSource: "MoEFCC NATCOM/BUR uplifted via EPA GHG Equivalencies" },
+      { name: "Furnace Oil (Boilers)", keywords: ["furnace oil","boiler","heavy oil","hfo","fuel oil"], factor: 3.1186, unit: "Liters", category: "India_GHG_Factors", processName: "Furnace_Oil", dqStatus: "uplifted", dqSource: "MoEFCC NATCOM/BUR uplifted via EPA GHG Equivalencies" },
+      { name: "Natural Gas", keywords: ["natural gas","gas","cng","methane","png","piped gas"], factor: 1.8913, unit: "m3", category: "India_GHG_Factors", processName: "Natural_Gas", dqStatus: "uplifted", dqSource: "MoEFCC NATCOM/BUR uplifted via EPA GHG Equivalencies" },
+      { name: "Indian Coal (Boilers)", keywords: ["coal","indian coal","thermal coal","bituminous","lignite","coal boiler"], factor: 1.9919, unit: "kg", category: "India_GHG_Factors", processName: "Coal_Indian", dqStatus: "uplifted", dqSource: "MoEFCC NATCOM/BUR uplifted via EPA GHG Equivalencies" },
+      { name: "Commercial LPG", keywords: ["lpg","liquefied petroleum gas","commercial lpg","propane","butane"], factor: 2.9979, unit: "kg", category: "India_GHG_Factors", processName: "LPG_Commercial", dqStatus: "uplifted", dqSource: "MoEFCC NATCOM/BUR uplifted via EPA GHG Equivalencies" },
+      // Scope 1: Mobile Combustion
+      { name: "Petrol Company Cars", keywords: ["petrol","gasoline","company car","petrol car"], factor: 2.2836, unit: "Liters", category: "India_GHG_Factors", processName: "Petrol_Fuel", dqStatus: "uplifted", dqSource: "MoEFCC NATCOM/BUR uplifted via EPA GHG Equivalencies" },
+      { name: "Diesel Company Vehicles", keywords: ["diesel car","diesel vehicle","company vehicle","fleet diesel"], factor: 2.6558, unit: "Liters", category: "India_GHG_Factors", processName: "Diesel_Fuel", dqStatus: "uplifted", dqSource: "MoEFCC NATCOM/BUR uplifted via EPA GHG Equivalencies" },
+      { name: "CNG Vehicles", keywords: ["cng","compressed natural gas","cng vehicle","cng auto"], factor: 2.686, unit: "kg", category: "India_GHG_Factors", processName: "CNG_Fuel", dqStatus: "uplifted", dqSource: "MoEFCC NATCOM/BUR uplifted via EPA GHG Equivalencies" },
+      // Scope 1: Fugitive
+      { name: "Refrigerant Top-up - R-32", keywords: ["r-32","r32","refrigerant","hvac refrigerant","difluoromethane"], factor: 675, unit: "kg", category: "India_GHG_Factors", processName: "Refrig_R32", dqStatus: "clean", dqSource: "IPCC AR5 GWP100, R-32 = 675" },
+      { name: "Refrigerant Top-up - R-410A", keywords: ["r-410a","r410a","refrigerant 410a","hvac 410a"], factor: 2088, unit: "kg", category: "India_GHG_Factors", processName: "Refrig_R410A", dqStatus: "clean", dqSource: "IPCC AR5 GWP100, R-410A = 2088" },
+      { name: "Refrigerant Top-up - R-22", keywords: ["r-22","r22","hcfc-22","freon"], factor: 1810, unit: "kg", category: "India_GHG_Factors", processName: "Refrig_R22", dqStatus: "clean", dqSource: "IPCC AR5 GWP100, R-22 = 1810" },
+      // Scope 1: Process
+      { name: "Acetylene Welding", keywords: ["acetylene","welding","oxy-acetylene","gas welding"], factor: 3.4003, unit: "kg", category: "India_GHG_Factors", processName: "Acetylene_Welding", dqStatus: "uplifted", dqSource: "MoEFCC NATCOM/BUR uplifted via EPA GHG Equivalencies" },
+      { name: "CO2 Fire Extinguisher Discharge", keywords: ["co2 extinguisher","fire extinguisher","co2 discharge","co2 fire"], factor: 1, unit: "kg", category: "India_GHG_Factors", processName: "Fire_Extinguisher_CO2", dqStatus: "clean", dqSource: "GWP of CO2 = 1 (by definition)" },
+      // Scope 2
+      { name: "Office Electricity - Grid Average", keywords: ["india electricity","cea grid","india grid","office electricity","factory electricity","warehouse electricity","grid india"], factor: 0.7314, unit: "kWh", category: "India_GHG_Factors", processName: "Grid_India_CEA", dqStatus: "uplifted", dqSource: "CEA 2022-23 CO2 Baseline, national avg EF uplifted to CO2e via EPA GHG Equivalencies" },
+      { name: "Office Electricity - Supplier/Residual Mix", keywords: ["market based electricity","supplier mix","residual mix","market electricity","scope 2 market"], factor: 0.7314, unit: "kWh", category: "India_GHG_Factors", processName: "Grid_MarketBased_Default", dqStatus: "uplifted", dqSource: "CEA 2022-23 CO2 Baseline, national avg EF uplifted to CO2e via EPA GHG Equivalencies" },
+      { name: "Renewable/REC-Backed Electricity Purchased", keywords: ["rec","renewable energy certificate","green electricity","wind ppa","solar ppa","zero emission electricity"], factor: 0, unit: "kWh", category: "India_GHG_Factors", processName: "REC_Backed_Electricity", dqStatus: "clean", dqSource: "GHG Protocol Scope 2 Guidance - REC backed = 0 kgCO2e/kWh (market-based)" },
+      { name: "Purchased Steam", keywords: ["steam","purchased steam","process steam","steam supply"], factor: 0.1811, unit: "kg", category: "India_GHG_Factors", processName: "Purchased_Steam", dqStatus: "uplifted", dqSource: "EPA US Steam EF uplifted via IPCC/Defra cross-validation for Indian context" },
+      // Scope 3: Upstream Transport
+      { name: "Inbound Trucking (Diesel, tonne-km)", keywords: ["trucking","truck freight","road freight india","inbound truck","diesel truck"], factor: 0.09, unit: "tkm", category: "India_GHG_Factors", processName: "Transport_Truck_tkm", dqStatus: "clean", dqSource: "MoRTH/TERI India freight emission factor" },
+      { name: "Inbound LCV Delivery", keywords: ["lcv","light commercial vehicle","delivery van india","light freight"], factor: 0.45, unit: "km", category: "India_GHG_Factors", processName: "Transport_LCV_km", dqStatus: "clean", dqSource: "MoRTH/TERI India LCV emission factor" },
+      { name: "Inbound HGV Delivery", keywords: ["hgv","heavy goods vehicle","heavy truck","truck delivery"], factor: 0.85, unit: "km", category: "India_GHG_Factors", processName: "Transport_HGV_km", dqStatus: "clean", dqSource: "MoRTH/TERI India HGV emission factor" },
+      { name: "Inbound Rail Freight", keywords: ["rail freight","railway freight","train cargo","rail cargo india"], factor: 0.015, unit: "tkm", category: "India_GHG_Factors", processName: "Rail_Freight", dqStatus: "clean", dqSource: "Indian Railways Sustainability Report 2022-23" },
+      { name: "Inbound Air Freight", keywords: ["air freight","air cargo","air freight india","express cargo"], factor: 1.58, unit: "tkm", category: "India_GHG_Factors", processName: "Air_Freight_Cargo", dqStatus: "clean", dqSource: "ICAO/Defra air freight EF" },
+      // Scope 3: Business Travel
+      { name: "Rail Travel", keywords: ["rail travel","train journey","passenger rail india","irctc"], factor: 0.01, unit: "p-km", category: "India_GHG_Factors", processName: "Rail_Passenger", dqStatus: "clean", dqSource: "Indian Railways Sustainability Report 2022-23" },
+      { name: "Domestic Flights", keywords: ["domestic flight","air travel india","domestic air","flying india"], factor: 0.12, unit: "p-km", category: "India_GHG_Factors", processName: "Air_Domestic", dqStatus: "clean", dqSource: "ICAO/Defra average domestic flight EF" },
+      { name: "International Flights", keywords: ["international flight","air travel abroad","long haul","international business travel"], factor: 0.117, unit: "p-km", category: "India_GHG_Factors", processName: "Air_International", dqStatus: "clean", dqSource: "ICAO/Defra average international flight EF" },
+      { name: "Taxi Travel", keywords: ["taxi","cab","ola","uber","ride hail india"], factor: 0.14, unit: "km", category: "India_GHG_Factors", processName: "Taxi_Diesel", dqStatus: "clean", dqSource: "MoRTH diesel car emission factor" },
+      { name: "Hotel Nights - 5 Star", keywords: ["hotel","5 star","luxury hotel","business hotel","5 star accommodation"], factor: 75.5, unit: "night", category: "India_GHG_Factors", processName: "Hotel_5Star", dqStatus: "clean", dqSource: "Hotel Carbon Measurement Initiative (HCMI) India estimate" },
+      { name: "Hotel Nights - Budget", keywords: ["budget hotel","guesthouse","3 star hotel","economy hotel"], factor: 25, unit: "night", category: "India_GHG_Factors", processName: "Hotel_Budget", dqStatus: "clean", dqSource: "Hotel Carbon Measurement Initiative (HCMI) India estimate" },
+      // Scope 3: Employee Commuting
+      { name: "Two-Wheeler Commute", keywords: ["two wheeler","motorcycle","bike commute","scooter commute","motorbike"], factor: 0.04, unit: "km", category: "India_GHG_Factors", processName: "Commute_2Wheeler", dqStatus: "clean", dqSource: "MoRTH two-wheeler emission factor, India fleet avg" },
+      { name: "Car Commute - Average", keywords: ["car commute","employee car","car travel commute","commuting car"], factor: 0.14, unit: "km", category: "India_GHG_Factors", processName: "Commute_Car_Avg", dqStatus: "clean", dqSource: "MoRTH India passenger car fleet avg EF" },
+      { name: "Car Commute - Small Segment", keywords: ["small car commute","hatchback commute","compact car commute"], factor: 0.11, unit: "km", category: "India_GHG_Factors", processName: "Commute_Car_Small", dqStatus: "clean", dqSource: "MoRTH India small car EF" },
+      { name: "Car Commute - Large Segment", keywords: ["large car commute","suv commute","sedan commute","premium car commute"], factor: 0.17, unit: "km", category: "India_GHG_Factors", processName: "Commute_Car_Large", dqStatus: "clean", dqSource: "MoRTH India large car EF" },
+      { name: "Bus Commute", keywords: ["bus commute","public bus","employee bus","city bus india"], factor: 0.03, unit: "p-km", category: "India_GHG_Factors", processName: "Commute_Bus", dqStatus: "clean", dqSource: "TERI/MoUD India city bus emission factor" },
+      { name: "Metro Rail Commute", keywords: ["metro","metro rail","subway commute","delhi metro","mumbai metro"], factor: 0.015, unit: "p-km", category: "India_GHG_Factors", processName: "Metro_Rail", dqStatus: "clean", dqSource: "Delhi Metro Rail Corporation Sustainability Report" },
+      // Scope 3: Waste
+      { name: "Waste to Landfill", keywords: ["landfill","waste landfill","solid waste","msw landfill"], factor: 0.85, unit: "kg", category: "India_GHG_Factors", processName: "Waste_Landfill", dqStatus: "clean", dqSource: "MoEFCC/TERI India SWM emission factor" },
+      { name: "Waste Recycled", keywords: ["recycled waste","waste recycling","recyclables","paper recycled","plastic recycled"], factor: 0.021, unit: "kg", category: "India_GHG_Factors", processName: "Waste_Recycle", dqStatus: "clean", dqSource: "Defra/TERI cross-validated recycling credit" },
+      { name: "Waste Incinerated", keywords: ["incinerated","waste incineration","waste to energy","burn waste"], factor: 0.4, unit: "kg", category: "India_GHG_Factors", processName: "Waste_Incineration", dqStatus: "clean", dqSource: "IPCC Waste guidelines, mixed municipal waste" },
+      { name: "Wastewater Treated", keywords: ["wastewater","effluent treatment","sewage treatment","etp","stp"], factor: 0.708, unit: "m3", category: "India_GHG_Factors", processName: "Wastewater_Treatment", dqStatus: "clean", dqSource: "IPCC Wastewater Treatment guidelines" },
+      // Scope 3: Upstream Leased Assets / Water
+      { name: "Leased Facility Water Use", keywords: ["water supply","leased water","facility water","tap water india"], factor: 0.31, unit: "m3", category: "India_GHG_Factors", processName: "Water_Supply", dqStatus: "proxy", dqSource: "Cross-validated / RECONCILED via EA/Defra water supply EF proxy for India" },
+      // Scope 3: Procurement
+      { name: "Virgin Paper Procurement", keywords: ["virgin paper","office paper procurement","printing paper buy","paper purchase"], factor: 0.92, unit: "kg", category: "India_GHG_Factors", processName: "Paper_Virgin", dqStatus: "clean", dqSource: "ecoinvent/Defra paper production EF, globally validated" },
+      { name: "Recycled Paper Procurement", keywords: ["recycled paper","recycled stationery","paper recycled buy"], factor: 0.6, unit: "kg", category: "India_GHG_Factors", processName: "Paper_Recycled", dqStatus: "clean", dqSource: "Defra recycled paper EF" },
+      { name: "Plastic Packaging Procurement", keywords: ["plastic packaging","plastic buy","packaging plastic","plastic wrap purchase"], factor: 2.5, unit: "kg", category: "India_GHG_Factors", processName: "Plastic_Packaging", dqStatus: "clean", dqSource: "TERI/ecoinvent plastic packaging production EF" },
+      { name: "Construction Steel Procurement", keywords: ["steel procurement","construction steel buy","structural steel purchase","rebar purchase"], factor: 2.33, unit: "kg", category: "India_GHG_Factors", processName: "Construction_Steel", dqStatus: "clean", dqSource: "World Steel Association global avg EF" },
+      { name: "Cement Procurement", keywords: ["cement buy","portland cement purchase","cement procurement","concrete purchase"], factor: 0.9, unit: "kg", category: "India_GHG_Factors", processName: "Cement_Portland", dqStatus: "clean", dqSource: "GCCA India cement EF average" },
+      // Scope 3: Spend-Based
+      { name: "IT / Professional Services (Spend)", keywords: ["it spend","professional services","consultancy spend","software purchase","it services"], factor: 0.005, unit: "INR", category: "India_GHG_Factors", processName: "Spend_IT", dqStatus: "clean", dqSource: "Exiobase India EEIO IT services coefficient" },
+      { name: "Construction / Repairs (Spend)", keywords: ["construction spend","repair spend","civil works","maintenance spend"], factor: 0.012, unit: "INR", category: "India_GHG_Factors", processName: "Spend_Construction", dqStatus: "clean", dqSource: "Exiobase India EEIO construction sector coefficient" },
+      { name: "Generic Purchased Services (Spend)", keywords: ["purchased services","generic services spend","services spend"], factor: 0.003, unit: "INR", category: "India_GHG_Factors", processName: "Spend_Generic_Services", dqStatus: "clean", dqSource: "Exiobase India EEIO generic services coefficient" },
+      // Scope 3: Capital Goods
+      { name: "Laptops Purchased", keywords: ["laptop","notebook computer","laptop purchase","laptop buy"], factor: 250, unit: "unit", category: "India_GHG_Factors", processName: "Laptop_Unit", dqStatus: "clean", dqSource: "iNEMI/Dell lifecycle GHG per laptop unit" },
+      { name: "Desktops Purchased", keywords: ["desktop","desktop computer","pc purchase","desktop buy"], factor: 350, unit: "unit", category: "India_GHG_Factors", processName: "Desktop_Unit", dqStatus: "clean", dqSource: "iNEMI/Dell lifecycle GHG per desktop unit" },
+      { name: "Smartphones Purchased", keywords: ["smartphone","mobile phone","phone purchase","handset buy"], factor: 65, unit: "unit", category: "India_GHG_Factors", processName: "Smartphone_Unit", dqStatus: "clean", dqSource: "Apple/Samsung avg lifecycle EF per smartphone" },
+      { name: "Office Furniture Purchased", keywords: ["furniture","office furniture","desk chair","workstation furniture"], factor: 3.5, unit: "kg", category: "India_GHG_Factors", processName: "Furniture", dqStatus: "clean", dqSource: "Furniture Industry Research Association EF avg" },
+      // Scope 3: T&D Losses and WTT
+      { name: "Grid T&D Losses", keywords: ["transmission loss","distribution loss","t&d loss","grid loss","line loss"], factor: 0.1459, unit: "kWh", category: "India_GHG_Factors", processName: "Grid_TD_Loss", dqStatus: "uplifted", dqSource: "CEA 2022-23 T&D loss-adjusted EF uplifted via EPA GHG Equivalencies" },
+      { name: "Well-to-Tank: Diesel", keywords: ["wtt diesel","upstream diesel","diesel upstream","fuel lifecycle diesel"], factor: 0.5835, unit: "Liters", category: "India_GHG_Factors", processName: "WTT_Diesel", dqStatus: "uplifted", dqSource: "Defra/ECUK WTT diesel EF uplifted via EPA GHG Equivalencies for IN" },
+      { name: "Well-to-Tank: Petrol", keywords: ["wtt petrol","upstream petrol","petrol upstream","fuel lifecycle petrol"], factor: 0.4628, unit: "Liters", category: "India_GHG_Factors", processName: "WTT_Petrol", dqStatus: "uplifted", dqSource: "Defra/ECUK WTT petrol EF uplifted via EPA GHG Equivalencies for IN" },
+      // Scope 3: Downstream (Placeholder categories)
+      { name: "Estimated Product Use-Phase Energy", keywords: ["product use phase","use phase energy","product energy use","consumer energy"], factor: 0, unit: "unit", category: "India_GHG_Factors", processName: "Product_Use_Phase_Energy", dqStatus: "placeholder", dqSource: "PLACEHOLDER — user must input product-specific use-phase energy & EF" },
+      { name: "Estimated End-of-Life Emissions", keywords: ["end of life","eol emissions","product disposal","end of life waste"], factor: 0, unit: "unit", category: "India_GHG_Factors", processName: "Product_EndOfLife", dqStatus: "placeholder", dqSource: "PLACEHOLDER — user must input product-specific EoL scenario" },
+      { name: "Equity-Share-Weighted Investee Emissions", keywords: ["equity share","investee emissions","financial investment emissions","equity investment"], factor: 0, unit: "INR invested", category: "India_GHG_Factors", processName: "Investment_Equity_Share", dqStatus: "placeholder", dqSource: "PLACEHOLDER — requires PCAF methodology & investee-reported data" },
+      { name: "Franchise Operations (if applicable)", keywords: ["franchise","franchise operations","franchisee emissions","franchise store"], factor: 0, unit: "franchise", category: "India_GHG_Factors", processName: "Franchise_Estimate", dqStatus: "placeholder", dqSource: "PLACEHOLDER — requires franchise-specific survey data" },
+      { name: "Assets Leased to Others - Energy Use", keywords: ["leased asset","downstream lease","asset leased","downstream leased asset"], factor: 0, unit: "unit", category: "India_GHG_Factors", processName: "Leased_Asset_Downstream", dqStatus: "placeholder", dqSource: "PLACEHOLDER — requires lessee energy consumption data" },
+      { name: "Financed Emissions (Financial Sector)", keywords: ["financed emissions","green finance","portfolio emissions","financial sector emissions"], factor: 1, unit: "tCO2e reported", category: "India_GHG_Factors", processName: "Financed_Emissions_Passthrough", dqStatus: "clean", dqSource: "Direct passthrough of reported tCO2e per PCAF standard" },
+      { name: "Third-Party Processing of Intermediate Goods", keywords: ["third party processing","contract manufacturing","outsourced processing","processing sold products"], factor: 0, unit: "unit", category: "India_GHG_Factors", processName: "Processing_Sold_Products_Proxy", dqStatus: "placeholder", dqSource: "PLACEHOLDER — requires third-party process-specific data" },
     ];
 
     /* ===========================================================
@@ -1264,23 +1391,17 @@
     /* ===========================================================
        FUZZY MATCHING ENGINE
        =========================================================== */
-    function fuzzyMatch(input) {
+    function fuzzyMatch(input, filterDb) {
       const inputLower = input.toLowerCase().trim();
       const inputWords = inputLower.split(/[\s,\-_\/\(\)]+/).filter(w => w.length > 1);
+      const maxPossible = Math.max(50 + inputWords.length * 15, 1);
 
-      let bestMatch = null;
-      let bestScore = 0;
-
-      EMISSION_DB.forEach(entry => {
+      const scored = [];
+      const pool = filterDb ? EMISSION_DB.filter(e => e.category === filterDb) : EMISSION_DB;
+      pool.forEach(entry => {
         let score = 0;
         const allKeywords = [entry.name.toLowerCase(), ...entry.keywords];
-
-        // Exact substring match in name
-        if (entry.name.toLowerCase().includes(inputLower) || inputLower.includes(entry.name.toLowerCase())) {
-          score += 50;
-        }
-
-        // Word overlap
+        if (entry.name.toLowerCase().includes(inputLower) || inputLower.includes(entry.name.toLowerCase())) score += 50;
         allKeywords.forEach(kw => {
           const kwWords = kw.split(/[\s,\-_\/\(\)]+/).filter(w => w.length > 1);
           inputWords.forEach(iw => {
@@ -1291,18 +1412,18 @@
             });
           });
         });
-
-        if (score > bestScore) {
-          bestScore = score;
-          bestMatch = entry;
-        }
+        if (score > 0) scored.push({ entry, score });
       });
 
-      // Normalize score to percentage
-      const maxPossible = Math.max(50 + inputWords.length * 15, 1);
-      const similarity = Math.min(Math.round((bestScore / maxPossible) * 100), 99);
+      scored.sort((a, b) => b.score - a.score);
+      const top5 = scored.slice(0, 5).map(({ entry, score }) => ({
+        entry,
+        similarity: Math.min(Math.round((score / maxPossible) * 100), 99)
+      }));
 
-      return { match: bestMatch, similarity: Math.max(similarity, bestMatch ? 25 : 0) };
+      const bestMatch = top5[0]?.entry || null;
+      const similarity = top5[0]?.similarity ?? 0;
+      return { match: bestMatch, similarity: Math.max(similarity, bestMatch ? 25 : 0), candidates: top5 };
     }
 
     function levenshtein(a, b) {
@@ -1319,41 +1440,44 @@
        =========================================================== */
     function runMatching() {
       const geo = document.getElementById('geography').value;
+      const dbSel = document.getElementById('database').value;
+      const filterDb = dbSel === 'India_GHG_Factors' ? 'India_GHG_Factors' : null;
 
       matchedItems = bomItems.map(item => {
-        const { match, similarity } = fuzzyMatch(item.description);
+        const { match, similarity, candidates } = fuzzyMatch(item.description, filterDb);
 
-        // DQR scores
         let dqrTech = similarity >= 85 ? 1 : similarity >= 65 ? 2 : similarity >= 45 ? 3 : 4;
         let dqrGeo = (geo === 'US' || geo === 'GLO') ? 1 : 2;
         let dqrTemp = 1;
 
-        // Risk level
         let risk = 'LOW';
         if (similarity < 50 || dqrTech >= 4) risk = 'HIGH';
         else if (similarity < 75 || dqrTech >= 3) risk = 'MEDIUM';
 
-        // CO2e calculation
         let co2e = 0;
         let factor = 0;
         if (match) {
           factor = match.factor;
-          // Simple unit conversion for common mismatches
           let qty = item.quantity;
           if (item.unit === 'g' && match.unit === 'kg') qty = qty / 1000;
           else if (item.unit === 't' && match.unit === 'kg') qty = qty * 1000;
           else if (item.unit === 'lb' && match.unit === 'kg') qty = qty * 0.4536;
           else if (item.unit === 'MJ' && match.unit === 'kWh') qty = qty / 3.6;
-          co2e = qty * factor / 1000; // convert to tCO2e
+          co2e = qty * factor / 1000;
         }
 
-        // Reasoning text
+        const dqStatus = match?.dqStatus || 'clean';
+        const isPlaceholder = dqStatus === 'placeholder';
+
         let reasoning = match
-          ? `Matched to "${match.processName}" from ${document.getElementById('database').value} database. Emission factor: ${match.factor} kgCO₂e/${match.unit}.`
+          ? `Matched to "${match.processName}" from ${dbSel} database. EF: ${match.factor} kgCO₂e/${match.unit}. Source: ${match.dqSource || 'N/A'}.`
           : 'No suitable match found in database. Manual override recommended.';
 
         let warning = null;
-        if (risk === 'HIGH' && match) {
+        if (isPlaceholder) {
+          warning = `⚠️ PLACEHOLDER factor — result_tco2e is NOT valid. Source: "${match.dqSource}". Replace with verified data before reporting.`;
+          co2e = null;
+        } else if (risk === 'HIGH' && match) {
           warning = 'Low similarity score — verify this mapping is correct. Consider manual override.';
         } else if (!match) {
           warning = 'No emission factor found. This item cannot be included in carbon calculations until mapped.';
@@ -1361,20 +1485,21 @@
 
         return {
           ...item,
-          match: match,
-          similarity: similarity,
-          risk: risk,
+          match,
+          similarity,
+          candidates: candidates || [],
+          dqStatus,
+          risk,
           dqr: [dqrTech, dqrGeo, dqrTemp],
-          co2e: co2e,
-          factor: factor,
+          co2e: co2e ?? 0,
+          factor,
           approved: false,
-          reasoning: reasoning,
-          warning: warning,
+          reasoning,
+          warning,
           processName: match ? match.processName : 'No match found'
         };
       });
 
-      // Sort: HIGH risk first
       const order = { HIGH: 0, MEDIUM: 1, LOW: 2 };
       matchedItems.sort((a, b) => order[a.risk] - order[b.risk]);
 
@@ -1387,9 +1512,14 @@
       showToast(`✓ Matched ${matchedItems.length} items. Review the results below.`, 'success');
     };
 
-    /* ===========================================================
-       REVIEW TABLE (Step 3)
-       =========================================================== */
+
+    const DQ_BADGE = {
+      clean:       { label: '✅ Clean',       color: '#10b981', bg: 'rgba(16,185,129,0.12)', title: 'Verified, peer-reviewed emission factor' },
+      uplifted:    { label: '⬆ Uplifted',    color: '#f59e0b', bg: 'rgba(245,158,11,0.12)',  title: 'Primary factor uplifted via EPA GHG Equivalencies; validated against multiple sources' },
+      proxy:       { label: '🔀 Proxy',       color: '#6366f1', bg: 'rgba(99,102,241,0.12)',  title: 'Cross-validated proxy/approximated factor — acceptable for reporting but note in methodology' },
+      placeholder: { label: '🚫 Placeholder', color: '#f43f5e', bg: 'rgba(244,63,94,0.12)',   title: 'PLACEHOLDER — NOT valid for reporting. Must be replaced with real data before submission.' },
+    };
+
     function renderReviewTable() {
       const tbody = document.getElementById('reviewTableBody');
       const searchVal = document.getElementById('reviewSearch').value.toLowerCase().trim();
@@ -1408,14 +1538,21 @@
       filtered.forEach(item => {
         const tr = document.createElement('tr');
         const simClass = item.similarity >= 80 ? 'high' : item.similarity >= 55 ? 'mid' : 'low';
+        const dq = DQ_BADGE[item.dqStatus] || DQ_BADGE.clean;
+        const tco2eDisplay = item.dqStatus === 'placeholder'
+          ? '<span style="color:var(--red);font-size:11px;font-weight:700;">PLACEHOLDER</span>'
+          : item.co2e > 0 ? `<span style="font-family:\'JetBrains Mono\',monospace;font-size:12px;font-weight:700;color:#fff;">${item.co2e.toFixed(4)}</span>` : '—';
 
         tr.innerHTML = `
           <td><button class="expand-btn" onclick="toggleExpand('${item.id}')">${expandedRow === item.id ? '▼' : '▶'}</button></td>
           <td>
             <div class="bom-name">${escHtml(item.description)}</div>
-            <div class="bom-meta">${item.quantity} ${item.unit} • ${item.co2e.toFixed(4)} tCO₂e</div>
+            <div class="bom-meta">${item.quantity} ${item.unit} • ${item.dqStatus !== 'placeholder' ? item.co2e.toFixed(4) + ' tCO₂e' : '<span style="color:var(--red);">PLACEHOLDER</span>'}</div>
           </td>
-          <td><span class="process-name">${escHtml(item.processName)}</span></td>
+          <td>
+            <span class="process-name">${escHtml(item.processName)}</span>
+            ${item.dqStatus ? `<span style="display:inline-flex;align-items:center;gap:4px;margin-top:4px;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;background:${dq.bg};color:${dq.color};border:1px solid ${dq.color}33;cursor:help;" title="${dq.title}">${dq.label}</span>` : ''}
+          </td>
           <td><span class="sim-score ${simClass}">${item.similarity}%</span></td>
           <td>
             <div class="dqr-pills" title="Tech: ${item.dqr[0]} | Geo: ${item.dqr[1]} | Time: ${item.dqr[2]}">
@@ -1425,39 +1562,137 @@
             </div>
           </td>
           <td><span class="risk-pill ${item.risk}">${item.risk}</span></td>
-          <td style="font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700; color:${item.co2e > 0 ? '#fff' : 'var(--text-muted)'};">${item.co2e > 0 ? item.co2e.toFixed(4) : '—'}</td>
+          <td>${tco2eDisplay}</td>
           <td>
             <div class="action-btns">
               ${item.approved
                 ? '<span class="approved-label">✓ Approved</span>'
-                : `<button class="btn-approve-sm" onclick="approveItem('${item.id}')">Approve</button>`}
+                : `<button class="btn-approve-sm" onclick="approveItem('${item.id}')"${item.dqStatus === 'placeholder' ? ' disabled title="Cannot approve placeholder — replace data first"' : ''}>Approve</button>`}
               <button class="btn-remove-sm" onclick="removeItem('${item.id}')">✕</button>
             </div>
           </td>
         `;
         tbody.appendChild(tr);
 
-        // Expanded detail
         if (expandedRow === item.id) {
           const detailTr = document.createElement('tr');
           detailTr.className = 'expanded-row';
+          // Build candidate picker chips
+          let candidateHtml = '';
+          if (item.candidates && item.candidates.length > 1) {
+            candidateHtml = `<div style="margin-top:12px;">
+              <div style="font-size:11px;color:var(--text-muted);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;">Alternative Candidates (click to switch):</div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px;">`;
+            item.candidates.forEach((c, idx) => {
+              const isCurrent = item.match && c.entry.processName === item.match.processName;
+              const cdq = DQ_BADGE[c.entry.dqStatus] || DQ_BADGE.clean;
+              candidateHtml += `<button onclick="switchCandidate('${item.id}',${idx})" style="font-size:11px;padding:4px 10px;border-radius:6px;border:1px solid ${isCurrent ? 'var(--emerald)' : 'var(--border)'};background:${isCurrent ? 'var(--emerald-dim)' : 'var(--bg-surface)'};color:${isCurrent ? 'var(--emerald)' : 'var(--text-secondary)'};cursor:pointer;font-weight:${isCurrent ? '700' : '500'};" title="EF: ${c.entry.factor} ${c.entry.unit} | ${cdq.title}">
+                ${c.entry.name} <span style="opacity:.65;">${c.similarity}%</span> <span style="color:${cdq.color};font-size:10px;">${cdq.label}</span>
+              </button>`;
+            });
+            candidateHtml += '</div></div>';
+          }
+
           detailTr.innerHTML = `<td colspan="8" class="expanded-detail">
             <strong>Audit Reasoning:</strong> ${escHtml(item.reasoning)}
-            ${item.warning ? `<div class="warning-box">⚠️ ${escHtml(item.warning)}</div>` : ''}
+            ${item.warning ? `<div class="warning-box">${escHtml(item.warning)}</div>` : ''}
             <div style="margin-top:8px; font-size:11px; color:var(--text-muted);">
               Emission Factor: <strong>${item.factor} kgCO₂e/${item.match ? item.match.unit : '?'}</strong>
               &nbsp;•&nbsp; Category: <strong>${item.match ? item.match.category : 'Unknown'}</strong>
               &nbsp;•&nbsp; Database: <strong>${document.getElementById('database').value}</strong>
+              ${item.match?.dqSource ? `&nbsp;•&nbsp; Source: <em>${escHtml(item.match.dqSource)}</em>` : ''}
             </div>
+            ${candidateHtml}
           </td>`;
           tbody.appendChild(detailTr);
         }
       });
 
-      updateProgress();
-    }
 
     function toggleExpand(id) { expandedRow = expandedRow === id ? null : id; renderReviewTable(); }
+
+    function switchCandidate(itemId, candidateIdx) {
+      matchedItems = matchedItems.map(item => {
+        if (item.id !== itemId) return item;
+        const c = item.candidates[candidateIdx];
+        if (!c) return item;
+        const newMatch = c.entry;
+        let qty = item.quantity;
+        if (item.unit === 'g' && newMatch.unit === 'kg') qty = qty / 1000;
+        else if (item.unit === 't' && newMatch.unit === 'kg') qty = qty * 1000;
+        else if (item.unit === 'lb' && newMatch.unit === 'kg') qty = qty * 0.4536;
+        else if (item.unit === 'MJ' && newMatch.unit === 'kWh') qty = qty / 3.6;
+        const dqStatus = newMatch.dqStatus || 'clean';
+        const isPlaceholder = dqStatus === 'placeholder';
+        const co2e = isPlaceholder ? null : (qty * newMatch.factor / 1000);
+        return {
+          ...item,
+          match: newMatch,
+          factor: newMatch.factor,
+          co2e: co2e ?? 0,
+          dqStatus,
+          processName: newMatch.processName,
+          reasoning: `[Manual switch] Matched to "${newMatch.processName}" (${c.similarity}% similarity). EF: ${newMatch.factor} kgCO₂e/${newMatch.unit}. Source: ${newMatch.dqSource || 'N/A'}.`,
+          warning: isPlaceholder
+            ? `⚠️ PLACEHOLDER factor — result_tco2e is NOT valid. Source: "${newMatch.dqSource}". Replace with verified data before reporting.`
+            : null,
+          // Any match switch resets approval — must be re-signed off
+          approved: false,
+        };
+      });
+      renderReviewTable();
+      showToast('Candidate switched. Row de-approved — please re-review and approve.', 'info');
+    }
+
+    function showGHGViewer() {
+      const overlay = document.getElementById('ghgViewerOverlay');
+      if (overlay) { overlay.style.display = 'flex'; return; }
+      const india = EMISSION_DB.filter(e => e.category === 'India_GHG_Factors');
+      const dqBadges = DQ_BADGE;
+      const rows = india.map(e => {
+        const dq = dqBadges[e.dqStatus] || dqBadges.clean;
+        return `<tr>
+          <td style="font-weight:600;color:var(--text-primary);">${e.name}</td>
+          <td style="font-family:'JetBrains Mono',monospace;color:var(--emerald);">${e.factor}</td>
+          <td style="color:var(--text-secondary);">${e.unit}</td>
+          <td><span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;background:${dq.bg};color:${dq.color};border:1px solid ${dq.color}33;" title="${dq.title}">${dq.label}</span></td>
+          <td style="color:var(--text-muted);font-size:11px;">${e.dqSource || ''}</td>
+        </tr>`;
+      }).join('');
+      const modal = document.createElement('div');
+      modal.id = 'ghgViewerOverlay';
+      modal.style.cssText = 'display:flex;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:24px;';
+      modal.innerHTML = `
+        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-xl);max-width:900px;width:100%;max-height:85vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--shadow-lg);">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border);flex-shrink:0;">
+            <div>
+              <div style="font-size:17px;font-weight:800;color:var(--text-primary);">🇮🇳 India GHG Factors v6</div>
+              <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Source: GHG_Calculator_RECTIFIED_v6.xlsx • ${india.length} factors • For reference only — data is NOT downloadable</div>
+            </div>
+            <button onclick="document.getElementById('ghgViewerOverlay').style.display='none'" style="background:transparent;border:1px solid var(--border);color:var(--text-primary);border-radius:8px;width:36px;height:36px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;">✕</button>
+          </div>
+          <div style="overflow-y:auto;padding:16px;">
+            <table style="width:100%;border-collapse:collapse;font-size:12px;">
+              <thead>
+                <tr style="position:sticky;top:0;background:var(--bg-surface);">
+                  <th style="text-align:left;padding:8px 12px;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);">Activity</th>
+                  <th style="text-align:left;padding:8px 12px;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);">EF (kgCO₂e)</th>
+                  <th style="text-align:left;padding:8px 12px;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);">Unit</th>
+                  <th style="text-align:left;padding:8px 12px;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);">Quality</th>
+                  <th style="text-align:left;padding:8px 12px;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);">Source/Notes</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+          <div style="padding:12px 24px;border-top:1px solid var(--border);background:rgba(244,63,94,0.06);flex-shrink:0;">
+            <div style="font-size:11px;color:var(--red);font-weight:600;">⚠️ PLACEHOLDER rows are shown for completeness but are NOT valid for GHG reporting until replaced with real activity data.</div>
+          </div>
+        </div>`;
+      document.body.appendChild(modal);
+    }
+
+
     function approveItem(id) {
       matchedItems = matchedItems.map(i => i.id === id ? { ...i, approved: true } : i);
       renderReviewTable();

@@ -29,6 +29,21 @@ ALIASES = {
     "tonne-km": "tkm",
     "ton-km": "tkm",
     "ton-mile": "ton-mile",
+    "liters": "L",
+    "liter": "L",
+    "litre": "L",
+    "litres": "L",
+    "l": "L",
+    "cubic meter": "m3",
+    "cubic meters": "m3",
+    "scm": "m3",
+    "passenger-km": "p-km",
+    "pax-distance": "p-km",
+    "nights": "night",
+    "units sold": "unit sold",
+    "franchises": "franchise",
+    "inr invested": "INR invested",
+    "tco2e reported": "tCO2e reported",
 }
 
 TO_BASE = {
@@ -44,7 +59,16 @@ TO_BASE = {
     "mi": ("distance", 1.609344),
     "tkm": ("transport", 1.0),
     "ton-mile": ("transport", 1.459972),
+    "p-km": ("pax-distance", 1.0),
+    "L": ("volume", 1.0),
+    "m3": ("volume", 1000.0),
+    "INR": ("spend", 1.0),
+    "night": ("count", 1.0),
     "unit": ("count", 1.0),
+    "unit sold": ("count", 1.0),
+    "franchise": ("count", 1.0),
+    "INR invested": ("spend", 1.0),
+    "tCO2e reported": ("count", 1.0),
 }
 
 
