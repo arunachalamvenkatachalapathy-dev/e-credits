@@ -190,18 +190,34 @@ def list_audits(project_id: str, audit_risk_level: str | None = None, db: Sessio
         query = query.filter(BomMappingAudit.audit_risk_level == audit_risk_level)
     order = {"HIGH": 0, "MEDIUM": 1, "LOW": 2}
     rows = query.all()
+    all_processes = db.query(LciProcess).all()
     enriched = []
     for row in sorted(rows, key=lambda r: (order.get(r.audit_risk_level or "", 9), r.created_at)):
         matched_proc = db.get(LciProcess, row.matched_process_id) if row.matched_process_id else None
         result_tco2e = None
         if matched_proc and matched_proc.emission_factor is not None and row.converted_quantity is not None:
             result_tco2e = (float(row.converted_quantity) * matched_proc.emission_factor) / 1000.0
+        candidates = []
+        if matched_proc and row.converted_unit:
+            cand_objs = retrieve_candidates(all_processes, row.raw_bom_input, row.converted_unit, matched_proc.database_source, matched_proc.system_model, row.target_geography)
+            candidates = [
+                {
+                    "process_id": c["process"].id,
+                    "process_name": c["process"].process_name,
+                    "process_uuid": c["process"].process_uuid,
+                    "similarity_score": c["similarity_score"],
+                    "data_quality_status": c["process"].data_quality_status,
+                    "emission_factor": c["process"].emission_factor,
+                }
+                for c in cand_objs
+            ]
         enriched.append({
             **{col.name: getattr(row, col.name) for col in row.__table__.columns},
             "result_tco2e": result_tco2e,
             "data_quality_status": matched_proc.data_quality_status if matched_proc else None,
             "emission_factor": matched_proc.emission_factor if matched_proc else None,
             "emission_factor_source": matched_proc.emission_factor_source if matched_proc else None,
+            "candidates": candidates,
             "placeholder_warning": (
                 f"⚠️ Placeholder factor — result not valid for '{matched_proc.process_name}'"
                 if matched_proc and matched_proc.data_quality_status == "placeholder" and float(row.converted_quantity or 0) > 0
@@ -230,8 +246,7 @@ def override(audit_id: str, payload: OverrideRequest, db: Session = Depends(get_
     audit = db.get(BomMappingAudit, audit_id)
     if not audit:
         raise HTTPException(404, "Audit not found")
-    if not payload.notes.strip():
-        raise HTTPException(400, "Override notes are required")
+    notes = (payload.notes or "").strip() or "Selected candidate match alternative from UI picker"
     process = db.get(LciProcess, payload.process_id)
     if not process:
         raise HTTPException(404, "Override process not found")
@@ -242,19 +257,33 @@ def override(audit_id: str, payload: OverrideRequest, db: Session = Depends(get_
     # Any candidate switch resets approval — must be freshly signed off
     audit.is_human_approved = False
     audit.reviewed_by_user_id = payload.user_id if db.get(User, payload.user_id) else None
-    audit.human_review_notes = payload.notes
+    audit.human_review_notes = notes
     audit.reviewed_at = now_utc()
     db.commit()
     db.refresh(audit)
     result_tco2e = None
     if process.emission_factor is not None and audit.converted_quantity is not None:
         result_tco2e = (float(audit.converted_quantity) * process.emission_factor) / 1000.0
+    all_processes = db.query(LciProcess).all()
+    cand_objs = retrieve_candidates(all_processes, audit.raw_bom_input, audit.converted_unit or audit.raw_bom_unit, process.database_source, process.system_model, audit.target_geography)
+    candidates = [
+        {
+            "process_id": c["process"].id,
+            "process_name": c["process"].process_name,
+            "process_uuid": c["process"].process_uuid,
+            "similarity_score": c["similarity_score"],
+            "data_quality_status": c["process"].data_quality_status,
+            "emission_factor": c["process"].emission_factor,
+        }
+        for c in cand_objs
+    ]
     return {
         **{col.name: getattr(audit, col.name) for col in audit.__table__.columns},
         "result_tco2e": result_tco2e,
         "data_quality_status": process.data_quality_status,
         "emission_factor": process.emission_factor,
         "emission_factor_source": process.emission_factor_source,
+        "candidates": candidates,
         "placeholder_warning": (
             f"⚠️ Placeholder factor — result not valid for '{process.process_name}'"
             if process.data_quality_status == "placeholder" and float(audit.converted_quantity or 0) > 0

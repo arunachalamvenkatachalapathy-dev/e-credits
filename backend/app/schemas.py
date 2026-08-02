@@ -42,9 +42,9 @@ class RejectRequest(BaseModel):
 
 
 class OverrideRequest(BaseModel):
-    user_id: str
+    user_id: str = "practitioner-1"
     process_id: str
-    notes: str
+    notes: str | None = "Selected candidate match alternative from UI picker"
 
 
 class AiChatRequest(BaseModel):

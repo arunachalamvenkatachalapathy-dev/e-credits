@@ -39,7 +39,9 @@ ALIASES = {
     "scm": "m3",
     "passenger-km": "p-km",
     "pax-distance": "p-km",
+    "night": "night",
     "nights": "night",
+    "inr": "INR",
     "units sold": "unit sold",
     "franchises": "franchise",
     "inr invested": "INR invested",
@@ -65,10 +67,10 @@ TO_BASE = {
     "INR": ("spend", 1.0),
     "night": ("count", 1.0),
     "unit": ("count", 1.0),
-    "unit sold": ("count", 1.0),
-    "franchise": ("count", 1.0),
-    "INR invested": ("spend", 1.0),
-    "tCO2e reported": ("count", 1.0),
+    "unit sold": ("unit_sold", 1.0),
+    "franchise": ("franchise", 1.0),
+    "INR invested": ("inr_invested", 1.0),
+    "tCO2e reported": ("tco2e_reported", 1.0),
 }
 
 

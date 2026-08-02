@@ -50,11 +50,58 @@ function App() {
   const [audits, setAudits] = useState([
     {
       id: "row-1",
+      raw_bom_input: "Diesel Generator (DG Sets) fuel",
+      raw_bom_quantity: 1000,
+      raw_bom_unit: "Liters",
+      matched_process_name: "Diesel Generator (DG Sets)",
+      vector_similarity_score: 1.0,
+      data_quality_status: "uplifted",
+      result_tco2e: 2.6558,
+      dqr_technological_score: 1,
+      dqr_geographical_score: 1,
+      dqr_temporal_score: 1,
+      audit_risk_level: "LOW",
+      audit_reasoning: "India GHG Factors v6 point emission factor match (2.6558 kgCO2e/L).",
+      mandatory_data_gap_warning: null,
+      is_human_approved: false,
+      co2e_kg_per_unit: 2.6558,
+      candidates: [
+        { process_name: "Diesel Generator (DG Sets)", similarity_score: 1.0, data_quality_status: "uplifted", emission_factor: 2.6558 },
+        { process_name: "Well-to-Tank: Diesel", similarity_score: 0.85, data_quality_status: "uplifted", emission_factor: 0.5835 },
+        { process_name: "Commercial LPG", similarity_score: 0.62, data_quality_status: "uplifted", emission_factor: 2.9979 }
+      ]
+    },
+    {
+      id: "row-2",
+      raw_bom_input: "Estimated Facility HVAC Use-Phase",
+      raw_bom_quantity: 450,
+      raw_bom_unit: "kWh",
+      matched_process_name: "Estimated Product Use-Phase Energy",
+      vector_similarity_score: 0.94,
+      data_quality_status: "placeholder",
+      result_tco2e: 0.0,
+      dqr_technological_score: 5,
+      dqr_geographical_score: 2,
+      dqr_temporal_score: 3,
+      audit_risk_level: "HIGH",
+      audit_reasoning: "Matched placeholder factor. Real activity data required before carbon accounting sign-off.",
+      mandatory_data_gap_warning: "Placeholder emission factor detected. Approval blocked pending real measurements.",
+      is_human_approved: false,
+      co2e_kg_per_unit: 0.0,
+      candidates: [
+        { process_name: "Estimated Product Use-Phase Energy", similarity_score: 0.94, data_quality_status: "placeholder", emission_factor: 0.0 },
+        { process_name: "Indian Grid Electricity", similarity_score: 0.72, data_quality_status: "clean", emission_factor: 0.716 }
+      ]
+    },
+    {
+      id: "row-3",
       raw_bom_input: "Aluminum sheet 6061-T6 (2mm)",
       raw_bom_quantity: 125,
       raw_bom_unit: "kg",
-      matched_process_name: "aluminium production, primary, ingot | USLCI",
+      matched_process_name: "aluminium production, primary, ingot",
       vector_similarity_score: 0.892,
+      data_quality_status: "clean",
+      result_tco2e: 1.05,
       dqr_technological_score: 4,
       dqr_geographical_score: 1,
       dqr_temporal_score: 2,
@@ -62,55 +109,32 @@ function App() {
       audit_reasoning: "Primary aluminum ingot match. High risk due to missing extrusion/rolling transformation energy step.",
       mandatory_data_gap_warning: "Forming & rolling energy process step required before EPD generation.",
       is_human_approved: false,
-      co2e_kg_per_unit: 8.4
+      co2e_kg_per_unit: 8.4,
+      candidates: [
+        { process_name: "aluminium production, primary, ingot", similarity_score: 0.892, data_quality_status: "clean", emission_factor: 8.4 },
+        { process_name: "steel production, low-alloy, at plant", similarity_score: 0.45, data_quality_status: "proxy", emission_factor: 1.8 }
+      ]
     },
     {
-      id: "row-2",
+      id: "row-4",
       raw_bom_input: "Medium voltage grid electricity",
       raw_bom_quantity: 1850,
       raw_bom_unit: "kWh",
-      matched_process_name: "electricity, medium voltage, grid mix | USLCI",
+      matched_process_name: "electricity, medium voltage, grid mix",
       vector_similarity_score: 0.965,
+      data_quality_status: "clean",
+      result_tco2e: 0.777,
       dqr_technological_score: 1,
       dqr_geographical_score: 1,
       dqr_temporal_score: 1,
       audit_risk_level: "LOW",
-      audit_reasoning: "Direct match to US grid electricity dataset with temporal validity.",
+      audit_reasoning: "Direct match to grid electricity dataset with temporal validity.",
       mandatory_data_gap_warning: null,
       is_human_approved: true,
-      co2e_kg_per_unit: 0.42
-    },
-    {
-      id: "row-3",
-      raw_bom_input: "Diesel freight transport (>32t)",
-      raw_bom_quantity: 420,
-      raw_bom_unit: "tkm",
-      matched_process_name: "transport, freight, lorry >32t, EURO5 | ELCD",
-      vector_similarity_score: 0.784,
-      dqr_technological_score: 2,
-      dqr_geographical_score: 3,
-      dqr_temporal_score: 2,
-      audit_risk_level: "MEDIUM",
-      audit_reasoning: "European EURO5 lorry proxy used for US transport context.",
-      mandatory_data_gap_warning: null,
-      is_human_approved: false,
-      co2e_kg_per_unit: 0.11
-    },
-    {
-      id: "row-4",
-      raw_bom_input: "Copper cathode wire drawing",
-      raw_bom_quantity: 65,
-      raw_bom_unit: "kg",
-      matched_process_name: "copper production, primary, cathode | USLCI",
-      vector_similarity_score: 0.912,
-      dqr_technological_score: 2,
-      dqr_geographical_score: 1,
-      dqr_temporal_score: 2,
-      audit_risk_level: "LOW",
-      audit_reasoning: "High quality primary copper cathode match.",
-      mandatory_data_gap_warning: null,
-      is_human_approved: false,
-      co2e_kg_per_unit: 4.1
+      co2e_kg_per_unit: 0.42,
+      candidates: [
+        { process_name: "electricity, medium voltage, grid mix", similarity_score: 0.965, data_quality_status: "clean", emission_factor: 0.42 }
+      ]
     }
   ]);
 
@@ -471,52 +495,116 @@ function App() {
                       <div className="bom-name">
                         <span>{row.raw_bom_input}</span>
                         <span className="bom-sub">
-                          {row.raw_bom_quantity} {row.raw_bom_unit} • {((row.raw_bom_quantity * row.co2e_kg_per_unit) / 1000).toFixed(2)} tCO₂e
+                          {row.raw_bom_quantity} {row.raw_bom_unit} • {row.result_tco2e !== undefined && row.result_tco2e !== null ? Number(row.result_tco2e).toFixed(3) : ((row.raw_bom_quantity * (row.co2e_kg_per_unit || 0)) / 1000).toFixed(3)} tCO₂e
                         </span>
                       </div>
 
                       <div className="matched-process">
-                        <div>{row.matched_process_name}</div>
-                        {row.data_quality_status && (
-                          <span
-                            style={{
-                              display: "inline-flex",
-                              alignItems: "center",
-                              gap: "4px",
-                              marginTop: "4px",
-                              padding: "2px 8px",
-                              borderRadius: "99px",
-                              fontSize: "10px",
-                              fontWeight: 700,
-                              background:
-                                row.data_quality_status === "clean"
-                                  ? "rgba(16,185,129,0.15)"
-                                  : row.data_quality_status === "uplifted"
-                                  ? "rgba(245,158,11,0.15)"
-                                  : row.data_quality_status === "proxy"
-                                  ? "rgba(99,102,241,0.15)"
-                                  : "rgba(244,63,94,0.15)",
-                              color:
-                                row.data_quality_status === "clean"
-                                  ? "#10b981"
-                                  : row.data_quality_status === "uplifted"
-                                  ? "#f59e0b"
-                                  : row.data_quality_status === "proxy"
-                                  ? "#6366f1"
-                                  : "#f43f5e",
-                              border: `1px solid ${
-                                row.data_quality_status === "clean"
-                                  ? "#10b981"
-                                  : row.data_quality_status === "uplifted"
-                                  ? "#f59e0b"
-                                  : row.data_quality_status === "proxy"
-                                  ? "#6366f1"
-                                  : "#f43f5e"
-                              }44`
-                            }}
-                          >
-                            {row.data_quality_status.toUpperCase()}
-                          </span>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+                          <span style={{ fontWeight: 600 }}>{row.matched_process_name}</span>
+                          {row.data_quality_status && (
+                            <span
+                              style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "4px",
+                                padding: "2px 8px",
+                                borderRadius: "99px",
+                                fontSize: "10px",
+                                fontWeight: 700,
+                                background:
+                                  row.data_quality_status === "clean"
+                                    ? "rgba(16,185,129,0.15)"
+                                    : row.data_quality_status === "uplifted"
+                                    ? "rgba(245,158,11,0.15)"
+                                    : row.data_quality_status === "proxy"
+                                    ? "rgba(99,102,241,0.15)"
+                                    : "rgba(244,63,94,0.15)",
+                                color:
+                                  row.data_quality_status === "clean"
+                                    ? "#10b981"
+                                    : row.data_quality_status === "uplifted"
+                                    ? "#f59e0b"
+                                    : row.data_quality_status === "proxy"
+                                    ? "#6366f1"
+                                    : "#f43f5e",
+                                border: `1px solid ${
+                                  row.data_quality_status === "clean"
+                                    ? "#10b981"
+                                    : row.data_quality_status === "uplifted"
+                                    ? "#f59e0b"
+                                    : row.data_quality_status === "proxy"
+                                    ? "#6366f1"
+                                    : "#f43f5e"
+                                }44`
+                              }}
+                            >
+                              {row.data_quality_status.toUpperCase()}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Top candidate chips displayed below matched process */}
+                        {row.candidates && row.candidates.length > 0 && (
+                          <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", marginTop: "6px" }}>
+                            {row.candidates.slice(0, 5).map((c) => {
+                              const isCurrent = c.process_id === row.matched_process_id || c.process_name === row.matched_process_name;
+                              return (
+                                <button
+                                  key={c.process_id || c.process_name}
+                                  onClick={async (e) => {
+                                    e.stopPropagation();
+                                    if (row.id && !row.id.startsWith("row-") && !row.id.startsWith("manual-")) {
+                                      try {
+                                        const res = await fetch(`${API}/bom/audits/${row.id}/override`, {
+                                          method: "POST",
+                                          headers: { "Content-Type": "application/json" },
+                                          body: JSON.stringify({ user_id: "practitioner-1", process_id: c.process_id, notes: "Selected candidate match alternative from UI picker" })
+                                        });
+                                        if (res.ok) {
+                                          const updated = await res.json();
+                                          setAudits((rows) => rows.map((item) => item.id === row.id ? { ...item, ...updated } : item));
+                                        }
+                                      } catch (err) {
+                                        console.error("Override API call failed", err);
+                                      }
+                                    } else {
+                                      setAudits((rows) =>
+                                        rows.map((item) =>
+                                          item.id === row.id
+                                            ? {
+                                                ...item,
+                                                matched_process_name: c.process_name,
+                                                matched_process_id: c.process_id,
+                                                vector_similarity_score: c.similarity_score,
+                                                data_quality_status: c.data_quality_status,
+                                                co2e_kg_per_unit: c.emission_factor !== undefined && c.emission_factor !== null ? c.emission_factor : item.co2e_kg_per_unit,
+                                                result_tco2e: c.emission_factor !== undefined && c.emission_factor !== null ? (item.raw_bom_quantity * c.emission_factor) / 1000 : item.result_tco2e,
+                                                is_human_approved: false
+                                              }
+                                            : item
+                                        )
+                                      );
+                                    }
+                                    setMessage("Match candidate switched. Row approval reset — fresh sign-off required.");
+                                  }}
+                                  style={{
+                                    fontSize: "10px",
+                                    padding: "2px 6px",
+                                    borderRadius: "4px",
+                                    border: `1px solid ${isCurrent ? "var(--accent-emerald)" : "var(--border-light)"}`,
+                                    background: isCurrent ? "rgba(16,185,129,0.2)" : "rgba(255,255,255,0.05)",
+                                    color: isCurrent ? "var(--accent-emerald)" : "var(--text-secondary)",
+                                    cursor: "pointer",
+                                    fontWeight: isCurrent ? 700 : 400
+                                  }}
+                                  title={`Click to select ${c.process_name} (${(c.similarity_score * 100).toFixed(0)}%)`}
+                                >
+                                  {c.process_name} ({(c.similarity_score * 100).toFixed(0)}%)
+                                </button>
+                              );
+                            })}
+                          </div>
                         )}
                       </div>
 
@@ -553,68 +641,23 @@ function App() {
                       </div>
                     </div>
 
+                    {/* Prominent Inline Warning for Placeholder Factor */}
+                    {row.data_quality_status === "placeholder" && row.raw_bom_quantity > 0 && (
+                      <div style={{ padding: "8px 16px 8px 68px", background: "rgba(244,63,94,0.15)", borderBottom: "1px solid rgba(244,63,94,0.4)", color: "#fecdd3", fontSize: "12px", display: "flex", alignItems: "center", gap: "8px" }}>
+                        <AlertTriangle size={15} style={{ color: "#f43f5e", flexShrink: 0 }} />
+                        <span><strong>⚠️ PLACEHOLDER emission factor:</strong> result_tco2e is NOT valid pending real activity data for '{row.matched_process_name}'. Approval disabled.</span>
+                      </div>
+                    )}
+
                     {expanded === row.id && (
                       <div style={{ padding: "16px 20px 16px 68px", background: "rgba(11, 15, 25, 0.6)", borderBottom: "1px solid var(--border-light)" }}>
                         <p style={{ fontSize: "13px", color: "var(--text-secondary)", marginBottom: "8px" }}>
                           <strong>Audit Reasoning:</strong> {row.audit_reasoning}
                         </p>
-                        {row.data_quality_status === "placeholder" && row.raw_bom_quantity > 0 && (
-                          <div style={{ padding: "10px 14px", background: "rgba(244,63,94,0.15)", border: "1px solid rgba(244,63,94,0.4)", borderRadius: "6px", color: "#fecdd3", fontSize: "13px", marginBottom: "10px" }}>
-                            <AlertTriangle size={16} style={{ display: "inline", marginRight: "8px" }} />
-                            ⚠️ PLACEHOLDER emission factor — result_tco2e is NOT valid pending real activity data.
-                          </div>
-                        )}
                         {row.mandatory_data_gap_warning && (
                           <div style={{ padding: "10px 14px", background: "rgba(244,63,94,0.1)", border: "1px solid rgba(244,63,94,0.3)", borderRadius: "6px", color: "#fecdd3", fontSize: "13px", marginBottom: "10px" }}>
                             <AlertTriangle size={16} style={{ display: "inline", marginRight: "8px" }} />
                             {row.mandatory_data_gap_warning}
-                          </div>
-                        )}
-
-                        {row.candidates && row.candidates.length > 1 && (
-                          <div style={{ marginTop: "12px", marginBottom: "12px" }}>
-                            <div style={{ fontSize: "11px", color: "var(--text-muted)", marginBottom: "6px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                              Alternative Candidate Matches (click to switch):
-                            </div>
-                            <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-                              {row.candidates.map((c) => {
-                                const isCurrent = c.process_name === row.matched_process_name;
-                                return (
-                                  <button
-                                    key={c.process_id || c.process_name}
-                                    onClick={() => {
-                                      setAudits((rows) =>
-                                        rows.map((item) =>
-                                          item.id === row.id
-                                            ? {
-                                                ...item,
-                                                matched_process_name: c.process_name,
-                                                vector_similarity_score: c.similarity_score,
-                                                data_quality_status: c.data_quality_status,
-                                                co2e_kg_per_unit: c.emission_factor || item.co2e_kg_per_unit,
-                                                is_human_approved: false // reset approval on match switch
-                                              }
-                                            : item
-                                        )
-                                      );
-                                      setMessage("Match candidate switched. Row approval reset — fresh sign-off required.");
-                                    }}
-                                    style={{
-                                      fontSize: "11px",
-                                      padding: "4px 10px",
-                                      borderRadius: "6px",
-                                      border: `1px solid ${isCurrent ? "var(--accent-emerald)" : "var(--border-light)"}`,
-                                      background: isCurrent ? "rgba(16,185,129,0.15)" : "var(--bg-surface)",
-                                      color: isCurrent ? "var(--accent-emerald)" : "var(--text-secondary)",
-                                      cursor: "pointer",
-                                      fontWeight: isCurrent ? 700 : 500
-                                    }}
-                                  >
-                                    {c.process_name} ({(c.similarity_score * 100).toFixed(0)}%)
-                                  </button>
-                                );
-                              })}
-                            </div>
                           </div>
                         )}
 

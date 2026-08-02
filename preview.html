@@ -658,7 +658,7 @@
         <div class="form-grid">
           <div class="form-group">
             <label class="form-label">Project Name</label>
-            <input class="form-input" id="projectName" placeholder="e.g. EV Battery Assembly Line" value="">
+            <input class="form-input" id="projectName" placeholder="e.g. EV Battery Assembly Line" value="EV Battery Assembly Line (India)">
             <span class="form-hint">Name of the product or manufacturing process</span>
           </div>
           <div class="form-group">
@@ -669,10 +669,10 @@
           <div class="form-group">
             <label class="form-label">Geography / Region</label>
             <select class="form-select" id="geography">
+              <option value="IN" selected>India (IN)</option>
               <option value="US">United States (US)</option>
               <option value="EU">Europe (EU)</option>
               <option value="GLO">Global (GLO)</option>
-              <option value="IN">India (IN)</option>
               <option value="CN">China (CN)</option>
             </select>
             <span class="form-hint">Region for electricity grid and transport emission factors</span>
@@ -680,10 +680,10 @@
           <div class="form-group">
             <label class="form-label">Emission Factor Database</label>
             <select class="form-select" id="database">
+              <option value="India_GHG_Factors" selected>🇮🇳 India GHG Factors (v6) — 60 Verified India Factors</option>
               <option value="USLCI">USLCI — US National LCI Database</option>
               <option value="ELCD">ELCD — European Reference Data</option>
               <option value="Agribalyse">Agribalyse — Agri-food Database</option>
-              <option value="India_GHG_Factors">🇮🇳 India GHG Factors (v6) — 60 Verified India Factors</option>
             </select>
             <span class="form-hint">Source of emission factors for material matching</span>
           </div>
@@ -1163,12 +1163,23 @@
        APP STATE
        =========================================================== */
     let currentStep = 1;
-    let bomItems = []; // { id, description, quantity, unit }
+    let bomItems = [
+      { id: 'bom-demo-1', description: 'Diesel Generator (DG Sets) fuel', quantity: 1000, unit: 'Liters' },
+      { id: 'bom-demo-2', description: 'Estimated Product Use-Phase Energy', quantity: 450, unit: 'unit' },
+      { id: 'bom-demo-3', description: 'Indian Coal (Boilers)', quantity: 250, unit: 'kg' },
+      { id: 'bom-demo-4', description: 'Refrigerant Top-up - R-32', quantity: 15, unit: 'kg' },
+      { id: 'bom-demo-5', description: 'Inbound Trucking (Diesel)', quantity: 1200, unit: 'tkm' }
+    ];
     let matchedItems = []; // { ...bomItem, match, similarity, risk, dqr, co2e, approved, reasoning, warning }
     let expandedRow = null;
     let currentFilter = 'ALL';
     let pieChartInst = null;
     let barChartInst = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderImportPreview();
+      runMatching();
+    });
 
     /* ===========================================================
        NAVIGATION
@@ -1552,6 +1563,17 @@
           <td>
             <span class="process-name">${escHtml(item.processName)}</span>
             ${item.dqStatus ? `<span style="display:inline-flex;align-items:center;gap:4px;margin-top:4px;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;background:${dq.bg};color:${dq.color};border:1px solid ${dq.color}33;cursor:help;" title="${dq.title}">${dq.label}</span>` : ''}
+            ${item.candidates && item.candidates.length > 0 ? `
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">
+                ${item.candidates.slice(0, 5).map((c, idx) => {
+                  const isCurrent = item.match && c.entry.processName === item.match.processName;
+                  const cdq = DQ_BADGE[c.entry.dqStatus] || DQ_BADGE.clean;
+                  return `<button onclick="switchCandidate('${item.id}',${idx})" style="font-size:10px;padding:2px 6px;border-radius:4px;border:1px solid ${isCurrent ? 'var(--emerald)' : 'var(--border)'};background:${isCurrent ? 'rgba(16,185,129,0.2)' : 'rgba(255,255,255,0.05)'};color:${isCurrent ? 'var(--emerald)' : 'var(--text-secondary)'};cursor:pointer;font-weight:${isCurrent ? '700' : '400'};" title="EF: ${c.entry.factor} ${c.entry.unit} | ${cdq.title}">
+                    ${escHtml(c.entry.name)} (${c.similarity}%)
+                  </button>`;
+                }).join('')}
+              </div>
+            ` : ''}
           </td>
           <td><span class="sim-score ${simClass}">${item.similarity}%</span></td>
           <td>
@@ -1573,6 +1595,14 @@
           </td>
         `;
         tbody.appendChild(tr);
+
+        if (item.dqStatus === 'placeholder') {
+          const warnTr = document.createElement('tr');
+          warnTr.innerHTML = `<td colspan="8" style="padding:8px 16px 8px 48px;background:rgba(244,63,94,0.15);border-bottom:1px solid rgba(244,63,94,0.4);color:#fecdd3;font-size:12px;">
+            ⚠️ <strong>PLACEHOLDER emission factor:</strong> result_tco2e is NOT valid pending real activity data for '${escHtml(item.processName)}'. Approval disabled.
+          </td>`;
+          tbody.appendChild(warnTr);
+        }
 
         if (expandedRow === item.id) {
           const detailTr = document.createElement('tr');
