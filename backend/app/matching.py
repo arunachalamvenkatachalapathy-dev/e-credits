@@ -36,15 +36,19 @@ def geography_tier(candidate_geo: str, target_geo: str) -> int:
     return 2
 
 
+from .units import normalize_unit
+
+
 def retrieve_candidates(processes: list[LciProcess], query: str, unit: str, source: str, system_model: str, target_geo: str) -> list[dict]:
     query_embedding = embed_text(query)
     candidates = []
+    target_unit = normalize_unit(unit)
     for process in processes:
         if not process.is_active:
             continue
         if process.database_source != source or process.system_model != system_model:
             continue
-        if process.reference_unit != unit or process.embedding_model != EMBEDDING_MODEL:
+        if normalize_unit(process.reference_unit) != target_unit or process.embedding_model != EMBEDDING_MODEL:
             continue
         score = cosine_similarity(query_embedding, process.embedding or [])
         candidates.append({"process": process, "similarity_score": round(score, 4), "geography_tier": geography_tier(process.geography, target_geo)})

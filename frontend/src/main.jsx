@@ -320,6 +320,7 @@ function App() {
             <option>ELCD</option>
             <option>Agribalyse Core</option>
             <option>ecoinvent BYOL private</option>
+            <option>India_GHG_Factors</option>
           </select>
         </div>
 
@@ -474,7 +475,50 @@ function App() {
                         </span>
                       </div>
 
-                      <div className="matched-process">{row.matched_process_name}</div>
+                      <div className="matched-process">
+                        <div>{row.matched_process_name}</div>
+                        {row.data_quality_status && (
+                          <span
+                            style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "4px",
+                              marginTop: "4px",
+                              padding: "2px 8px",
+                              borderRadius: "99px",
+                              fontSize: "10px",
+                              fontWeight: 700,
+                              background:
+                                row.data_quality_status === "clean"
+                                  ? "rgba(16,185,129,0.15)"
+                                  : row.data_quality_status === "uplifted"
+                                  ? "rgba(245,158,11,0.15)"
+                                  : row.data_quality_status === "proxy"
+                                  ? "rgba(99,102,241,0.15)"
+                                  : "rgba(244,63,94,0.15)",
+                              color:
+                                row.data_quality_status === "clean"
+                                  ? "#10b981"
+                                  : row.data_quality_status === "uplifted"
+                                  ? "#f59e0b"
+                                  : row.data_quality_status === "proxy"
+                                  ? "#6366f1"
+                                  : "#f43f5e",
+                              border: `1px solid ${
+                                row.data_quality_status === "clean"
+                                  ? "#10b981"
+                                  : row.data_quality_status === "uplifted"
+                                  ? "#f59e0b"
+                                  : row.data_quality_status === "proxy"
+                                  ? "#6366f1"
+                                  : "#f43f5e"
+                              }44`
+                            }}
+                          >
+                            {row.data_quality_status.toUpperCase()}
+                          </span>
+                        )}
+                      </div>
 
                       <div className="similarity-badge">{(row.vector_similarity_score * 100).toFixed(1)}%</div>
 
@@ -494,7 +538,12 @@ function App() {
                             <Check size={14} style={{ display: "inline" }} /> Approved
                           </span>
                         ) : (
-                          <button className="btn-action-approve" onClick={() => approveRow(row.id)}>
+                          <button
+                            className="btn-action-approve"
+                            onClick={() => approveRow(row.id)}
+                            disabled={row.data_quality_status === "placeholder"}
+                            title={row.data_quality_status === "placeholder" ? "Cannot approve placeholder — real data required" : ""}
+                          >
                             Approve
                           </button>
                         )}
@@ -509,12 +558,66 @@ function App() {
                         <p style={{ fontSize: "13px", color: "var(--text-secondary)", marginBottom: "8px" }}>
                           <strong>Audit Reasoning:</strong> {row.audit_reasoning}
                         </p>
+                        {row.data_quality_status === "placeholder" && row.raw_bom_quantity > 0 && (
+                          <div style={{ padding: "10px 14px", background: "rgba(244,63,94,0.15)", border: "1px solid rgba(244,63,94,0.4)", borderRadius: "6px", color: "#fecdd3", fontSize: "13px", marginBottom: "10px" }}>
+                            <AlertTriangle size={16} style={{ display: "inline", marginRight: "8px" }} />
+                            ⚠️ PLACEHOLDER emission factor — result_tco2e is NOT valid pending real activity data.
+                          </div>
+                        )}
                         {row.mandatory_data_gap_warning && (
                           <div style={{ padding: "10px 14px", background: "rgba(244,63,94,0.1)", border: "1px solid rgba(244,63,94,0.3)", borderRadius: "6px", color: "#fecdd3", fontSize: "13px", marginBottom: "10px" }}>
                             <AlertTriangle size={16} style={{ display: "inline", marginRight: "8px" }} />
                             {row.mandatory_data_gap_warning}
                           </div>
                         )}
+
+                        {row.candidates && row.candidates.length > 1 && (
+                          <div style={{ marginTop: "12px", marginBottom: "12px" }}>
+                            <div style={{ fontSize: "11px", color: "var(--text-muted)", marginBottom: "6px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                              Alternative Candidate Matches (click to switch):
+                            </div>
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                              {row.candidates.map((c) => {
+                                const isCurrent = c.process_name === row.matched_process_name;
+                                return (
+                                  <button
+                                    key={c.process_id || c.process_name}
+                                    onClick={() => {
+                                      setAudits((rows) =>
+                                        rows.map((item) =>
+                                          item.id === row.id
+                                            ? {
+                                                ...item,
+                                                matched_process_name: c.process_name,
+                                                vector_similarity_score: c.similarity_score,
+                                                data_quality_status: c.data_quality_status,
+                                                co2e_kg_per_unit: c.emission_factor || item.co2e_kg_per_unit,
+                                                is_human_approved: false // reset approval on match switch
+                                              }
+                                            : item
+                                        )
+                                      );
+                                      setMessage("Match candidate switched. Row approval reset — fresh sign-off required.");
+                                    }}
+                                    style={{
+                                      fontSize: "11px",
+                                      padding: "4px 10px",
+                                      borderRadius: "6px",
+                                      border: `1px solid ${isCurrent ? "var(--accent-emerald)" : "var(--border-light)"}`,
+                                      background: isCurrent ? "rgba(16,185,129,0.15)" : "var(--bg-surface)",
+                                      color: isCurrent ? "var(--accent-emerald)" : "var(--text-secondary)",
+                                      cursor: "pointer",
+                                      fontWeight: isCurrent ? 700 : 500
+                                    }}
+                                  >
+                                    {c.process_name} ({(c.similarity_score * 100).toFixed(0)}%)
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+
                         <button className="btn-danger" style={{ height: "30px", fontSize: "12px" }} onClick={() => removeRow(row.id)}>
                           <Trash2 size={13} /> Remove Item from BOM
                         </button>
