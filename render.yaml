@@ -10,7 +10,7 @@ services:
     runtime: python
     plan: free
     rootDir: backend
-    buildCommand: pip install -r requirements.txt
+    buildCommand: pip install -r requirements.txt && python seed_india_ghg.py
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
     envVars:
@@ -21,7 +21,7 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: CORS_ORIGINS
-        value: "http://localhost:5173"
+        value: "http://localhost:5173,https://melodic-stroopwafel-6e6b9d.netlify.app,https://arunachalamvenkatachalapathy-dev.github.io"
         # ^ Update this in the Render dashboard after your Netlify site is
         # live -- set it to your real Netlify URL, comma-separated with
         # localhost if you still want local dev to work. This file can't
