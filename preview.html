@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -581,12 +581,12 @@
        ============================================================ -->
   <header class="topbar">
     <div class="brand">
-      <span class="brand-icon">ΓÜí</span>
+      <span class="brand-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></span>
       <span class="brand-name">E-Credits</span>
       <span class="brand-badge">Carbon Calculator</span>
     </div>
     <div class="topbar-actions">
-      <button class="btn btn-sm" id="btnDownloadTemplate">≡ƒôÑ Download CSV Template</button>
+      <button class="btn btn-sm" id="btnDownloadTemplate"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>Download CSV Template</button>
     </div>
   </header>
 
@@ -632,22 +632,22 @@
 
       <div class="how-it-works">
         <div class="how-step">
-          <div class="how-step-icon">≡ƒôï</div>
+          <div class="how-step-icon">📋</div>
           <div class="how-step-title">1. Setup Project</div>
           <div class="how-step-desc">Name your product and pick the region &amp; database</div>
         </div>
         <div class="how-step">
-          <div class="how-step-icon">≡ƒôñ</div>
+          <div class="how-step-icon">📥</div>
           <div class="how-step-title">2. Upload BOM</div>
           <div class="how-step-desc">Upload a CSV or enter materials manually</div>
         </div>
         <div class="how-step">
-          <div class="how-step-icon">≡ƒöì</div>
+          <div class="how-step-icon">🔍</div>
           <div class="how-step-title">3. Review Matches</div>
           <div class="how-step-desc">Verify each material's emission factor mapping</div>
         </div>
         <div class="how-step">
-          <div class="how-step-icon">≡ƒÅå</div>
+          <div class="how-step-icon">🏆</div>
           <div class="how-step-title">4. Get Results</div>
           <div class="how-step-desc">See your footprint, credits, and export reports</div>
         </div>
@@ -681,25 +681,25 @@
           <div class="form-group">
             <label class="form-label">Emission Factor Database</label>
             <select class="form-select" id="database">
-              <option value="India_GHG_Factors" selected>≡ƒç«≡ƒç│ India GHG Factors (v6) ΓÇö 60 Verified India Factors</option>
-              <option value="USLCI">USLCI ΓÇö US National LCI Database</option>
-              <option value="ELCD">ELCD ΓÇö European Reference Data</option>
-              <option value="Agribalyse">Agribalyse ΓÇö Agri-food Database</option>
+              <option value="India_GHG_Factors" selected>🇮🇳 India GHG Factors (v6) — 60 Verified India Factors</option>
+              <option value="USLCI">USLCI - US Life Cycle Inventory — US National LCI Database</option>
+              <option value="ELCD">ELCD — European Reference Data</option>
+              <option value="Agribalyse">Agribalyse — Agri-food Database</option>
             </select>
             <span class="form-hint">Source of emission factors for material matching</span>
           </div>
         </div>
       </div>
 
-      <!-- Inventory Setup ΓÇö GHG Protocol Cover_Boundary fields -->
+      <!-- Inventory Setup — GHG Protocol Cover_Boundary fields -->
       <div class="card" style="margin-top:20px;">
-        <div class="card-title">≡ƒôï Inventory Setup <span style="font-size:12px;font-weight:500;color:var(--text-muted);margin-left:8px;">GHG Protocol Boundary</span></div>
+        <div class="card-title">📋 Inventory Setup <span style="font-size:12px;font-weight:500;color:var(--text-muted);margin-left:8px;">GHG Protocol Boundary</span></div>
         <div class="card-subtitle">Define your organizational boundary, base year, and reporting method per the GHG Protocol Corporate Standard.</div>
         <div class="form-grid">
           <div class="form-group">
             <label class="form-label">Organizational Boundary Approach</label>
             <select class="form-select" id="orgBoundary">
-              <option value="">ΓÇö Select one ΓÇö</option>
+              <option value="">— Select one —</option>
               <option value="Operational Control">Operational Control</option>
               <option value="Financial Control">Financial Control</option>
               <option value="Equity Share">Equity Share</option>
@@ -719,7 +719,7 @@
           <div class="form-group">
             <label class="form-label">Scope 2 Dual-Reporting Method</label>
             <select class="form-select" id="scope2Method">
-              <option value="">ΓÇö Select one ΓÇö</option>
+              <option value="">— Select one —</option>
               <option value="Location-Based">Location-Based (grid average EF)</option>
               <option value="Market-Based">Market-Based (supplier/residual mix)</option>
               <option value="Both">Both (Dual Reporting per GHG Protocol Scope 2 Guidance)</option>
@@ -729,10 +729,10 @@
         </div>
         <div style="margin-top:14px;padding:12px 16px;background:var(--indigo-dim);border:1px solid rgba(99,102,241,0.25);border-radius:var(--radius-md);">
           <div style="display:flex;gap:8px;align-items:flex-start;">
-            <span style="font-size:16px;margin-top:1px;">Γä╣∩╕Å</span>
+            <span style="font-size:16px;margin-top:1px;">ℹ️</span>
             <div style="font-size:13px;color:var(--text-secondary);line-height:1.6;">
               <strong style="color:var(--text-primary);">India GHG Factors v6</strong> covers Scope 1 (stationary/mobile/fugitive/process), Scope 2 (CEA grid, market-based, steam), and Scope 3 (all 15 GHG Protocol categories). Select the database above to activate India-specific factors with provenance tagging.
-              <button class="btn" style="margin-top:8px;height:30px;font-size:12px;padding:0 12px;" onclick="showGHGViewer()">≡ƒôè View India GHG Factor Table</button>
+              <button class="btn" style="margin-top:8px;height:30px;font-size:12px;padding:0 12px;" onclick="showGHGViewer()">📊 View India GHG Factor Table</button>
             </div>
           </div>
         </div>
@@ -740,7 +740,7 @@
 
       <div class="step-footer">
         <div></div>
-        <button class="btn btn-primary btn-lg" onclick="goToStep(2)">Continue to Import Data ΓåÆ</button>
+        <button class="btn btn-primary btn-lg" onclick="goToStep(2)">Continue to Import Data →</button>
       </div>
     </div>
 
@@ -755,9 +755,9 @@
 
         <div class="dropzone" id="dropzone">
           <input type="file" accept=".csv,.xlsx,.xls,.txt" id="fileInput">
-          <div class="dropzone-icon">≡ƒôé</div>
+          <div class="dropzone-icon">☁️</div>
           <div class="dropzone-title">Drag &amp; drop your CSV file here</div>
-          <div class="dropzone-hint">or click to browse ΓÇó Supports CSV files with description, quantity, unit columns</div>
+          <div class="dropzone-hint">or click to browse • Supports CSV files with description, quantity, unit columns</div>
         </div>
 
         <div class="or-divider">or add items manually</div>
@@ -780,7 +780,7 @@
               <option>kg</option><option>g</option><option>t</option><option>lb</option>
               <option>kWh</option><option>MJ</option>
               <option>tkm</option><option>ton-mile</option><option>km</option>
-              <option>m┬│</option><option>L</option><option>unit</option>
+              <option>m</option><option>L</option><option>unit</option>
             </select>
           </div>
           <div class="form-group">
@@ -807,8 +807,8 @@
       </div>
 
       <div class="step-footer">
-        <button class="btn" onclick="goToStep(1)">ΓåÉ Back to Setup</button>
-        <button class="btn btn-primary btn-lg" id="btnRunMatching" disabled>Run Matching & Calculate ΓåÆ</button>
+        <button class="btn" onclick="goToStep(1)">É Back to Setup</button>
+        <button class="btn btn-primary btn-lg" id="btnRunMatching" disabled>Run Matching & Calculate →</button>
       </div>
     </div>
 
@@ -827,7 +827,7 @@
           </div>
         </div>
         <div class="toolbar-right">
-          <button class="btn btn-primary btn-sm" id="btnApproveAllLow">Γ£ô Approve All Low Risk</button>
+          <button class="btn btn-primary btn-sm" id="btnApproveAllLow"> Approve All Low Risk</button>
         </div>
       </div>
 
@@ -841,7 +841,7 @@
               <th>Similarity</th>
               <th>Quality</th>
               <th>Risk</th>
-              <th>COΓéée</th>
+              <th>COéée</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -860,8 +860,8 @@
       </div>
 
       <div class="step-footer">
-        <button class="btn" onclick="goToStep(2)">ΓåÉ Back to Import</button>
-        <button class="btn btn-primary btn-lg" id="btnToResults">View Results & Export ΓåÆ</button>
+        <button class="btn" onclick="goToStep(2)">É Back to Import</button>
+        <button class="btn btn-primary btn-lg" id="btnToResults">View Results & Export →</button>
       </div>
     </div>
 
@@ -873,7 +873,7 @@
       <div class="kpi-grid">
         <div class="kpi-card">
           <div class="kpi-label">Total Carbon Footprint</div>
-          <div class="kpi-value"><span id="resTotalCO2">0.00</span> <span class="kpi-unit">tCOΓéée</span></div>
+          <div class="kpi-value"><span id="resTotalCO2">0.00</span> <span class="kpi-unit">tCOéée</span></div>
         </div>
         <div class="kpi-card danger">
           <div class="kpi-label">High Risk Items</div>
@@ -896,14 +896,14 @@
           <div class="chart-wrap"><canvas id="pieChart"></canvas></div>
         </div>
         <div class="chart-card">
-          <h3>Top Contributors (kgCOΓéée)</h3>
+          <h3>Top Contributors (kgCOéée)</h3>
           <div class="chart-wrap"><canvas id="barChart"></canvas></div>
         </div>
       </div>
 
       <!-- What-If Simulator -->
       <div class="sim-card">
-        <h3>ΓÜí What-If Scenario Simulator</h3>
+        <h3>⚡ What-If Scenario Simulator</h3>
         <div class="sim-grid">
           <div class="sim-sliders">
             <div class="slider-group">
@@ -922,18 +922,18 @@
           <div class="sim-results">
             <div class="sim-metric">
               <span>Baseline Footprint</span>
-              <span class="val" id="simBaseline">0 tCOΓéée</span>
+              <span class="val" id="simBaseline">0 tCOéée</span>
             </div>
             <div class="sim-metric" style="border-color:rgba(16,185,129,0.3);">
               <span>Simulated Footprint</span>
-              <span class="val" style="color:var(--emerald);" id="simNew">0 tCOΓéée</span>
+              <span class="val" style="color:var(--emerald);" id="simNew">0 tCOéée</span>
             </div>
             <div class="sim-metric" style="border-color:rgba(99,102,241,0.2); background:var(--indigo-dim);">
               <span>Avoided Emissions</span>
-              <span class="val" style="color:var(--indigo);" id="simAvoided">0 tCOΓéée</span>
+              <span class="val" style="color:var(--indigo);" id="simAvoided">0 tCOéée</span>
             </div>
             <div class="sim-metric" style="border-color:rgba(99,102,241,0.2); background:var(--indigo-dim);">
-              <span>E-Credit Value @ $35/tCOΓéée</span>
+              <span>E-Credit Value @ $35/tCOéée</span>
               <span class="val" style="color:var(--indigo);" id="simCreditVal">$0</span>
             </div>
           </div>
@@ -944,12 +944,12 @@
       <div class="compliance-grid">
         <div class="compliance-card">
           <h4>EU CBAM Readiness</h4>
-          <p>Carbon Border Adjustment Mechanism ΓÇö embedded carbon disclosure for imports into the EU.</p>
-          <span class="compliance-status status-pass" id="compCBAM">Γ£ô Data Available</span>
+          <p>Carbon Border Adjustment Mechanism — embedded carbon disclosure for imports into the EU.</p>
+          <span class="compliance-status status-pass" id="compCBAM"> Data Available</span>
         </div>
         <div class="compliance-card">
           <h4>ISO 14040/14044 LCA</h4>
-          <p>Life Cycle Assessment standard ΓÇö goal, scope, inventory, and impact assessment compliance.</p>
+          <p>Life Cycle Assessment standard — goal, scope, inventory, and impact assessment compliance.</p>
           <span class="compliance-status status-active" id="compISO">Practitioner Review Needed</span>
         </div>
         <div class="compliance-card">
@@ -961,11 +961,11 @@
 
       <!-- Export -->
       <div class="export-section">
-        <button class="btn btn-primary" id="btnExportCSV">≡ƒôè Export CSV Report</button>
-        <button class="btn btn-indigo" id="btnExportJSON">≡ƒôï Export JSON Data</button>
-        <button class="btn btn-primary" id="btnShowBig4Report" style="background:linear-gradient(135deg, #0284c7, #0369a1);color:#fff;border:none;">≡ƒôæ Big 4 GHG Audit Report</button>
-        <button class="btn" id="btnShowCert">≡ƒÅå View E-Credits Certificate</button>
-        <button class="btn btn-ghost" onclick="goToStep(3)">ΓåÉ Back to Review</button>
+        <button class="btn btn-primary" id="btnExportCSV">📊 Export CSV Report</button>
+        <button class="btn btn-indigo" id="btnExportJSON">📋 Export JSON Data</button>
+        <button class="btn btn-primary" id="btnShowBig4Report" style="background:linear-gradient(135deg, #0284c7, #0369a1);color:#fff;border:none;">ƒæ Big 4 GHG Audit Report</button>
+        <button class="btn" id="btnShowCert">🏆 View E-Credits Certificate</button>
+        <button class="btn btn-ghost" onclick="goToStep(3)">É Back to Review</button>
       </div>
     </div>
   </div>
@@ -975,7 +975,7 @@
        ============================================================ -->
   <div class="modal-overlay" id="big4Modal">
     <div class="modal-box" style="width: min(940px, 95vw); max-height: 90vh; overflow-y: auto;">
-      <button class="modal-close" id="closeBig4">Γ£ò</button>
+      <button class="modal-close" id="closeBig4">ò</button>
       
       <div id="big4ReportDocument" style="background:#fff; color:#0f172a; padding:40px; border-radius:12px; font-family:'Plus Jakarta Sans', sans-serif;">
         <!-- Big 4 Header Banner -->
@@ -999,7 +999,7 @@
             The assessment encompasses Scope 1 (Direct Combustions), Scope 2 (Purchased Electricity Grid), and Scope 3 (Upstream Supply Chain & Purchased Materials) boundaries under the GHG Protocol Corporate Standard.
           </p>
           <div style="margin-top:12px; padding:14px 18px; background:#f8fafc; border-left:4px solid #10b981; border-radius:4px; font-size:12.5px; color:#1e293b;">
-            <strong>Practitioner's Conclusion:</strong> Based on the audit procedures performed, nothing has come to our attention that causes us to believe that the quantified GHG Inventory footprint of <strong id="b4TotalCO2" style="color:#059669; font-family:'JetBrains Mono',monospace;">0.0000 tCOΓéée</strong> is not prepared, in all material respects, in accordance with the GHG Protocol Corporate Standard and ISO 14064-1:2018 requirements.
+            <strong>Practitioner's Conclusion:</strong> Based on the audit procedures performed, nothing has come to our attention that causes us to believe that the quantified GHG Inventory footprint of <strong id="b4TotalCO2" style="color:#059669; font-family:'JetBrains Mono',monospace;">0.0000 tCOéée</strong> is not prepared, in all material respects, in accordance with the GHG Protocol Corporate Standard and ISO 14064-1:2018 requirements.
           </div>
         </div>
 
@@ -1015,8 +1015,8 @@
             </thead>
             <tbody>
               <tr><td style="padding:8px 12px; border:1px solid #cbd5e1;">Consolidation Approach</td><td style="padding:8px 12px; border:1px solid #cbd5e1; font-weight:600;">Operational Control (100% Facilities & Lines)</td></tr>
-              <tr><td style="padding:8px 12px; border:1px solid #cbd5e1;">Target Geography / Grid Context</td><td style="padding:8px 12px; border:1px solid #cbd5e1; font-weight:600;" id="b4Geo">India (IN) ΓÇö Central Electricity Authority Grid Factors</td></tr>
-              <tr><td style="padding:8px 12px; border:1px solid #cbd5e1;">LCI Background Database</td><td style="padding:8px 12px; border:1px solid #cbd5e1; font-weight:600;" id="b4Database">India GHG Factors (v6) ΓÇö Verified Dataset</td></tr>
+              <tr><td style="padding:8px 12px; border:1px solid #cbd5e1;">Target Geography / Grid Context</td><td style="padding:8px 12px; border:1px solid #cbd5e1; font-weight:600;" id="b4Geo">India (IN) — Central Electricity Authority Grid Factors</td></tr>
+              <tr><td style="padding:8px 12px; border:1px solid #cbd5e1;">LCI Background Database</td><td style="padding:8px 12px; border:1px solid #cbd5e1; font-weight:600;" id="b4Database">India GHG Factors (v6) — Verified Dataset</td></tr>
               <tr><td style="padding:8px 12px; border:1px solid #cbd5e1;">Materiality Cut-off Threshold</td><td style="padding:8px 12px; border:1px solid #cbd5e1; font-weight:600;">5.0% of total gross emissions</td></tr>
               <tr><td style="padding:8px 12px; border:1px solid #cbd5e1;">Scope 2 Guidance Method</td><td style="padding:8px 12px; border:1px solid #cbd5e1; font-weight:600;">Dual Reporting (Location-Based Grid Baseline + Market-Based Contractual)</td></tr>
             </tbody>
@@ -1032,10 +1032,10 @@
                 <th style="padding:8px 10px;">BOM Input Activity</th>
                 <th style="padding:8px 10px;">Quantity & Unit</th>
                 <th style="padding:8px 10px;">Matched LCI Process</th>
-                <th style="padding:8px 10px;">EF (kgCOΓéée/unit)</th>
+                <th style="padding:8px 10px;">EF (kgCOéée/unit)</th>
                 <th style="padding:8px 10px;">Provenance</th>
                 <th style="padding:8px 10px;">Risk</th>
-                <th style="padding:8px 10px; text-align:right;">Footprint (tCOΓéée)</th>
+                <th style="padding:8px 10px; text-align:right;">Footprint (tCOéée)</th>
               </tr>
             </thead>
             <tbody id="b4TableBody"></tbody>
@@ -1071,10 +1071,10 @@
           <div style="display:flex; justify-content:space-between; padding:16px 20px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; font-size:13px;">
             <div>
               <div style="font-size:11px; color:#64748b; font-weight:600; text-transform:uppercase;">Simulated Avoided Emissions</div>
-              <div style="font-size:22px; font-weight:800; color:#059669;" id="b4Avoided">0.00 tCOΓéée</div>
+              <div style="font-size:22px; font-weight:800; color:#059669;" id="b4Avoided">0.00 tCOéée</div>
             </div>
             <div>
-              <div style="font-size:11px; color:#64748b; font-weight:600; text-transform:uppercase;">Voluntary Credit Valuation ($35/tCOΓéée)</div>
+              <div style="font-size:11px; color:#64748b; font-weight:600; text-transform:uppercase;">Voluntary Credit Valuation ($35/tCOéée)</div>
               <div style="font-size:22px; font-weight:800; color:#4f46e5;" id="b4CreditVal">$0.00</div>
             </div>
             <div>
@@ -1094,7 +1094,7 @@
           </div>
           <div style="text-align:center;">
             <div style="border:2px dashed #059669; color:#059669; font-weight:800; font-size:12px; padding:10px 20px; border-radius:8px; text-transform:uppercase; letter-spacing:1px;">
-              Γ£ô ASSURANCE SEAL ISSUED
+               ASSURANCE SEAL ISSUED
             </div>
             <div style="font-size:11px; color:#64748b; margin-top:6px;" id="b4SignDate">Date: Aug 3, 2026</div>
           </div>
@@ -1102,7 +1102,7 @@
       </div>
 
       <div style="display:flex; gap:12px; margin-top:20px; justify-content:flex-end;">
-        <button class="btn btn-primary btn-lg" onclick="requestPdfDownload('big4')">≡ƒôÑ Download Big 4 PDF Audit Report</button>
+        <button class="btn btn-primary btn-lg" onclick="requestPdfDownload('big4')">📥 Download Big 4 PDF Audit Report</button>
         <button class="btn btn-lg" onclick="document.getElementById('big4Modal').classList.remove('open')">Close Report</button>
       </div>
     </div>
@@ -1113,8 +1113,8 @@
        ============================================================ -->
   <div class="modal-overlay" id="otpModal">
     <div class="modal-box" style="width: min(480px, 95vw); text-align: center; padding: 36px 32px;">
-      <button class="modal-close" onclick="document.getElementById('otpModal').classList.remove('open')">Γ£ò</button>
-      <div style="font-size: 42px; margin-bottom: 12px;">≡ƒöÉ</div>
+      <button class="modal-close" onclick="document.getElementById('otpModal').classList.remove('open')">ò</button>
+      <div style="font-size: 42px; margin-bottom: 12px;">🔐</div>
       <h3 style="font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 6px;">Auditor Identity Verification</h3>
       <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.5;">
         Under ISAE 3410 assurance compliance, downloading official Big 4 GHG Audit Reports requires a verified corporate Gmail address.
@@ -1126,20 +1126,20 @@
           <input type="email" id="otpEmailInput" placeholder="auditor@gmail.com" style="width: 100%; margin-top: 6px; padding: 12px 16px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-md); color: #fff; font-size: 14px; outline: none;">
         </div>
         <button class="btn btn-primary btn-lg" onclick="sendOtp()" style="width: 100%; justify-content: center;">
-          ≡ƒôº Send 6-Digit OTP Code
+          ƒº Send 6-Digit OTP Code
         </button>
       </div>
 
       <div id="otpStepVerify" style="display: none;">
         <div style="background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); padding: 10px 14px; border-radius: var(--radius-md); font-size: 12.5px; color: var(--emerald); margin-bottom: 20px;">
-          Γ£ô OTP code sent to <strong id="otpSentTarget">user@gmail.com</strong>. Code expires in <span id="otpTimer">60</span>s.
+           OTP code sent to <strong id="otpSentTarget">user@gmail.com</strong>. Code expires in <span id="otpTimer">60</span>s.
         </div>
         <div style="margin-bottom: 20px;">
           <label style="font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 8px;">Enter 6-Digit Verification Code</label>
           <input type="text" id="otpCodeInput" maxlength="6" placeholder="4 8 9 2 0 1" style="width: 200px; text-align: center; letter-spacing: 6px; font-family: 'JetBrains Mono', monospace; font-size: 22px; font-weight: 800; padding: 10px; background: var(--bg-dark); border: 1px solid var(--emerald); border-radius: var(--radius-md); color: var(--emerald); outline: none;">
         </div>
         <button class="btn btn-primary btn-lg" onclick="verifyOtp()" style="width: 100%; justify-content: center;">
-          ≡ƒöô Verify OTP & Unlock Download
+          🔍 Verify OTP & Unlock Download
         </button>
         <button class="btn btn-ghost" onclick="sendOtp()" style="width: 100%; margin-top: 10px; justify-content: center; font-size: 12px;">
           Resend OTP Code
@@ -1153,33 +1153,33 @@
        ============================================================ -->
   <div class="modal-overlay" id="certModal">
     <div class="modal-box">
-      <button class="modal-close" id="closeCert">Γ£ò</button>
+      <button class="modal-close" id="closeCert">ò</button>
       <h3 style="font-size:18px; font-weight:800; color:#fff;">Carbon Reduction Certificate</h3>
       <div class="cert-card">
         <div class="cert-stamp">VERIFIED</div>
         <h2>E-Credits Carbon Certificate</h2>
-        <div class="cert-project" id="certProject">ΓÇö</div>
+        <div class="cert-project" id="certProject">—</div>
         <div class="cert-metrics">
           <div>
             <div class="cert-metric-label">Total Carbon Footprint</div>
-            <div class="cert-metric-value" id="certTotal">ΓÇö</div>
+            <div class="cert-metric-value" id="certTotal">—</div>
           </div>
           <div>
             <div class="cert-metric-label">Avoided Emissions</div>
-            <div class="cert-metric-value" style="color:#34d399;" id="certAvoided">ΓÇö</div>
+            <div class="cert-metric-value" style="color:#34d399;" id="certAvoided">—</div>
           </div>
           <div>
             <div class="cert-metric-label">E-Credit Valuation</div>
-            <div class="cert-metric-value" style="color:#818cf8;" id="certValue">ΓÇö</div>
+            <div class="cert-metric-value" style="color:#818cf8;" id="certValue">—</div>
           </div>
           <div>
             <div class="cert-metric-label">Assessment Year</div>
-            <div class="cert-metric-value" id="certYear">ΓÇö</div>
+            <div class="cert-metric-value" id="certYear">—</div>
           </div>
         </div>
       </div>
       <div style="display:flex; gap:12px;">
-        <button class="btn btn-primary" onclick="requestPdfDownload('cert')">≡ƒôÑ Download Certificate PDF</button>
+        <button class="btn btn-primary" onclick="requestPdfDownload('cert')">📥 Download Certificate PDF</button>
         <button class="btn" onclick="document.getElementById('certModal').classList.remove('open')">Close</button>
       </div>
     </div>
@@ -1260,7 +1260,7 @@
       // --- WATER ---
       { name: "Water supply (tap)", keywords: ["water","tap water","mains water","municipal water","h2o"], factor: 0.000344, unit: "kg", category: "Utility", processName: "tap water production" },
 
-      // --- INDIA GHG FACTORS (v6) ΓÇö Source: GHG_Calculator_RECTIFIED_v6.xlsx DB_Master ---
+      // --- INDIA GHG FACTORS (v6) — Source: GHG_Calculator_RECTIFIED_v6.xlsx DB_Master ---
       // Scope 1: Stationary Combustion
       { name: "Diesel Generator (DG Sets)", keywords: ["diesel","dg set","generator","diesel generator","diesel fuel"], factor: 2.6558, unit: "Liters", category: "India_GHG_Factors", processName: "Diesel_Fuel", dqStatus: "uplifted", dqSource: "MoEFCC NATCOM/BUR uplifted via EPA GHG Equivalencies" },
       { name: "Furnace Oil (Boilers)", keywords: ["furnace oil","boiler","heavy oil","hfo","fuel oil"], factor: 3.1186, unit: "Liters", category: "India_GHG_Factors", processName: "Furnace_Oil", dqStatus: "uplifted", dqSource: "MoEFCC NATCOM/BUR uplifted via EPA GHG Equivalencies" },
@@ -1330,13 +1330,13 @@
       { name: "Well-to-Tank: Diesel", keywords: ["wtt diesel","upstream diesel","diesel upstream","fuel lifecycle diesel"], factor: 0.5835, unit: "Liters", category: "India_GHG_Factors", processName: "WTT_Diesel", dqStatus: "uplifted", dqSource: "Defra/ECUK WTT diesel EF uplifted via EPA GHG Equivalencies for IN" },
       { name: "Well-to-Tank: Petrol", keywords: ["wtt petrol","upstream petrol","petrol upstream","fuel lifecycle petrol"], factor: 0.4628, unit: "Liters", category: "India_GHG_Factors", processName: "WTT_Petrol", dqStatus: "uplifted", dqSource: "Defra/ECUK WTT petrol EF uplifted via EPA GHG Equivalencies for IN" },
       // Scope 3: Downstream (Placeholder categories)
-      { name: "Estimated Product Use-Phase Energy", keywords: ["product use phase","use phase energy","product energy use","consumer energy"], factor: 0, unit: "unit", category: "India_GHG_Factors", processName: "Product_Use_Phase_Energy", dqStatus: "placeholder", dqSource: "PLACEHOLDER ΓÇö user must input product-specific use-phase energy & EF" },
-      { name: "Estimated End-of-Life Emissions", keywords: ["end of life","eol emissions","product disposal","end of life waste"], factor: 0, unit: "unit", category: "India_GHG_Factors", processName: "Product_EndOfLife", dqStatus: "placeholder", dqSource: "PLACEHOLDER ΓÇö user must input product-specific EoL scenario" },
-      { name: "Equity-Share-Weighted Investee Emissions", keywords: ["equity share","investee emissions","financial investment emissions","equity investment"], factor: 0, unit: "INR invested", category: "India_GHG_Factors", processName: "Investment_Equity_Share", dqStatus: "placeholder", dqSource: "PLACEHOLDER ΓÇö requires PCAF methodology & investee-reported data" },
-      { name: "Franchise Operations (if applicable)", keywords: ["franchise","franchise operations","franchisee emissions","franchise store"], factor: 0, unit: "franchise", category: "India_GHG_Factors", processName: "Franchise_Estimate", dqStatus: "placeholder", dqSource: "PLACEHOLDER ΓÇö requires franchise-specific survey data" },
-      { name: "Assets Leased to Others - Energy Use", keywords: ["leased asset","downstream lease","asset leased","downstream leased asset"], factor: 0, unit: "unit", category: "India_GHG_Factors", processName: "Leased_Asset_Downstream", dqStatus: "placeholder", dqSource: "PLACEHOLDER ΓÇö requires lessee energy consumption data" },
+      { name: "Estimated Product Use-Phase Energy", keywords: ["product use phase","use phase energy","product energy use","consumer energy"], factor: 0, unit: "unit", category: "India_GHG_Factors", processName: "Product_Use_Phase_Energy", dqStatus: "placeholder", dqSource: "PLACEHOLDER — user must input product-specific use-phase energy & EF" },
+      { name: "Estimated End-of-Life Emissions", keywords: ["end of life","eol emissions","product disposal","end of life waste"], factor: 0, unit: "unit", category: "India_GHG_Factors", processName: "Product_EndOfLife", dqStatus: "placeholder", dqSource: "PLACEHOLDER — user must input product-specific EoL scenario" },
+      { name: "Equity-Share-Weighted Investee Emissions", keywords: ["equity share","investee emissions","financial investment emissions","equity investment"], factor: 0, unit: "INR invested", category: "India_GHG_Factors", processName: "Investment_Equity_Share", dqStatus: "placeholder", dqSource: "PLACEHOLDER — requires PCAF methodology & investee-reported data" },
+      { name: "Franchise Operations (if applicable)", keywords: ["franchise","franchise operations","franchisee emissions","franchise store"], factor: 0, unit: "franchise", category: "India_GHG_Factors", processName: "Franchise_Estimate", dqStatus: "placeholder", dqSource: "PLACEHOLDER — requires franchise-specific survey data" },
+      { name: "Assets Leased to Others - Energy Use", keywords: ["leased asset","downstream lease","asset leased","downstream leased asset"], factor: 0, unit: "unit", category: "India_GHG_Factors", processName: "Leased_Asset_Downstream", dqStatus: "placeholder", dqSource: "PLACEHOLDER — requires lessee energy consumption data" },
       { name: "Financed Emissions (Financial Sector)", keywords: ["financed emissions","green finance","portfolio emissions","financial sector emissions"], factor: 1, unit: "tCO2e reported", category: "India_GHG_Factors", processName: "Financed_Emissions_Passthrough", dqStatus: "clean", dqSource: "Direct passthrough of reported tCO2e per PCAF standard" },
-      { name: "Third-Party Processing of Intermediate Goods", keywords: ["third party processing","contract manufacturing","outsourced processing","processing sold products"], factor: 0, unit: "unit", category: "India_GHG_Factors", processName: "Processing_Sold_Products_Proxy", dqStatus: "placeholder", dqSource: "PLACEHOLDER ΓÇö requires third-party process-specific data" },
+      { name: "Third-Party Processing of Intermediate Goods", keywords: ["third party processing","contract manufacturing","outsourced processing","processing sold products"], factor: 0, unit: "unit", category: "India_GHG_Factors", processName: "Processing_Sold_Products_Proxy", dqStatus: "placeholder", dqSource: "PLACEHOLDER — requires third-party process-specific data" },
     ];
 
     /* ===========================================================
@@ -1367,11 +1367,11 @@
     function goToStep(step) {
       // Validation
       if (step === 2 && !document.getElementById('projectName').value.trim()) {
-        showToast('ΓÜá∩╕Å Please enter a project name first.', 'warning');
+        showToast('⚡á Please enter a project name first.', 'warning');
         return;
       }
       if (step === 3 && bomItems.length === 0) {
-        showToast('ΓÜá∩╕Å Import at least one BOM item first.', 'warning');
+        showToast('⚡á Import at least one BOM item first.', 'warning');
         return;
       }
       if (step === 3 && matchedItems.length === 0) {
@@ -1422,7 +1422,7 @@
     document.getElementById('btnDownloadTemplate').onclick = () => {
       const csv = 'description,quantity,unit\nprimary aluminium ingot,125,kg\ngrid electricity for assembly,1850,kWh\ndiesel freight delivery,420,tkm\ncopper wire drawing,65,kg\nHDPE granules for housing,150,kg\nstainless steel fasteners,30,kg\ncardboard packaging,50,kg\n';
       downloadFile('bom-template.csv', csv, 'text/csv');
-      showToast('Γ£ô Template downloaded. Fill it in and upload!', 'success');
+      showToast(' Template downloaded. Fill it in and upload!', 'success');
     };
 
     /* ===========================================================
@@ -1447,7 +1447,7 @@
     function parseCSV(text, filename) {
       const result = Papa.parse(text, { header: true, skipEmptyLines: true, dynamicTyping: true });
       if (result.errors.length > 0 && result.data.length === 0) {
-        showToast('Γ¥î Could not parse CSV file. Check the format.', 'error');
+        showToast('î Could not parse CSV file. Check the format.', 'error');
         return;
       }
 
@@ -1459,7 +1459,7 @@
       const unitCol = fields.find(f => ['unit','uom','units'].includes(f));
 
       if (!descCol || !qtyCol) {
-        showToast('Γ¥î CSV must have "description" and "quantity" columns.', 'error');
+        showToast('î CSV must have "description" and "quantity" columns.', 'error');
         return;
       }
 
@@ -1475,11 +1475,11 @@
       });
 
       if (added > 0) {
-        showToast(`Γ£ô Imported ${added} items from "${filename}"`, 'success');
+        showToast(` Imported ${added} items from "${filename}"`, 'success');
         renderImportPreview();
         matchedItems = []; // Reset matches
       } else {
-        showToast('ΓÜá∩╕Å No valid rows found in file.', 'warning');
+        showToast('⚡á No valid rows found in file.', 'warning');
       }
     }
 
@@ -1490,12 +1490,12 @@
       const desc = document.getElementById('manualDesc').value.trim();
       const qty = parseFloat(document.getElementById('manualQty').value);
       const unit = document.getElementById('manualUnit').value;
-      if (!desc) { showToast('ΓÜá∩╕Å Enter a material description.', 'warning'); return; }
-      if (isNaN(qty) || qty <= 0) { showToast('ΓÜá∩╕Å Enter a valid quantity.', 'warning'); return; }
+      if (!desc) { showToast('⚡á Enter a material description.', 'warning'); return; }
+      if (isNaN(qty) || qty <= 0) { showToast('⚡á Enter a valid quantity.', 'warning'); return; }
 
       bomItems.push({ id: 'bom-' + Date.now() + '-' + Math.random().toString(36).substr(2,5), description: desc, quantity: qty, unit: unit });
       document.getElementById('manualDesc').value = '';
-      showToast(`Γ£ô Added "${desc}"`, 'success');
+      showToast(` Added "${desc}"`, 'success');
       renderImportPreview();
       matchedItems = [];
     };
@@ -1560,7 +1560,7 @@
           <td style="color:#fff; font-weight:600;">${escHtml(item.description)}</td>
           <td>${item.quantity}</td>
           <td>${item.unit}</td>
-          <td><button class="remove-row-btn" onclick="removeImportRow('${item.id}')" title="Remove">Γ£ò</button></td>
+          <td><button class="remove-row-btn" onclick="removeImportRow('${item.id}')" title="Remove">ò</button></td>
         `;
         tbody.appendChild(tr);
       });
@@ -1627,7 +1627,7 @@
     }
 
     /* ===========================================================
-       RUN MATCHING (Step 2 ΓåÆ Step 3)
+       RUN MATCHING (Step 2 → Step 3)
        =========================================================== */
     function runMatching() {
       const geo = document.getElementById('geography').value;
@@ -1661,15 +1661,15 @@
         const isPlaceholder = dqStatus === 'placeholder';
 
         let reasoning = match
-          ? `Matched to "${match.processName}" from ${dbSel} database. EF: ${match.factor} kgCOΓéée/${match.unit}. Source: ${match.dqSource || 'N/A'}.`
+          ? `Matched to "${match.processName}" from ${dbSel} database. EF: ${match.factor} kgCOéée/${match.unit}. Source: ${match.dqSource || 'N/A'}.`
           : 'No suitable match found in database. Manual override recommended.';
 
         let warning = null;
         if (isPlaceholder) {
-          warning = `ΓÜá∩╕Å PLACEHOLDER factor ΓÇö result_tco2e is NOT valid. Source: "${match.dqSource}". Replace with verified data before reporting.`;
+          warning = `⚡á PLACEHOLDER factor — result_tco2e is NOT valid. Source: "${match.dqSource}". Replace with verified data before reporting.`;
           co2e = null;
         } else if (risk === 'HIGH' && match) {
-          warning = 'Low similarity score ΓÇö verify this mapping is correct. Consider manual override.';
+          warning = 'Low similarity score — verify this mapping is correct. Consider manual override.';
         } else if (!match) {
           warning = 'No emission factor found. This item cannot be included in carbon calculations until mapped.';
         }
@@ -1700,15 +1700,15 @@
     document.getElementById('btnRunMatching').onclick = () => {
       runMatching();
       goToStep(3);
-      showToast(`Γ£ô Matched ${matchedItems.length} items. Review the results below.`, 'success');
+      showToast(` Matched ${matchedItems.length} items. Review the results below.`, 'success');
     };
 
 
     const DQ_BADGE = {
-      clean:       { label: 'Γ£à Clean',       color: '#10b981', bg: 'rgba(16,185,129,0.12)', title: 'Verified, peer-reviewed emission factor' },
-      uplifted:    { label: 'Γ¼å Uplifted',    color: '#f59e0b', bg: 'rgba(245,158,11,0.12)',  title: 'Primary factor uplifted via EPA GHG Equivalencies; validated against multiple sources' },
-      proxy:       { label: '≡ƒöÇ Proxy',       color: '#6366f1', bg: 'rgba(99,102,241,0.12)',  title: 'Cross-validated proxy/approximated factor ΓÇö acceptable for reporting but note in methodology' },
-      placeholder: { label: '≡ƒÜ½ Placeholder', color: '#f43f5e', bg: 'rgba(244,63,94,0.12)',   title: 'PLACEHOLDER ΓÇö NOT valid for reporting. Must be replaced with real data before submission.' },
+      clean:       { label: 'à Clean',       color: '#10b981', bg: 'rgba(16,185,129,0.12)', title: 'Verified, peer-reviewed emission factor' },
+      uplifted:    { label: ' Uplifted',    color: '#f59e0b', bg: 'rgba(245,158,11,0.12)',  title: 'Primary factor uplifted via EPA GHG Equivalencies; validated against multiple sources' },
+      proxy:       { label: '🔍Ç Proxy',       color: '#6366f1', bg: 'rgba(99,102,241,0.12)',  title: 'Cross-validated proxy/approximated factor — acceptable for reporting but note in methodology' },
+      placeholder: { label: 'ƒ Placeholder', color: '#f43f5e', bg: 'rgba(244,63,94,0.12)',   title: 'PLACEHOLDER — NOT valid for reporting. Must be replaced with real data before submission.' },
     };
 
     function renderReviewTable() {
@@ -1721,7 +1721,7 @@
       if (searchVal) filtered = filtered.filter(i => i.description.toLowerCase().includes(searchVal) || i.processName.toLowerCase().includes(searchVal));
 
       if (filtered.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" class="empty-state"><div class="empty-state-icon">≡ƒöì</div><div class="empty-state-text">No items matching your filter.</div></td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" class="empty-state"><div class="empty-state-icon">🔍</div><div class="empty-state-text">No items matching your filter.</div></td></tr>';
         updateProgress();
         return;
       }
@@ -1732,13 +1732,13 @@
         const dq = DQ_BADGE[item.dqStatus] || DQ_BADGE.clean;
         const tco2eDisplay = item.dqStatus === 'placeholder'
           ? '<span style="color:var(--red);font-size:11px;font-weight:700;">PLACEHOLDER</span>'
-          : item.co2e > 0 ? `<span style="font-family:\'JetBrains Mono\',monospace;font-size:12px;font-weight:700;color:#fff;">${item.co2e.toFixed(4)}</span>` : 'ΓÇö';
+          : item.co2e > 0 ? `<span style="font-family:\'JetBrains Mono\',monospace;font-size:12px;font-weight:700;color:#fff;">${item.co2e.toFixed(4)}</span>` : '—';
 
         tr.innerHTML = `
-          <td><button class="expand-btn" onclick="toggleExpand('${item.id}')">${expandedRow === item.id ? 'Γû╝' : 'Γû╢'}</button></td>
+          <td><button class="expand-btn" onclick="toggleExpand('${item.id}')">${expandedRow === item.id ? 'û╝' : 'û╢'}</button></td>
           <td>
             <div class="bom-name">${escHtml(item.description)}</div>
-            <div class="bom-meta">${item.quantity} ${item.unit} ΓÇó ${item.dqStatus !== 'placeholder' ? item.co2e.toFixed(4) + ' tCOΓéée' : '<span style="color:var(--red);">PLACEHOLDER</span>'}</div>
+            <div class="bom-meta">${item.quantity} ${item.unit} • ${item.dqStatus !== 'placeholder' ? item.co2e.toFixed(4) + ' tCOéée' : '<span style="color:var(--red);">PLACEHOLDER</span>'}</div>
           </td>
           <td>
             <div style="font-weight:600;color:#fff;margin-bottom:2px;">${escHtml(item.processName)}</div>
@@ -1746,7 +1746,7 @@
             <div style="display:flex;align-items:center;gap:4px;margin-top:4px;font-size:11px;color:var(--text-muted);">
               <span style="font-weight:600;color:var(--text-secondary);">EF:</span>
               <input type="number" step="any" value="${item.factor}" onchange="updateFactor('${item.id}', this.value)" style="width:80px;padding:2px 6px;border-radius:4px;border:1px solid var(--emerald);background:var(--bg-dark);color:var(--emerald);font-family:'JetBrains Mono',monospace;font-weight:700;font-size:11px;" title="Click to edit emission factor value">
-              <span>kgCOΓéée/${item.match ? item.match.unit : item.unit}</span>
+              <span>kgCOéée/${item.match ? item.match.unit : item.unit}</span>
             </div>
             ${item.candidates && item.candidates.length > 0 ? `
               <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">
@@ -1773,9 +1773,9 @@
           <td>
             <div class="action-btns">
               ${item.approved
-                ? '<span class="approved-label">Γ£ô Approved</span>'
-                : `<button class="btn-approve-sm" onclick="approveItem('${item.id}')"${item.dqStatus === 'placeholder' ? ' disabled title="Cannot approve placeholder ΓÇö replace data first"' : ''}>Approve</button>`}
-              <button class="btn-remove-sm" onclick="removeItem('${item.id}')">Γ£ò</button>
+                ? '<span class="approved-label"> Approved</span>'
+                : `<button class="btn-approve-sm" onclick="approveItem('${item.id}')"${item.dqStatus === 'placeholder' ? ' disabled title="Cannot approve placeholder — replace data first"' : ''}>Approve</button>`}
+              <button class="btn-remove-sm" onclick="removeItem('${item.id}')">ò</button>
             </div>
           </td>
         `;
@@ -1784,7 +1784,7 @@
         if (item.dqStatus === 'placeholder') {
           const warnTr = document.createElement('tr');
           warnTr.innerHTML = `<td colspan="8" style="padding:8px 16px 8px 48px;background:rgba(244,63,94,0.15);border-bottom:1px solid rgba(244,63,94,0.4);color:#fecdd3;font-size:12px;">
-            ΓÜá∩╕Å <strong>PLACEHOLDER emission factor:</strong> result_tco2e is NOT valid pending real activity data for '${escHtml(item.processName)}'. Approval disabled.
+            ⚡á <strong>PLACEHOLDER emission factor:</strong> result_tco2e is NOT valid pending real activity data for '${escHtml(item.processName)}'. Approval disabled.
           </td>`;
           tbody.appendChild(warnTr);
         }
@@ -1812,10 +1812,10 @@
             <strong>Audit Reasoning:</strong> ${escHtml(item.reasoning)}
             ${item.warning ? `<div class="warning-box">${escHtml(item.warning)}</div>` : ''}
             <div style="margin-top:8px; font-size:11px; color:var(--text-muted);">
-              Emission Factor: <strong>${item.factor} kgCOΓéée/${item.match ? item.match.unit : '?'}</strong>
-              &nbsp;ΓÇó&nbsp; Category: <strong>${item.match ? item.match.category : 'Unknown'}</strong>
-              &nbsp;ΓÇó&nbsp; Database: <strong>${document.getElementById('database').value}</strong>
-              ${item.match?.dqSource ? `&nbsp;ΓÇó&nbsp; Source: <em>${escHtml(item.match.dqSource)}</em>` : ''}
+              Emission Factor: <strong>${item.factor} kgCOéée/${item.match ? item.match.unit : '?'}</strong>
+              &nbsp;•&nbsp; Category: <strong>${item.match ? item.match.category : 'Unknown'}</strong>
+              &nbsp;•&nbsp; Database: <strong>${document.getElementById('database').value}</strong>
+              ${item.match?.dqSource ? `&nbsp;•&nbsp; Source: <em>${escHtml(item.match.dqSource)}</em>` : ''}
             </div>
             ${candidateHtml}
           </td>`;
@@ -1849,16 +1849,16 @@
           co2e: co2e ?? 0,
           dqStatus,
           processName: newMatch.processName,
-          reasoning: `[Manual switch] Matched to "${newMatch.processName}" (${c.similarity}% similarity). EF: ${newMatch.factor} kgCOΓéée/${newMatch.unit}. Source: ${newMatch.dqSource || 'N/A'}.`,
+          reasoning: `[Manual switch] Matched to "${newMatch.processName}" (${c.similarity}% similarity). EF: ${newMatch.factor} kgCOéée/${newMatch.unit}. Source: ${newMatch.dqSource || 'N/A'}.`,
           warning: isPlaceholder
-            ? `ΓÜá∩╕Å PLACEHOLDER factor ΓÇö result_tco2e is NOT valid. Source: "${newMatch.dqSource}". Replace with verified data before reporting.`
+            ? `⚡á PLACEHOLDER factor — result_tco2e is NOT valid. Source: "${newMatch.dqSource}". Replace with verified data before reporting.`
             : null,
-          // Any match switch resets approval ΓÇö must be re-signed off
+          // Any match switch resets approval — must be re-signed off
           approved: false,
         };
       });
       renderReviewTable();
-      showToast('Candidate switched. Row de-approved ΓÇö please re-review and approve.', 'info');
+      showToast('Candidate switched. Row de-approved — please re-review and approve.', 'info');
     }
 
     function showGHGViewer() {
@@ -1883,17 +1883,17 @@
         <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-xl);max-width:900px;width:100%;max-height:85vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--shadow-lg);">
           <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border);flex-shrink:0;">
             <div>
-              <div style="font-size:17px;font-weight:800;color:var(--text-primary);">≡ƒç«≡ƒç│ India GHG Factors v6</div>
-              <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Source: GHG_Calculator_RECTIFIED_v6.xlsx ΓÇó ${india.length} factors ΓÇó For reference only ΓÇö data is NOT downloadable</div>
+              <div style="font-size:17px;font-weight:800;color:var(--text-primary);">🇮🇳 India GHG Factors v6</div>
+              <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Source: GHG_Calculator_RECTIFIED_v6.xlsx • ${india.length} factors • For reference only — data is NOT downloadable</div>
             </div>
-            <button onclick="document.getElementById('ghgViewerOverlay').style.display='none'" style="background:transparent;border:1px solid var(--border);color:var(--text-primary);border-radius:8px;width:36px;height:36px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;">Γ£ò</button>
+            <button onclick="document.getElementById('ghgViewerOverlay').style.display='none'" style="background:transparent;border:1px solid var(--border);color:var(--text-primary);border-radius:8px;width:36px;height:36px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;">ò</button>
           </div>
           <div style="overflow-y:auto;padding:16px;">
             <table style="width:100%;border-collapse:collapse;font-size:12px;">
               <thead>
                 <tr style="position:sticky;top:0;background:var(--bg-surface);">
                   <th style="text-align:left;padding:8px 12px;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);">Activity</th>
-                  <th style="text-align:left;padding:8px 12px;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);">EF (kgCOΓéée)</th>
+                  <th style="text-align:left;padding:8px 12px;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);">EF (kgCOéée)</th>
                   <th style="text-align:left;padding:8px 12px;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);">Unit</th>
                   <th style="text-align:left;padding:8px 12px;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);">Quality</th>
                   <th style="text-align:left;padding:8px 12px;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);">Source/Notes</th>
@@ -1903,7 +1903,7 @@
             </table>
           </div>
           <div style="padding:12px 24px;border-top:1px solid var(--border);background:rgba(244,63,94,0.06);flex-shrink:0;">
-            <div style="font-size:11px;color:var(--red);font-weight:600;">ΓÜá∩╕Å PLACEHOLDER rows are shown for completeness but are NOT valid for GHG reporting until replaced with real activity data.</div>
+            <div style="font-size:11px;color:var(--red);font-weight:600;">⚡á PLACEHOLDER rows are shown for completeness but are NOT valid for GHG reporting until replaced with real activity data.</div>
           </div>
         </div>`;
       document.body.appendChild(modal);
@@ -1913,7 +1913,7 @@
     function approveItem(id) {
       matchedItems = matchedItems.map(i => i.id === id ? { ...i, approved: true } : i);
       renderReviewTable();
-      showToast('Γ£ô Item approved.', 'success');
+      showToast(' Item approved.', 'success');
     }
     function removeItem(id) {
       matchedItems = matchedItems.filter(i => i.id !== id);
@@ -1950,7 +1950,7 @@
         return i;
       });
       renderReviewTable();
-      showToast(`Γ£ô Approved ${count} low-risk items.`, 'success');
+      showToast(` Approved ${count} low-risk items.`, 'success');
     };
 
     document.getElementById('btnToResults').onclick = () => goToStep(4);
@@ -1999,12 +1999,12 @@
           responsive: true, maintainAspectRatio: false,
           plugins: {
             legend: { position: 'right', labels: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans', size: 11 }, padding: 12 } },
-            tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.parsed.toFixed(2)} kgCOΓéée` } }
+            tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.parsed.toFixed(2)} kgCOéée` } }
           }
         }
       });
 
-      // Bar chart ΓÇö top items
+      // Bar chart — top items
       const topItems = [...matchedItems].sort((a, b) => b.co2e - a.co2e).slice(0, 8);
       if (barChartInst) barChartInst.destroy();
       barChartInst = new Chart(document.getElementById('barChart'), {
@@ -2019,7 +2019,7 @@
         },
         options: {
           indexAxis: 'y', responsive: true, maintainAspectRatio: false,
-          plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `${ctx.parsed.x.toFixed(2)} kgCOΓéée` } } },
+          plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `${ctx.parsed.x.toFixed(2)} kgCOéée` } } },
           scales: {
             x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b', font: { family: 'Plus Jakarta Sans', size: 11 } } },
             y: { grid: { display: false }, ticks: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans', size: 11 } } }
@@ -2059,9 +2059,9 @@
       const avoided = baseline - newFootprint;
       const creditVal = avoided * 35000; // $35 per tCO2e
 
-      document.getElementById('simBaseline').textContent = baseline.toFixed(4) + ' tCOΓéée';
-      document.getElementById('simNew').textContent = newFootprint.toFixed(4) + ' tCOΓéée';
-      document.getElementById('simAvoided').textContent = avoided.toFixed(4) + ' tCOΓéée';
+      document.getElementById('simBaseline').textContent = baseline.toFixed(4) + ' tCOéée';
+      document.getElementById('simNew').textContent = newFootprint.toFixed(4) + ' tCOéée';
+      document.getElementById('simAvoided').textContent = avoided.toFixed(4) + ' tCOéée';
       document.getElementById('simCreditVal').textContent = formatCurrency(creditVal);
       document.getElementById('resCreditValue').textContent = formatCurrency(creditVal);
     }
@@ -2087,7 +2087,7 @@
       rows.push('');
       rows.push(`"Total Carbon Footprint",,,,,,,${totalCO2e.toFixed(6)} tCO2e`);
       downloadFile(`${document.getElementById('projectName').value || 'ecredits'}-report.csv`, rows.join('\n'), 'text/csv');
-      showToast('Γ£ô CSV report exported.', 'success');
+      showToast(' CSV report exported.', 'success');
     };
 
     document.getElementById('btnExportJSON').onclick = () => {
@@ -2107,7 +2107,7 @@
         exportedAt: new Date().toISOString()
       };
       downloadFile(`${document.getElementById('projectName').value || 'ecredits'}-data.json`, JSON.stringify(data, null, 2), 'application/json');
-      showToast('Γ£ô JSON data exported.', 'success');
+      showToast(' JSON data exported.', 'success');
     };
 
     /* ===========================================================
@@ -2128,8 +2128,8 @@
       const creditVal = avoided * 35000;
 
       document.getElementById('certProject').textContent = document.getElementById('projectName').value || 'Untitled Project';
-      document.getElementById('certTotal').textContent = totalCO2e.toFixed(4) + ' tCOΓéée';
-      document.getElementById('certAvoided').textContent = avoided.toFixed(4) + ' tCOΓéée';
+      document.getElementById('certTotal').textContent = totalCO2e.toFixed(4) + ' tCOéée';
+      document.getElementById('certAvoided').textContent = avoided.toFixed(4) + ' tCOéée';
       document.getElementById('certValue').textContent = formatCurrency(creditVal);
       document.getElementById('certYear').textContent = document.getElementById('targetYear').value;
       document.getElementById('certModal').classList.add('open');
@@ -2184,7 +2184,7 @@
         tbody.appendChild(tr);
       });
 
-      document.getElementById('b4TotalCO2').innerText = `${totalCO2.toFixed(4)} tCOΓéée`;
+      document.getElementById('b4TotalCO2').innerText = `${totalCO2.toFixed(4)} tCOéée`;
       document.getElementById('b4CleanCount').innerText = cleanCount;
       document.getElementById('b4UpliftedCount').innerText = upliftedCount;
       document.getElementById('b4ProxyCount').innerText = proxyCount;
@@ -2195,7 +2195,7 @@
       const simRen = parseFloat(document.getElementById('simRenSlider').value) || 0;
       const reductionFactor = (simRec * 0.4 + simRen * 0.45) / 100;
       const avoided = (totalCO2 * reductionFactor);
-      document.getElementById('b4Avoided').innerText = `${avoided.toFixed(2)} tCOΓéée`;
+      document.getElementById('b4Avoided').innerText = `${avoided.toFixed(2)} tCOéée`;
       document.getElementById('b4CreditVal').innerText = `$${(avoided * 35).toFixed(2)}`;
 
       document.getElementById('big4Modal').classList.add('open');
@@ -2243,7 +2243,7 @@
         }
       }, 1000);
 
-      showToast(`≡ƒôº Verification OTP sent to ${email} (Code: ${generatedOtp})`, 'success');
+      showToast(`ƒº Verification OTP sent to ${email} (Code: ${generatedOtp})`, 'success');
     }
 
     function verifyOtp() {
@@ -2252,7 +2252,7 @@
         const email = document.getElementById('otpEmailInput').value.trim();
         sessionStorage.setItem('otp_verified_email', email);
         document.getElementById('otpModal').classList.remove('open');
-        showToast(`Γ£ô Gmail ${email} verified successfully! Starting PDF download...`, 'success');
+        showToast(` Gmail ${email} verified successfully! Starting PDF download...`, 'success');
         if (pendingPdfTask) {
           executePdfDownload(pendingPdfTask);
           pendingPdfTask = null;
@@ -2274,9 +2274,9 @@
           html2canvas:  { scale: 2, useCORS: true, logging: false },
           jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
         };
-        showToast('ΓÅ│ Generating Big 4 PDF Audit Report...', 'info');
+        showToast(' Generating Big 4 PDF Audit Report...', 'info');
         html2pdf().set(opt).from(element).save().then(() => {
-          showToast('Γ£ô Big 4 PDF Audit Report downloaded successfully!', 'success');
+          showToast(' Big 4 PDF Audit Report downloaded successfully!', 'success');
         });
       } else if (type === 'cert') {
         const element = document.querySelector('.cert-card');
@@ -2287,9 +2287,9 @@
           html2canvas:  { scale: 2, useCORS: true },
           jsPDF:        { unit: 'in', format: 'letter', orientation: 'landscape' }
         };
-        showToast('ΓÅ│ Generating Carbon Certificate PDF...', 'info');
+        showToast(' Generating Carbon Certificate PDF...', 'info');
         html2pdf().set(opt).from(element).save().then(() => {
-          showToast('Γ£ô E-Credits Carbon Certificate PDF downloaded successfully!', 'success');
+          showToast(' E-Credits Carbon Certificate PDF downloaded successfully!', 'success');
         });
       }
     }
