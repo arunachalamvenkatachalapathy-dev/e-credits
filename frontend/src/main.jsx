@@ -639,9 +639,67 @@ function App() {
                   <span style={{ color: "var(--accent-emerald)", fontWeight: 800 }}>{simResults.avoidedCo2eTons} tCO₂e</span>
                 </div>
                 <div className="sim-metric">
-                  <span>E-Credit Dollar Valuation</span>
+                  <span>Illustrative Value @ $35/tCO₂e Reference Price*</span>
                   <span style={{ color: "var(--accent-indigo)", fontWeight: 800 }}>{simResults.creditDollarValue}</span>
                 </div>
+                <p style={{ fontSize: "10px", color: "var(--text-secondary)", marginTop: "8px", fontStyle: "italic" }}>
+                  * $35/tCO₂e is a rough voluntary-market reference point, not a quote. Real
+                  prices for verified credits or RECs range roughly $3–$200+/tCO₂e depending
+                  on project type, vintage, and registry — see the Offset section below for
+                  where to get an actual quote.
+                </p>
+              </div>
+            </div>
+
+            {/* Reduce vs. Offset -- deliberately NOT a checkout/payment flow.
+                Reduction (above) lowers your actual reported footprint and needs
+                no third party. Offsetting is a separate claim about residual
+                emissions after reduction, and this tool does not sell, broker,
+                or verify credits -- it refers to real, independently-run
+                registries instead of fabricating a purchase flow backed by
+                nothing. */}
+            <div className="panel-card" style={{ marginTop: "20px" }}>
+              <div className="panel-title">
+                <Leaf size={20} style={{ color: "var(--accent-emerald)" }} /> Offsetting Your Residual Footprint
+              </div>
+              <p style={{ fontSize: "13px", color: "var(--text-secondary)", marginBottom: "14px" }}>
+                Reduction (the simulator above) lowers your actual reported emissions and
+                doesn't require anyone else's involvement. Offsetting is different: you pay
+                for emissions reductions that happen elsewhere to counterbalance emissions
+                you weren't able to eliminate. It's a separate claim layered on top of your
+                inventory, not a subtraction from it under the GHG Protocol.
+              </p>
+              <p style={{ fontSize: "13px", color: "var(--text-secondary)", marginBottom: "14px" }}>
+                <strong style={{ color: "#fff" }}>This tool doesn't sell or broker credits</strong>, and
+                deliberately doesn't try to — the voluntary carbon market has well-documented
+                quality problems, and a checkout button backed by no real registry
+                relationship would be worse than no button at all. If you want to offset your
+                residual footprint of <strong style={{ color: "var(--accent-emerald)" }}>{stats.totalCo2eTons} tCO₂e</strong>,
+                these are real, independently-run registries — do your own due diligence on
+                any specific project before purchasing:
+              </p>
+              <div className="grid3">
+                <a href="https://registry.goldstandard.org/projects" target="_blank" rel="noopener noreferrer"
+                   style={{ background: "var(--bg-surface)", padding: "16px", borderRadius: "8px", border: "1px solid var(--border-light)", textDecoration: "none", display: "block" }}>
+                  <strong style={{ color: "#fff" }}>Gold Standard Marketplace</strong>
+                  <p style={{ fontSize: "12px", color: "var(--text-secondary)", marginTop: "4px" }}>
+                    Certified projects with additional sustainable-development verification.
+                  </p>
+                </a>
+                <a href="https://registry.verra.org/app/search" target="_blank" rel="noopener noreferrer"
+                   style={{ background: "var(--bg-surface)", padding: "16px", borderRadius: "8px", border: "1px solid var(--border-light)", textDecoration: "none", display: "block" }}>
+                  <strong style={{ color: "#fff" }}>Verra Registry</strong>
+                  <p style={{ fontSize: "12px", color: "var(--text-secondary)", marginTop: "4px" }}>
+                    The largest voluntary registry (VCS standard) — search and verify projects directly.
+                  </p>
+                </a>
+                <a href="https://puro.earth/buy-co2-removal-credits" target="_blank" rel="noopener noreferrer"
+                   style={{ background: "var(--bg-surface)", padding: "16px", borderRadius: "8px", border: "1px solid var(--border-light)", textDecoration: "none", display: "block" }}>
+                  <strong style={{ color: "#fff" }}>Puro.earth</strong>
+                  <p style={{ fontSize: "12px", color: "var(--text-secondary)", marginTop: "4px" }}>
+                    Focused on engineered carbon removal (biochar, mineralization) rather than avoidance credits.
+                  </p>
+                </a>
               </div>
             </div>
           </div>
@@ -656,8 +714,20 @@ function App() {
             <div className="grid3">
               <div style={{ background: "var(--bg-surface)", padding: "18px", borderRadius: "10px", border: "1px solid var(--border-light)" }}>
                 <strong style={{ color: "#fff" }}>EU CBAM Readiness</strong>
-                <p style={{ fontSize: "12px", color: "var(--text-secondary)", margin: "6px 0 12px" }}>Carbon Border Adjustment Mechanism embedded carbon verification.</p>
-                <span className="brand-badge">Verified Compliant</span>
+                <p style={{ fontSize: "12px", color: "var(--text-secondary)", margin: "6px 0 12px" }}>Carbon Border Adjustment Mechanism embedded carbon disclosure.</p>
+                {/* This badge previously said "Verified Compliant" unconditionally --
+                    no third party verifies anything in this tool, and it displayed
+                    that even with zero reviewed rows or all-placeholder data. Now
+                    reflects actual review state instead of a fixed claim. */}
+                {stats.total === 0 ? (
+                  <span className="brand-badge" style={{ background: "var(--text-secondary)" }}>No Data Yet</span>
+                ) : stats.placeholderCount > 0 || stats.approved < stats.total ? (
+                  <span className="brand-badge" style={{ background: "var(--risk-med)" }}>
+                    Practitioner Review Required ({stats.approved}/{stats.total} reviewed{stats.placeholderCount > 0 ? `, ${stats.placeholderCount} placeholder` : ""})
+                  </span>
+                ) : (
+                  <span className="brand-badge">Structurally Complete — Not Third-Party Verified</span>
+                )}
               </div>
               <div style={{ background: "var(--bg-surface)", padding: "18px", borderRadius: "10px", border: "1px solid var(--border-light)" }}>
                 <strong style={{ color: "#fff" }}>EU Digital Product Passport (DPP)</strong>
