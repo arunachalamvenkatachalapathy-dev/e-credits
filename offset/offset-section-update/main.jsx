@@ -52,99 +52,13 @@ function App() {
   const [year, setYear] = useState(2024);
   const [source, setSource] = useState("USLCI");
   
-  const DEFAULT_SAMPLE_AUDITS = [
-    {
-      id: "sample-audit-1",
-      raw_bom_input: "Diesel generator fuel",
-      raw_bom_quantity: 1000.0,
-      raw_bom_unit: "Liters",
-      matched_process_id: "proc-diesel-1",
-      matched_process_name: "Well-to-Tank: Diesel",
-      matched_emission_factor: 2.6558,
-      matched_data_quality_status: "uplifted",
-      vector_similarity_score: 0.99,
-      dqr_technological_score: 1,
-      dqr_geographical_score: 2,
-      dqr_temporal_score: 1,
-      audit_risk_level: "LOW",
-      is_human_approved: false,
-      result_tco2e: 2.6558,
-      audit_reasoning: 'Matched to "Well-to-Tank: Diesel" from India_GHG_Factors database. EF: 2.6558 kgCO2e/L.',
-      candidate_options: [
-        { process_id: "proc-diesel-1", process_name: "Well-to-Tank: Diesel", similarity_score: 0.99, data_quality_status: "uplifted", emission_factor: 2.6558 },
-        { process_id: "proc-diesel-2", process_name: "Commercial LPG", similarity_score: 0.72, data_quality_status: "clean", emission_factor: 2.9830 },
-        { process_id: "proc-diesel-3", process_name: "Heavy Fuel Oil (Boilers)", similarity_score: 0.65, data_quality_status: "clean", emission_factor: 3.1200 }
-      ]
-    },
-    {
-      id: "sample-audit-2",
-      raw_bom_input: "Product Use Phase Energy",
-      raw_bom_quantity: 450.0,
-      raw_bom_unit: "Units Sold",
-      matched_process_id: "proc-usephase-1",
-      matched_process_name: "Estimated Product Use-Phase Energy",
-      matched_emission_factor: 0.0,
-      matched_data_quality_status: "placeholder",
-      vector_similarity_score: 0.95,
-      dqr_technological_score: 4,
-      dqr_geographical_score: 2,
-      dqr_temporal_score: 1,
-      audit_risk_level: "HIGH",
-      is_human_approved: false,
-      result_tco2e: 0.0,
-      mandatory_data_gap_warning: "⚠️ PLACEHOLDER emission factor — result_tco2e is NOT valid. Replace with verified data before reporting.",
-      audit_reasoning: "PLACEHOLDER factor — Category 11 Use-phase energy requires specific duty cycle & lifespan measurements.",
-      candidate_options: [
-        { process_id: "proc-usephase-1", process_name: "Estimated Product Use-Phase Energy", similarity_score: 0.95, data_quality_status: "placeholder", emission_factor: 0.0 }
-      ]
-    },
-    {
-      id: "sample-audit-3",
-      raw_bom_input: "Indian Coal (Boilers)",
-      raw_bom_quantity: 250.0,
-      raw_bom_unit: "kg",
-      matched_process_id: "proc-coal-1",
-      matched_process_name: "Indian Coal (Boilers)",
-      matched_emission_factor: 2.0400,
-      matched_data_quality_status: "clean",
-      vector_similarity_score: 0.98,
-      dqr_technological_score: 1,
-      dqr_geographical_score: 1,
-      dqr_temporal_score: 1,
-      audit_risk_level: "LOW",
-      is_human_approved: true,
-      result_tco2e: 0.5100,
-      audit_reasoning: "Matched to Indian Coal (Boilers). EF: 2.04 kgCO2e/kg.",
-      candidate_options: [
-        { process_id: "proc-coal-1", process_name: "Indian Coal (Boilers)", similarity_score: 0.98, data_quality_status: "clean", emission_factor: 2.0400 }
-      ]
-    },
-    {
-      id: "sample-audit-4",
-      raw_bom_input: "Refrigerant Top-up - R-32",
-      raw_bom_quantity: 15.0,
-      raw_bom_unit: "kg",
-      matched_process_id: "proc-r32-1",
-      matched_process_name: "Refrigerant Top-up - R-32",
-      matched_emission_factor: 675.0,
-      matched_data_quality_status: "clean",
-      vector_similarity_score: 0.99,
-      dqr_technological_score: 1,
-      dqr_geographical_score: 1,
-      dqr_temporal_score: 1,
-      audit_risk_level: "LOW",
-      is_human_approved: true,
-      result_tco2e: 10.1250,
-      audit_reasoning: "Matched to R-32 Refrigerant leakage. GWP: 675 kgCO2e/kg.",
-      candidate_options: [
-        { process_id: "proc-r32-1", process_name: "Refrigerant Top-up - R-32", similarity_score: 0.99, data_quality_status: "clean", emission_factor: 675.0 }
-      ]
-    }
-  ];
-
-  const [audits, setAudits] = useState(DEFAULT_SAMPLE_AUDITS);
+  const [projectId, setProjectId] = useState(null);
+  const [audits, setAudits] = useState([]);
   const [loadError, setLoadError] = useState(null);
 
+  // Real project creation + audit fetch, replacing what used to be four
+  // hardcoded mock rows that looked identical to real data but weren't --
+  // this now actually calls the backend built earlier in this project.
   useEffect(() => {
     async function initProject() {
       try {
@@ -161,12 +75,11 @@ function App() {
         const project = await res.json();
         setProjectId(project.id);
         const auditsRes = await fetch(`${API}/bom/audits/${project.id}`);
-        if (auditsRes.ok) {
-          const loaded = await auditsRes.json();
-          if (loaded && loaded.length > 0) setAudits(loaded);
-        }
+        if (auditsRes.ok) setAudits(await auditsRes.json());
       } catch (err) {
-        console.log(`Backend API offline or unreachable (${err.message}) — using pre-loaded sample India GHG Factors.`);
+        setLoadError(
+          `Could not reach the backend at ${API}. Is it running? (${err.message})`
+        );
       }
     }
     initProject();
