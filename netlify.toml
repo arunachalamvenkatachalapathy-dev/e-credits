@@ -1,15 +1,6 @@
 [build]
-  base = "frontend"
-  command = "npm run build"
-  publish = "dist"
+  publish = "."
 
-[build.environment]
-  NODE_VERSION = "20"
-
-# Single-page app fallback -- without this, refreshing on any route other
-# than the root would 404 on Netlify's static file server. This app is
-# currently single-route (step-based, not URL-routed), so this is a safety
-# net rather than a fix for a known bug -- cheap to include, no downside.
 [[redirects]]
   from = "/*"
   to = "/index.html"
