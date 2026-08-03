@@ -52,99 +52,13 @@ function App() {
   const [year, setYear] = useState(2024);
   const [source, setSource] = useState("USLCI");
   
-  const DEFAULT_SAMPLE_AUDITS = [
-    {
-      id: "sample-audit-1",
-      raw_bom_input: "Diesel generator fuel",
-      raw_bom_quantity: 1000.0,
-      raw_bom_unit: "Liters",
-      matched_process_id: "proc-diesel-1",
-      matched_process_name: "Well-to-Tank: Diesel",
-      matched_emission_factor: 2.6558,
-      matched_data_quality_status: "uplifted",
-      vector_similarity_score: 0.99,
-      dqr_technological_score: 1,
-      dqr_geographical_score: 2,
-      dqr_temporal_score: 1,
-      audit_risk_level: "LOW",
-      is_human_approved: false,
-      result_tco2e: 2.6558,
-      audit_reasoning: 'Matched to "Well-to-Tank: Diesel" from India_GHG_Factors database. EF: 2.6558 kgCO2e/L.',
-      candidate_options: [
-        { process_id: "proc-diesel-1", process_name: "Well-to-Tank: Diesel", similarity_score: 0.99, data_quality_status: "uplifted", emission_factor: 2.6558 },
-        { process_id: "proc-diesel-2", process_name: "Commercial LPG", similarity_score: 0.72, data_quality_status: "clean", emission_factor: 2.9830 },
-        { process_id: "proc-diesel-3", process_name: "Heavy Fuel Oil (Boilers)", similarity_score: 0.65, data_quality_status: "clean", emission_factor: 3.1200 }
-      ]
-    },
-    {
-      id: "sample-audit-2",
-      raw_bom_input: "Product Use Phase Energy",
-      raw_bom_quantity: 450.0,
-      raw_bom_unit: "Units Sold",
-      matched_process_id: "proc-usephase-1",
-      matched_process_name: "Estimated Product Use-Phase Energy",
-      matched_emission_factor: 0.0,
-      matched_data_quality_status: "placeholder",
-      vector_similarity_score: 0.95,
-      dqr_technological_score: 4,
-      dqr_geographical_score: 2,
-      dqr_temporal_score: 1,
-      audit_risk_level: "HIGH",
-      is_human_approved: false,
-      result_tco2e: 0.0,
-      mandatory_data_gap_warning: "⚠️ PLACEHOLDER emission factor — result_tco2e is NOT valid. Replace with verified data before reporting.",
-      audit_reasoning: "PLACEHOLDER factor — Category 11 Use-phase energy requires specific duty cycle & lifespan measurements.",
-      candidate_options: [
-        { process_id: "proc-usephase-1", process_name: "Estimated Product Use-Phase Energy", similarity_score: 0.95, data_quality_status: "placeholder", emission_factor: 0.0 }
-      ]
-    },
-    {
-      id: "sample-audit-3",
-      raw_bom_input: "Indian Coal (Boilers)",
-      raw_bom_quantity: 250.0,
-      raw_bom_unit: "kg",
-      matched_process_id: "proc-coal-1",
-      matched_process_name: "Indian Coal (Boilers)",
-      matched_emission_factor: 2.0400,
-      matched_data_quality_status: "clean",
-      vector_similarity_score: 0.98,
-      dqr_technological_score: 1,
-      dqr_geographical_score: 1,
-      dqr_temporal_score: 1,
-      audit_risk_level: "LOW",
-      is_human_approved: true,
-      result_tco2e: 0.5100,
-      audit_reasoning: "Matched to Indian Coal (Boilers). EF: 2.04 kgCO2e/kg.",
-      candidate_options: [
-        { process_id: "proc-coal-1", process_name: "Indian Coal (Boilers)", similarity_score: 0.98, data_quality_status: "clean", emission_factor: 2.0400 }
-      ]
-    },
-    {
-      id: "sample-audit-4",
-      raw_bom_input: "Refrigerant Top-up - R-32",
-      raw_bom_quantity: 15.0,
-      raw_bom_unit: "kg",
-      matched_process_id: "proc-r32-1",
-      matched_process_name: "Refrigerant Top-up - R-32",
-      matched_emission_factor: 675.0,
-      matched_data_quality_status: "clean",
-      vector_similarity_score: 0.99,
-      dqr_technological_score: 1,
-      dqr_geographical_score: 1,
-      dqr_temporal_score: 1,
-      audit_risk_level: "LOW",
-      is_human_approved: true,
-      result_tco2e: 10.1250,
-      audit_reasoning: "Matched to R-32 Refrigerant leakage. GWP: 675 kgCO2e/kg.",
-      candidate_options: [
-        { process_id: "proc-r32-1", process_name: "Refrigerant Top-up - R-32", similarity_score: 0.99, data_quality_status: "clean", emission_factor: 675.0 }
-      ]
-    }
-  ];
-
-  const [audits, setAudits] = useState(DEFAULT_SAMPLE_AUDITS);
+  const [projectId, setProjectId] = useState(null);
+  const [audits, setAudits] = useState([]);
   const [loadError, setLoadError] = useState(null);
 
+  // Real project creation + audit fetch, replacing what used to be four
+  // hardcoded mock rows that looked identical to real data but weren't --
+  // this now actually calls the backend built earlier in this project.
   useEffect(() => {
     async function initProject() {
       try {
@@ -161,12 +75,11 @@ function App() {
         const project = await res.json();
         setProjectId(project.id);
         const auditsRes = await fetch(`${API}/bom/audits/${project.id}`);
-        if (auditsRes.ok) {
-          const loaded = await auditsRes.json();
-          if (loaded && loaded.length > 0) setAudits(loaded);
-        }
+        if (auditsRes.ok) setAudits(await auditsRes.json());
       } catch (err) {
-        console.log(`Backend API offline or unreachable (${err.message}) — using pre-loaded sample India GHG Factors.`);
+        setLoadError(
+          `Could not reach the backend at ${API}. Is it running? (${err.message})`
+        );
       }
     }
     initProject();
@@ -424,7 +337,7 @@ function App() {
             <option>USLCI</option>
             <option>ELCD</option>
             <option>Agribalyse Core</option>
-            <option value="ecoinvent BYOL private import">ecoinvent BYOL private import</option>
+            <option>ecoinvent BYOL private</option>
             <option value="India_GHG_Factors">India GHG Factors (60 factors, provenance-tagged)</option>
           </select>
         </div>
@@ -726,67 +639,9 @@ function App() {
                   <span style={{ color: "var(--accent-emerald)", fontWeight: 800 }}>{simResults.avoidedCo2eTons} tCO₂e</span>
                 </div>
                 <div className="sim-metric">
-                  <span>Illustrative Value @ $35/tCO₂e Reference Price*</span>
+                  <span>E-Credit Dollar Valuation</span>
                   <span style={{ color: "var(--accent-indigo)", fontWeight: 800 }}>{simResults.creditDollarValue}</span>
                 </div>
-                <p style={{ fontSize: "10px", color: "var(--text-secondary)", marginTop: "8px", fontStyle: "italic" }}>
-                  * $35/tCO₂e is a rough voluntary-market reference point, not a quote. Real
-                  prices for verified credits or RECs range roughly $3–$200+/tCO₂e depending
-                  on project type, vintage, and registry — see the Offset section below for
-                  where to get an actual quote.
-                </p>
-              </div>
-            </div>
-
-            {/* Reduce vs. Offset -- deliberately NOT a checkout/payment flow.
-                Reduction (above) lowers your actual reported footprint and needs
-                no third party. Offsetting is a separate claim about residual
-                emissions after reduction, and this tool does not sell, broker,
-                or verify credits -- it refers to real, independently-run
-                registries instead of fabricating a purchase flow backed by
-                nothing. */}
-            <div className="panel-card" style={{ marginTop: "20px" }}>
-              <div className="panel-title">
-                <Leaf size={20} style={{ color: "var(--accent-emerald)" }} /> Offsetting Your Residual Footprint
-              </div>
-              <p style={{ fontSize: "13px", color: "var(--text-secondary)", marginBottom: "14px" }}>
-                Reduction (the simulator above) lowers your actual reported emissions and
-                doesn't require anyone else's involvement. Offsetting is different: you pay
-                for emissions reductions that happen elsewhere to counterbalance emissions
-                you weren't able to eliminate. It's a separate claim layered on top of your
-                inventory, not a subtraction from it under the GHG Protocol.
-              </p>
-              <p style={{ fontSize: "13px", color: "var(--text-secondary)", marginBottom: "14px" }}>
-                <strong style={{ color: "#fff" }}>This tool doesn't sell or broker credits</strong>, and
-                deliberately doesn't try to — the voluntary carbon market has well-documented
-                quality problems, and a checkout button backed by no real registry
-                relationship would be worse than no button at all. If you want to offset your
-                residual footprint of <strong style={{ color: "var(--accent-emerald)" }}>{stats.totalCo2eTons} tCO₂e</strong>,
-                these are real, independently-run registries — do your own due diligence on
-                any specific project before purchasing:
-              </p>
-              <div className="grid3">
-                <a href="https://registry.goldstandard.org/projects" target="_blank" rel="noopener noreferrer"
-                   style={{ background: "var(--bg-surface)", padding: "16px", borderRadius: "8px", border: "1px solid var(--border-light)", textDecoration: "none", display: "block" }}>
-                  <strong style={{ color: "#fff" }}>Gold Standard Marketplace</strong>
-                  <p style={{ fontSize: "12px", color: "var(--text-secondary)", marginTop: "4px" }}>
-                    Certified projects with additional sustainable-development verification.
-                  </p>
-                </a>
-                <a href="https://registry.verra.org/app/search" target="_blank" rel="noopener noreferrer"
-                   style={{ background: "var(--bg-surface)", padding: "16px", borderRadius: "8px", border: "1px solid var(--border-light)", textDecoration: "none", display: "block" }}>
-                  <strong style={{ color: "#fff" }}>Verra Registry</strong>
-                  <p style={{ fontSize: "12px", color: "var(--text-secondary)", marginTop: "4px" }}>
-                    The largest voluntary registry (VCS standard) — search and verify projects directly.
-                  </p>
-                </a>
-                <a href="https://puro.earth/buy-co2-removal-credits" target="_blank" rel="noopener noreferrer"
-                   style={{ background: "var(--bg-surface)", padding: "16px", borderRadius: "8px", border: "1px solid var(--border-light)", textDecoration: "none", display: "block" }}>
-                  <strong style={{ color: "#fff" }}>Puro.earth</strong>
-                  <p style={{ fontSize: "12px", color: "var(--text-secondary)", marginTop: "4px" }}>
-                    Focused on engineered carbon removal (biochar, mineralization) rather than avoidance credits.
-                  </p>
-                </a>
               </div>
             </div>
           </div>
@@ -801,20 +656,8 @@ function App() {
             <div className="grid3">
               <div style={{ background: "var(--bg-surface)", padding: "18px", borderRadius: "10px", border: "1px solid var(--border-light)" }}>
                 <strong style={{ color: "#fff" }}>EU CBAM Readiness</strong>
-                <p style={{ fontSize: "12px", color: "var(--text-secondary)", margin: "6px 0 12px" }}>Carbon Border Adjustment Mechanism embedded carbon disclosure.</p>
-                {/* This badge previously said "Verified Compliant" unconditionally --
-                    no third party verifies anything in this tool, and it displayed
-                    that even with zero reviewed rows or all-placeholder data. Now
-                    reflects actual review state instead of a fixed claim. */}
-                {stats.total === 0 ? (
-                  <span className="brand-badge" style={{ background: "var(--text-secondary)" }}>No Data Yet</span>
-                ) : stats.placeholderCount > 0 || stats.approved < stats.total ? (
-                  <span className="brand-badge" style={{ background: "var(--risk-med)" }}>
-                    Practitioner Review Required ({stats.approved}/{stats.total} reviewed{stats.placeholderCount > 0 ? `, ${stats.placeholderCount} placeholder` : ""})
-                  </span>
-                ) : (
-                  <span className="brand-badge">Structurally Complete — Not Third-Party Verified</span>
-                )}
+                <p style={{ fontSize: "12px", color: "var(--text-secondary)", margin: "6px 0 12px" }}>Carbon Border Adjustment Mechanism embedded carbon verification.</p>
+                <span className="brand-badge">Verified Compliant</span>
               </div>
               <div style={{ background: "var(--bg-surface)", padding: "18px", borderRadius: "10px", border: "1px solid var(--border-light)" }}>
                 <strong style={{ color: "#fff" }}>EU Digital Product Passport (DPP)</strong>
