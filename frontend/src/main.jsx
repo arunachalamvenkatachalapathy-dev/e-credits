@@ -424,7 +424,7 @@ function App() {
             <option>USLCI</option>
             <option>ELCD</option>
             <option>Agribalyse Core</option>
-            <option>ecoinvent BYOL private</option>
+            <option value="ecoinvent BYOL private import">ecoinvent BYOL private import</option>
             <option value="India_GHG_Factors">India GHG Factors (60 factors, provenance-tagged)</option>
           </select>
         </div>
