@@ -17,7 +17,12 @@ if (!fs.existsSync(distDir)) {
 if (fs.existsSync(sourceHtml)) {
   fs.copyFileSync(sourceHtml, path.join(distDir, 'index.html'));
   fs.copyFileSync(sourceHtml, path.join(distDir, 'preview.html'));
-  console.log('Successfully copied preview.html to dist/index.html and dist/preview.html!');
+  
+  const excelFile = path.resolve(rootDir, 'GHG_Calculator_RECTIFIED_v6.xlsx');
+  if (fs.existsSync(excelFile)) {
+    fs.copyFileSync(excelFile, path.join(distDir, 'GHG_Calculator_RECTIFIED_v6.xlsx'));
+  }
+  console.log('Successfully copied preview.html and GHG_Calculator_RECTIFIED_v6.xlsx to dist!');
 } else {
   console.error('Error: preview.html not found at root directory!');
 }

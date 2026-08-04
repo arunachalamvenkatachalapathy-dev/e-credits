@@ -94,17 +94,27 @@ async def upload_bom(file: UploadFile = File(...)):
         raise HTTPException(400, "BOM upload is empty")
     try:
         if filename.lower().endswith((".xlsx", ".xls")):
-            df = pd.read_excel(BytesIO(content))
+            xl = pd.ExcelFile(BytesIO(content))
+            sheet_name = next((s for s in xl.sheet_names if "ghg_master" in s.lower() or "calculator" in s.lower()), xl.sheet_names[0])
+            df = xl.parse(sheet_name)
         else:
             df = pd.read_csv(BytesIO(content))
     except Exception as exc:
         raise HTTPException(400, f"Unable to parse BOM file: {exc}") from exc
+
     df.columns = [str(column).strip().lower() for column in df.columns]
-    description_col = next((col for col in ["description", "item", "material", "raw_bom_input"] if col in df.columns), None)
-    quantity_col = next((col for col in ["quantity", "qty", "amount"] if col in df.columns), None)
+    description_col = next((col for col in ["category / item", "description", "item", "material", "raw_bom_input"] if col in df.columns), None)
+    quantity_col = next((col for col in ["quantity (input)", "quantity", "qty", "amount"] if col in df.columns), None)
     unit_col = next((col for col in ["unit", "uom"] if col in df.columns), None)
+    
     if not all([description_col, quantity_col, unit_col]):
-        raise HTTPException(400, "BOM must include description/material, quantity, and unit columns")
+        # Fallback to first 3 columns
+        cols = list(df.columns)
+        if len(cols) >= 3:
+            description_col, quantity_col, unit_col = cols[0], cols[1], cols[2]
+        else:
+            raise HTTPException(400, "BOM must include description/material, quantity, and unit columns")
+            
     parsed = []
     for _, row in df.iterrows():
         try:
@@ -113,10 +123,11 @@ async def upload_bom(file: UploadFile = File(...)):
             continue
         description = str(row[description_col]).strip()
         unit = str(row[unit_col]).strip()
-        if description and unit:
+        if description and unit and not description.upper().startswith("SCOPE") and not description.upper().startswith("CATEGORY"):
             parsed.append({"raw_bom_input": description, "quantity": quantity, "unit": unit})
+            
     if not parsed:
-        raise HTTPException(400, "BOM did not contain any valid rows")
+        raise HTTPException(400, "BOM did not contain any valid activity rows")
     return parsed
 
 
