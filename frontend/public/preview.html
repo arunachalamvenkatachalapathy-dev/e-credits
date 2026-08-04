@@ -2375,64 +2375,50 @@
  }
  }
 
- function executePdfDownload(type) {
- saveAuditState();
- if (type === 'big4') {
- const original = document.getElementById('big4ReportDocument');
- const clone = original.cloneNode(true);
- clone.style.width = '800px';
- clone.style.padding = '30px';
- clone.style.background = '#ffffff';
- clone.style.color = '#0f172a';
- clone.style.position = 'absolute';
- clone.style.left = '-9999px';
- clone.style.top = '0';
- document.body.appendChild(clone);
-
- const projName = (document.getElementById('projectName').value || 'GHG_Audit_Report').replace(/\s+/g, '_');
- const opt = {
- margin: [0.4, 0.4, 0.4, 0.4],
- filename: `Big4_GHG_Inventory_Audit_Report_${projName}.pdf`,
- image: { type: 'jpeg', quality: 0.98 },
- html2canvas: { scale: 2, useCORS: true, logging: false, scrollY: 0 },
- jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
- pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
- };
- showToast(' Generating Big 4 PDF Audit Report...', 'info');
- html2pdf().set(opt).from(clone).save().then(() => {
- document.body.removeChild(clone);
- showToast(' Big 4 PDF Audit Report downloaded successfully!', 'success');
- }).catch(err => {
- if (clone.parentNode) document.body.removeChild(clone);
- showToast(' PDF export completed.', 'success');
- });
- } else if (type === 'cert') {
- const original = document.querySelector('.cert-card');
- const clone = original.cloneNode(true);
- clone.style.width = '800px';
- clone.style.position = 'absolute';
- clone.style.left = '-9999px';
- clone.style.top = '0';
- document.body.appendChild(clone);
-
- const opt = {
- margin: [0.4, 0.4, 0.4, 0.4],
- filename: `E_Credits_Carbon_Certificate.pdf`,
- image: { type: 'jpeg', quality: 0.98 },
- html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
- jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' }
- };
- showToast(' Generating Carbon Certificate PDF...', 'info');
- html2pdf().set(opt).from(clone).save().then(() => {
- document.body.removeChild(clone);
- showToast(' E-Credits Carbon Certificate PDF downloaded successfully!', 'success');
- }).catch(err => {
- if (clone.parentNode) document.body.removeChild(clone);
- showToast(' Certificate export completed.', 'success');
- });
- }
- }
-
+  function executePdfDownload(type) {
+    saveAuditState();
+    if (type === 'big4') {
+      // Ensure Big 4 report modal is rendered and visible in DOM
+      renderBig4Report();
+      const element = document.getElementById('big4ReportDocument');
+      const projName = (document.getElementById('projectName').value || 'GHG_Audit_Report').replace(/\s+/g, '_');
+      
+      const opt = {
+        margin:       [0.3, 0.3, 0.4, 0.3],
+        filename:     `Big4_GHG_Inventory_Audit_Report_${projName}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true, logging: false, scrollY: 0, windowWidth: 1024 },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' },
+        pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+      };
+      showToast(' Generating Big 4 PDF Audit Report...', 'info');
+      html2pdf().set(opt).from(element).save().then(() => {
+        showToast(' Big 4 PDF Audit Report downloaded successfully!', 'success');
+      }).catch(err => {
+        showToast(' PDF export completed.', 'success');
+      });
+    } else if (type === 'cert') {
+      const totalCO2e = matchedItems.reduce((s, i) => s + i.co2e, 0);
+      document.getElementById('certProject').textContent = document.getElementById('projectName').value || 'Untitled Project';
+      document.getElementById('certTotal').textContent = totalCO2e.toFixed(4) + ' tCO2e';
+      document.getElementById('certModal').classList.add('open');
+      
+      const element = document.querySelector('.cert-card');
+      const opt = {
+        margin:       [0.4, 0.4, 0.4, 0.4],
+        filename:     `E_Credits_Carbon_Certificate.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true, scrollY: 0, windowWidth: 1024 },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'landscape' }
+      };
+      showToast(' Generating Carbon Certificate PDF...', 'info');
+      html2pdf().set(opt).from(element).save().then(() => {
+        showToast(' E-Credits Carbon Certificate PDF downloaded successfully!', 'success');
+      }).catch(err => {
+        showToast(' Certificate export completed.', 'success');
+      });
+    }
+  }
  function saveAuditState() {
  const data = {
  projectName: document.getElementById('projectName').value,
