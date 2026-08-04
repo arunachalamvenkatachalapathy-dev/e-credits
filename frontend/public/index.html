@@ -17,38 +17,39 @@
  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
- <style>
+ 
+<style>
   /* ============================================================
-  100% PURE WHITE & CLEAN LIGHT THEME
+  EXACT BEIGE YELLOW GREEN PALETTE
   ============================================================ */
   :root {
-    --bg-dark: #FFFFFF;
+    --bg-dark: #FBF5DD;
     --bg-surface: #FFFFFF;
-    --bg-surface-hover: #F8FAFC;
+    --bg-surface-hover: #F6F0D4;
     --bg-card: #FFFFFF;
-    --border: #E2E8F0;
-    --border-hover: #CBD5E1;
-    --text-primary: #0F172A;
-    --text-secondary: #475569;
-    --text-muted: #64748B;
-    --emerald: #059669;
-    --emerald-dim: #E7F3EC;
-    --cyan: #2563EB;
-    --cyan-dim: #EFF6FF;
-    --indigo: #4F46E5;
-    --indigo-dim: #EEF2FF;
-    --red: #E11D48;
-    --red-dim: #FFE4E6;
-    --amber: #D97706;
-    --amber-dim: #FEF3C7;
-    --forest: #059669;
-    --forest-soft: #E7F3EC;
+    --border: #E7E1B1;
+    --border-hover: #CFC894;
+    --text-primary: #0D530E;
+    --text-secondary: #2E4D2B;
+    --text-muted: #577553;
+    --emerald: #306D29;
+    --emerald-dim: #E7E1B1;
+    --cyan: #306D29;
+    --cyan-dim: #F6F0D4;
+    --indigo: #306D29;
+    --indigo-dim: #F6F0D4;
+    --red: #C53030;
+    --red-dim: #FED7D7;
+    --amber: #D69E2E;
+    --amber-dim: #FEFCBF;
+    --forest: #306D29;
+    --forest-soft: #E7E1B1;
     --radius-sm: 6px;
     --radius-md: 8px;
     --radius-lg: 12px;
     --radius-xl: 16px;
-    --shadow-lg: 0 4px 16px rgba(15,23,42,0.04);
-    --transition: 0.2s ease-in-out;
+    --shadow-lg: 0 4px 16px rgba(13,83,14,0.06);
+    --transition: 0.2s ease;
     --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     --font-mono: 'IBM Plex Mono', 'JetBrains Mono', monospace;
   }
@@ -56,10 +57,10 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   
   html, body {
-    background: #FFFFFF !important;
-    background-color: #FFFFFF !important;
+    background: #FBF5DD !important;
+    background-color: #FBF5DD !important;
     background-image: none !important;
-    color: #0F172A !important;
+    color: #0D530E !important;
     font-family: var(--font-sans);
     line-height: 1.6;
     min-height: 100vh;
@@ -71,126 +72,126 @@
     position: sticky; top: 0; z-index: 50;
     height: 64px;
     background: #FFFFFF !important;
-    border-bottom: 1px solid #E2E8F0 !important;
+    border-bottom: 1px solid #E7E1B1 !important;
     display: flex; align-items: center; justify-content: space-between;
     padding: 0 32px;
-    box-shadow: 0 1px 3px rgba(15,23,42,0.03);
+    box-shadow: 0 2px 6px rgba(13,83,14,0.04);
   }
-  .brand { display: flex; align-items: center; gap: 12px; }
-  .brand-icon { font-size: 24px; color: #059669; }
-  .brand-name { font-weight: 800; font-size: 18px; color: #0F172A !important; }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand-icon { font-size: 24px; color: #306D29; }
+  .brand-name { font-weight: 800; font-size: 18px; color: #0D530E !important; letter-spacing: -0.3px; }
   .brand-badge {
-    background: #E7F3EC !important;
-    color: #059669 !important; font-weight: 800; font-size: 10px;
+    background: #E7E1B1 !important;
+    color: #0D530E !important; font-weight: 800; font-size: 10px;
     padding: 4px 10px; border-radius: 99px; text-transform: uppercase; letter-spacing: 0.5px;
-    border: 1px solid #A7F3D0;
+    border: 1px solid #CFC894;
   }
 
   /* BUTTONS */
   .btn {
     font-family: inherit; font-size: 13px; font-weight: 600;
     height: 40px; padding: 0 20px; border-radius: 8px;
-    border: 1px solid #CBD5E1; background: #FFFFFF;
-    color: #0F172A !important;
+    border: 1px solid #E7E1B1; background: #FFFFFF;
+    color: #0D530E !important;
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
     cursor: pointer; transition: all 0.2s ease; text-decoration: none; white-space: nowrap;
   }
-  .btn:hover { background: #F8FAFC; border-color: #94A3B8; }
-  .btn-primary { background: #059669 !important; color: #FFFFFF !important; border: none !important; font-weight: 700; }
-  .btn-primary:hover { background: #047857 !important; box-shadow: 0 4px 12px rgba(5,150,105,0.25); }
-  .btn-indigo { background: #2563EB !important; color: #FFFFFF !important; border: none !important; }
-  .btn-indigo:hover { background: #1D4ED8 !important; }
-  .btn-danger { background: #FFE4E6 !important; color: #E11D48 !important; border: 1px solid #FECDD3 !important; }
-  .btn-ghost { background: transparent; border: 1px dashed #CBD5E1; color: #475569 !important; }
-  .btn-ghost:hover { border-color: #059669; color: #059669 !important; }
+  .btn:hover { background: #F6F0D4; border-color: #CFC894; }
+  .btn-primary { background: #306D29 !important; color: #FFFFFF !important; border: 1px solid #306D29 !important; font-weight: 700; }
+  .btn-primary:hover { background: #0D530E !important; border-color: #0D530E !important; box-shadow: 0 4px 12px rgba(48,109,41,0.3); }
+  .btn-indigo { background: #306D29 !important; color: #FFFFFF !important; border: none !important; }
+  .btn-indigo:hover { background: #0D530E !important; }
+  .btn-danger { background: #FED7D7 !important; color: #C53030 !important; border: 1px solid #FEB2B2 !important; }
+  .btn-ghost { background: transparent; border: 1px dashed #E7E1B1; color: #2E4D2B !important; }
+  .btn-ghost:hover { border-color: #306D29; color: #306D29 !important; }
 
   /* STEPPER */
   .stepper { display: flex; align-items: center; justify-content: center; gap: 0; margin-bottom: 32px; padding: 0 20px; }
   .step-item { display: flex; align-items: center; gap: 10px; padding: 10px 18px; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
-  .step-item:hover { background: #F8FAFC; }
+  .step-item:hover { background: #F6F0D4; }
   .step-num {
     width: 32px; height: 32px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
     font-size: 13px; font-weight: 800;
-    background: #F8FAFC; border: 2px solid #CBD5E1; color: #64748B;
+    background: #F6F0D4; border: 2px solid #E7E1B1; color: #577553;
   }
-  .step-label { font-size: 13px; font-weight: 600; color: #64748B; }
-  .step-connector { width: 40px; height: 2px; background: #E2E8F0; flex-shrink: 0; }
-  .step-item.active .step-num { background: #059669; border-color: #059669; color: #FFFFFF; }
-  .step-item.active .step-label { color: #059669; font-weight: 700; }
-  .step-item.done .step-num { background: #E7F3EC; border-color: #059669; color: #059669; }
-  .step-item.done .step-label { color: #0F172A; }
+  .step-label { font-size: 13px; font-weight: 600; color: #577553; }
+  .step-connector { width: 40px; height: 2px; background: #E7E1B1; flex-shrink: 0; }
+  .step-item.active .step-num { background: #306D29; border-color: #306D29; color: #FFFFFF; }
+  .step-item.active .step-label { color: #306D29; font-weight: 700; }
+  .step-item.done .step-num { background: #E7E1B1; border-color: #306D29; color: #0D530E; }
+  .step-item.done .step-label { color: #0D530E; }
 
   /* CARDS & HERO */
-  .app-container { max-width: 1200px; margin: 0 auto; padding: 32px 24px 80px; background: #FFFFFF !important; }
+  .app-container { max-width: 1200px; margin: 0 auto; padding: 32px 24px 80px; background: #FBF5DD !important; }
   .card {
     background: #FFFFFF !important;
-    border: 1px solid #E2E8F0 !important;
+    border: 1px solid #E7E1B1 !important;
     border-radius: 12px !important;
     padding: 32px !important;
     margin-bottom: 24px !important;
-    box-shadow: 0 1px 3px rgba(15,23,42,0.04) !important;
+    box-shadow: 0 2px 8px rgba(13,83,14,0.03) !important;
   }
-  .card-title { font-size: 20px; font-weight: 800; color: #0F172A !important; margin-bottom: 6px; }
-  .card-subtitle { font-size: 14px; color: #475569 !important; margin-bottom: 24px; }
+  .card-title { font-size: 20px; font-weight: 800; color: #0D530E !important; margin-bottom: 6px; }
+  .card-subtitle { font-size: 14px; color: #2E4D2B !important; margin-bottom: 24px; }
 
-  .hero-section { text-align: center; margin-bottom: 32px; background: #FFFFFF !important; }
-  .hero-title { font-size: 32px; font-weight: 800; color: #0F172A !important; margin-bottom: 10px; }
-  .hero-title span { color: #059669 !important; }
-  .hero-desc { font-size: 15px; color: #475569 !important; max-width: 680px; margin: 0 auto 24px; line-height: 1.6; }
+  .hero-section { text-align: center; margin-bottom: 32px; background: #FBF5DD !important; }
+  .hero-title { font-size: 32px; font-weight: 800; color: #0D530E !important; margin-bottom: 10px; }
+  .hero-title span { color: #306D29 !important; }
+  .hero-desc { font-size: 15px; color: #2E4D2B !important; max-width: 680px; margin: 0 auto 24px; line-height: 1.6; }
 
   /* HOW IT WORKS CARDS */
   .how-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
   .how-step {
     background: #FFFFFF !important;
-    border: 1px solid #E2E8F0 !important;
+    border: 1px solid #E7E1B1 !important;
     border-radius: 12px !important;
     padding: 20px 16px !important;
     text-align: center;
-    box-shadow: 0 1px 3px rgba(15,23,42,0.03) !important;
+    box-shadow: 0 1px 3px rgba(13,83,14,0.03) !important;
   }
-  .how-step-icon { font-size: 28px; margin-bottom: 8px; color: #059669; }
-  .how-step-title { font-size: 14px; font-weight: 700; color: #0F172A !important; margin-bottom: 4px; }
-  .how-step-desc { font-size: 12px; color: #64748B !important; line-height: 1.4; }
+  .how-step-icon { font-size: 28px; margin-bottom: 8px; color: #306D29; }
+  .how-step-title { font-size: 14px; font-weight: 700; color: #0D530E !important; margin-bottom: 4px; }
+  .how-step-desc { font-size: 12px; color: #577553 !important; line-height: 1.4; }
 
   /* FORMS & INPUTS */
   .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
   .form-group { display: flex; flex-direction: column; gap: 6px; }
   .form-group.full { grid-column: 1 / -1; }
-  .form-label { font-size: 11px; font-weight: 700; color: #475569 !important; text-transform: uppercase; letter-spacing: 0.5px; }
+  .form-label { font-size: 11px; font-weight: 700; color: #2E4D2B !important; text-transform: uppercase; letter-spacing: 0.5px; }
   .form-input, .form-select {
     width: 100%; font-family: inherit; font-size: 14px;
-    background: #FFFFFF !important; border: 1px solid #CBD5E1 !important;
+    background: #FFFFFF !important; border: 1px solid #E7E1B1 !important;
     border-radius: 8px; padding: 10px 14px;
-    color: #0F172A !important; outline: none; transition: all 0.2s;
+    color: #0D530E !important; outline: none; transition: all 0.2s;
   }
-  .form-input:focus, .form-select:focus { border-color: #059669 !important; box-shadow: 0 0 0 3px rgba(5,150,105,0.12) !important; }
+  .form-input:focus, .form-select:focus { border-color: #306D29 !important; box-shadow: 0 0 0 3px rgba(48,109,41,0.15) !important; }
 
   /* TABLES */
-  .table-container { overflow-x: auto; border: 1px solid #E2E8F0; border-radius: 8px; background: #FFFFFF; }
+  .table-container { overflow-x: auto; border: 1px solid #E7E1B1; border-radius: 8px; background: #FFFFFF; }
   .data-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
-  .data-table th { background: #F8FAFC !important; color: #334155 !important; font-weight: 700; padding: 12px 16px; border-bottom: 2px solid #E2E8F0; }
-  .data-table td { padding: 12px 16px; border-bottom: 1px solid #E2E8F0; color: #0F172A !important; }
-  .data-table tr:hover { background: #F8FAFC !important; }
+  .data-table th { background: #FBF5DD !important; color: #0D530E !important; font-weight: 700; padding: 12px 16px; border-bottom: 2px solid #E7E1B1; }
+  .data-table td { padding: 12px 16px; border-bottom: 1px solid #E7E1B1; color: #0D530E !important; }
+  .data-table tr:hover { background: #F6F0D4 !important; }
 
   /* MODALS */
   .modal-overlay {
     position: fixed; inset: 0; z-index: 100;
-    background: rgba(15,23,42,0.3) !important; backdrop-filter: blur(4px);
+    background: rgba(13,83,14,0.3) !important; backdrop-filter: blur(4px);
     display: none; align-items: center; justify-content: center; padding: 20px;
   }
   .modal-overlay.open { display: flex; }
   .modal-card {
-    background: #FFFFFF !important; color: #0F172A !important;
-    border: 1px solid #E2E8F0 !important; border-radius: 16px !important;
-    box-shadow: 0 20px 40px rgba(15,23,42,0.1) !important;
+    background: #FFFFFF !important; color: #0D530E !important;
+    border: 1px solid #E7E1B1 !important; border-radius: 16px !important;
+    box-shadow: 0 20px 40px rgba(13,83,14,0.12) !important;
     max-width: 900px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 32px;
   }
 
   /* LEFT RAIL */
   .audit-layout { display: grid; grid-template-columns: 280px 1fr; gap: 24px; }
-  .left-rail { background: #FFFFFF !important; border: 1px solid #E2E8F0 !important; border-radius: 12px; padding: 20px; }
-  .rail-section-title { font-size: 11px; font-weight: 800; color: #475569 !important; text-transform: uppercase; margin-bottom: 12px; }
+  .left-rail { background: #FFFFFF !important; border: 1px solid #E7E1B1 !important; border-radius: 12px; padding: 20px; }
+  .rail-section-title { font-size: 11px; font-weight: 800; color: #2E4D2B !important; text-transform: uppercase; margin-bottom: 12px; }
 </style>
 </head>
 <body>
@@ -692,12 +693,12 @@
  <div class="modal-box" style="width: min(940px, 95vw); max-height: 90vh; overflow-y: auto;">
  <button class="modal-close" id="closeBig4">✕</button>
  
- <div id="big4ReportDocument" style="background:#fff; color:#0f172a; padding:40px; border-radius:12px; font-family:'Plus Jakarta Sans', sans-serif;">
+ <div id="big4ReportDocument" style="background:#fff; color:#FBF5DD; padding:40px; border-radius:12px; font-family:'Plus Jakarta Sans', sans-serif;">
  <!-- Big 4 Header Banner -->
- <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:3px solid #0f172a; padding-bottom:20px; margin-bottom:28px;">
+ <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:3px solid #FBF5DD; padding-bottom:20px; margin-bottom:28px;">
  <div>
  <div style="font-size:11px; font-weight:800; letter-spacing:1.5px; color:#475569; text-transform:uppercase;">GLOBAL SUSTAINABILITY ASSURANCE PRACTICE</div>
- <h1 style="font-size:24px; font-weight:800; color:#0f172a; margin:4px 0 2px;">INDEPENDENT PRACTITIONER'S ASSURANCE REPORT</h1>
+ <h1 style="font-size:24px; font-weight:800; color:#FBF5DD; margin:4px 0 2px;">INDEPENDENT PRACTITIONER'S ASSURANCE REPORT</h1>
  <div style="font-size:13px; color:#64748b; font-weight:600;">Greenhouse Gas Inventory & Carbon Footprint Audit Statement</div>
  </div>
  <div style="text-align:right;">
@@ -708,19 +709,19 @@
 
  <!-- Section 1: Engagement & Executive Summary -->
  <div style="margin-bottom:24px;">
- <h3 style="font-size:13px; font-weight:800; color:#0f172a; border-bottom:1px solid #e2e8f0; padding-bottom:6px; text-transform:uppercase; letter-spacing:0.5px;">1. Engagement Scope & Independent Assurance Opinion</h3>
+ <h3 style="font-size:13px; font-weight:800; color:#FBF5DD; border-bottom:1px solid #e2e8f0; padding-bottom:6px; text-transform:uppercase; letter-spacing:0.5px;">1. Engagement Scope & Independent Assurance Opinion</h3>
  <p style="font-size:12.5px; color:#334155; margin-top:10px; line-height:1.6;">
- We have conducted a limited assurance engagement on the Greenhouse Gas (GHG) inventory assessment for <strong id="b4ProjectName" style="color:#0f172a;">EV Battery Assembly Line (India)</strong> for the reference period <strong id="b4Year">2024</strong>. 
+ We have conducted a limited assurance engagement on the Greenhouse Gas (GHG) inventory assessment for <strong id="b4ProjectName" style="color:#FBF5DD;">EV Battery Assembly Line (India)</strong> for the reference period <strong id="b4Year">2024</strong>. 
  The assessment encompasses Scope 1 (Direct Combustions), Scope 2 (Purchased Electricity Grid), and Scope 3 (Upstream Supply Chain & Purchased Materials) boundaries under the GHG Protocol Corporate Standard.
  </p>
- <div style="margin-top:12px; padding:14px 18px; background:#f8fafc; border-left:4px solid #10b981; border-radius:4px; font-size:12.5px; color:#1e293b;">
+ <div style="margin-top:12px; padding:14px 18px; background:#f8fafc; border-left:4px solid #10b981; border-radius:4px; font-size:12.5px; color:#F6F0D4;">
  <strong>Practitioner's Conclusion:</strong> Based on the audit procedures performed, nothing has come to our attention that causes us to believe that the quantified GHG Inventory footprint of <strong id="b4TotalCO2" style="color:#059669; font-family:'JetBrains Mono',monospace;">0.0000 tCO2e</strong> is not prepared, in all material respects, in accordance with the GHG Protocol Corporate Standard and ISO 14064-1:2018 requirements.
  </div>
  </div>
 
  <!-- Section 2: Boundary & Consolidation Approach -->
  <div style="margin-bottom:24px;">
- <h3 style="font-size:13px; font-weight:800; color:#0f172a; border-bottom:1px solid #e2e8f0; padding-bottom:6px; text-transform:uppercase; letter-spacing:0.5px;">2. Organizational & Operational Boundaries</h3>
+ <h3 style="font-size:13px; font-weight:800; color:#FBF5DD; border-bottom:1px solid #e2e8f0; padding-bottom:6px; text-transform:uppercase; letter-spacing:0.5px;">2. Organizational & Operational Boundaries</h3>
  <table style="width:100%; border-collapse:collapse; font-size:12px; margin-top:12px;">
  <thead>
  <tr style="background:#f1f5f9; text-align:left;">
@@ -740,7 +741,7 @@
 
  <!-- Section 3: Detailed Line-by-Line Activity Audit Ledger -->
  <div style="margin-bottom:24px;">
- <h3 style="font-size:13px; font-weight:800; color:#0f172a; border-bottom:1px solid #e2e8f0; padding-bottom:6px; text-transform:uppercase; letter-spacing:0.5px;">3. Line-by-Line Activity Audit Ledger & Provenance Tagging</h3>
+ <h3 style="font-size:13px; font-weight:800; color:#FBF5DD; border-bottom:1px solid #e2e8f0; padding-bottom:6px; text-transform:uppercase; letter-spacing:0.5px;">3. Line-by-Line Activity Audit Ledger & Provenance Tagging</h3>
  <table style="width:100%; border-collapse:collapse; font-size:11px; margin-top:12px;">
  <thead>
  <tr style="background:#FFFFFF; color:#0F172A; text-align:left;">
@@ -759,7 +760,7 @@
 
  <!-- Section 4: Data Quality & Provenance Summary -->
  <div style="margin-bottom:24px;">
- <h3 style="font-size:13px; font-weight:800; color:#0f172a; border-bottom:1px solid #e2e8f0; padding-bottom:6px; text-transform:uppercase; letter-spacing:0.5px;">4. Data Quality Pedigree & Provenance Breakdown</h3>
+ <h3 style="font-size:13px; font-weight:800; color:#FBF5DD; border-bottom:1px solid #e2e8f0; padding-bottom:6px; text-transform:uppercase; letter-spacing:0.5px;">4. Data Quality Pedigree & Provenance Breakdown</h3>
  <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; margin-top:12px;">
  <div style="padding:12px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:6px; text-align:center;">
  <div style="font-size:10px; font-weight:700; color:#166534; text-transform:uppercase;">Clean Factors</div>
@@ -782,7 +783,7 @@
 
  <!-- Section 5: Decarbonization & Voluntary Market Valuation -->
  <div style="margin-bottom:28px;">
- <h3 style="font-size:13px; font-weight:800; color:#0f172a; border-bottom:1px solid #e2e8f0; padding-bottom:6px; text-transform:uppercase; letter-spacing:0.5px;">5. Decarbonization Scenario & E-Credit Valuation</h3>
+ <h3 style="font-size:13px; font-weight:800; color:#FBF5DD; border-bottom:1px solid #e2e8f0; padding-bottom:6px; text-transform:uppercase; letter-spacing:0.5px;">5. Decarbonization Scenario & E-Credit Valuation</h3>
  <div style="display:flex; justify-content:space-between; padding:16px 20px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; font-size:13px;">
  <div>
  <div style="font-size:11px; color:#64748b; font-weight:600; text-transform:uppercase;">Simulated Avoided Emissions</div>
@@ -794,17 +795,17 @@
  </div>
  <div>
  <div style="font-size:11px; color:#64748b; font-weight:600; text-transform:uppercase;">Audited Line Items</div>
- <div style="font-size:22px; font-weight:800; color:#0f172a;" id="b4ItemCount">0 / 0 Approved</div>
+ <div style="font-size:22px; font-weight:800; color:#FBF5DD;" id="b4ItemCount">0 / 0 Approved</div>
  </div>
  </div>
  </div>
 
  <!-- Section 6: Formal Sign-off & Independent Verification Stamp -->
- <div style="border-top:2px solid #0f172a; padding-top:20px; display:flex; justify-content:space-between; align-items:flex-end;">
+ <div style="border-top:2px solid #FBF5DD; padding-top:20px; display:flex; justify-content:space-between; align-items:flex-end;">
  <div>
  <div style="font-size:11px; color:#64748b; font-weight:700; text-transform:uppercase;">INDEPENDENT ASSURANCE PRACTITIONER</div>
- <div style="font-size:16px; font-weight:800; color:#0f172a; margin-top:2px;">Big 4 Sustainability & Carbon Advisory Lead</div>
- <div style="font-size:11px; color:#64748b; margin-top:4px;">Audit Reference ID: <strong style="font-family:'JetBrains Mono',monospace; color:#0f172a;" id="b4AuditId">AUD-2024-GHG-8821</strong></div>
+ <div style="font-size:16px; font-weight:800; color:#FBF5DD; margin-top:2px;">Big 4 Sustainability & Carbon Advisory Lead</div>
+ <div style="font-size:11px; color:#64748b; margin-top:4px;">Audit Reference ID: <strong style="font-family:'JetBrains Mono',monospace; color:#FBF5DD;" id="b4AuditId">AUD-2024-GHG-8821</strong></div>
  <div style="font-size:10px; color:#94a3b8; font-family:'JetBrains Mono',monospace; margin-top:2px;">Verification Hash: 0x7f8c9b2a1e4d8903c5b78a9d1234ef01</div>
  </div>
  <div style="text-align:center;">
@@ -1902,13 +1903,13 @@
  const tr = document.createElement('tr');
  tr.style.borderBottom = '1px solid #cbd5e1';
  tr.innerHTML = `
- <td style="padding:8px 10px; font-weight:600; color:#0f172a;">${escHtml(item.description)}</td>
+ <td style="padding:8px 10px; font-weight:600; color:#FBF5DD;">${escHtml(item.description)}</td>
  <td style="padding:8px 10px; color:#475569;">${item.quantity} ${item.unit}</td>
  <td style="padding:8px 10px; font-family:'JetBrains Mono',monospace; color:#334155;">${escHtml(item.processName)}</td>
  <td style="padding:8px 10px; font-family:'JetBrains Mono',monospace; font-weight:700; color:#059669;">${item.factor}</td>
  <td style="padding:8px 10px;"><span style="text-transform:uppercase; font-weight:700; font-size:10px; padding:2px 6px; border-radius:3px; background:${item.dqStatus === 'clean' ? '#dcfce7' : item.dqStatus === 'uplifted' ? '#fef3c7' : item.dqStatus === 'proxy' ? '#e0e7ff' : '#ffe4e6'}; color:${item.dqStatus === 'clean' ? '#15803d' : item.dqStatus === 'uplifted' ? '#b45309' : item.dqStatus === 'proxy' ? '#4338ca' : '#be123c'};">${item.dqStatus}</span></td>
  <td style="padding:8px 10px;"><span style="font-weight:700; color:${item.risk === 'HIGH' ? '#e11d48' : item.risk === 'MEDIUM' ? '#d97706' : '#059669'};">${item.risk}</span></td>
- <td style="padding:8px 10px; font-family:'JetBrains Mono',monospace; font-weight:800; text-align:right; color:#0f172a;">${item.dqStatus === 'placeholder' ? 'PLACEHOLDER' : co2Val.toFixed(4)}</td>
+ <td style="padding:8px 10px; font-family:'JetBrains Mono',monospace; font-weight:800; text-align:right; color:#FBF5DD;">${item.dqStatus === 'placeholder' ? 'PLACEHOLDER' : co2Val.toFixed(4)}</td>
  `;
  tbody.appendChild(tr);
  });
@@ -2005,7 +2006,7 @@
       staging.style.width = '800px';
       staging.style.padding = '30px';
       staging.style.background = '#ffffff';
-      staging.style.color = '#0f172a';
+      staging.style.color = '#FBF5DD';
       staging.style.zIndex = '99999';
       staging.style.boxSizing = 'border-box';
       staging.appendChild(original.cloneNode(true));
@@ -2126,7 +2127,7 @@
           <button onclick="askQuickPrompt('Explain DQR Data Quality Ratings')" style="font-size:10px; padding:4px 8px; background:#F8FAFC; border:1px solid #334155; color:#94a3b8; border-radius:6px; cursor:pointer;">💡 What is DQR Score?</button>
         </div>
       </div>
-      <div style="padding:10px; background:#FFFFFF; border-top:1px solid #1e293b; display:flex; gap:6px;">
+      <div style="padding:10px; background:#FFFFFF; border-top:1px solid #F6F0D4; display:flex; gap:6px;">
         <input type="text" id="aiInputText" placeholder="Ask a question..." style="flex:1; background:#F8FAFC; border:1px solid #334155; color:#0F172A; padding:8px 12px; border-radius:8px; font-size:12px; font-family:var(--font-sans);" onkeypress="if(event.key==='Enter') sendAiMessage()">
         <button onclick="sendAiMessage()" class="btn btn-sm btn-primary">Send</button>
       </div>
