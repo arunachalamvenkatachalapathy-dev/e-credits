@@ -5,7 +5,7 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
  <meta charset="utf-8">
  <meta name="viewport" content="width=device-width, initial-scale=1">
- <title>E-Credits | Carbon Footprint Calculator &amp; Credit Generator</title>
+ <title>NetZeroCalc | Carbon Footprint Calculator &amp; Credit Generator</title>
  <meta name="description" content="Upload your Bill of Materials, calculate carbon footprint, and generate verified carbon credits. BOM-to-LCI semantic mapping tool.">
  <link rel="preconnect" href="https://fonts.googleapis.com">
  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -68,7 +68,7 @@
  .topbar {
  position: sticky; top: 0; z-index: 50;
  height: 64px;
- background: rgba(15,23,42,0.88);
+ background: #FFFFFF;
  backdrop-filter: blur(24px);
  border-bottom: 1px solid var(--border);
  display: flex; align-items: center; justify-content: space-between;
@@ -76,7 +76,7 @@
  }
  .brand { display: flex; align-items: center; gap: 12px; }
  .brand-icon { font-size: 24px; }
- .brand-name { font-weight: 800; font-size: 17px; color: #fff; }
+ .brand-name { font-weight: 800; font-size: 17px; color: #0F172A; }
  .brand-badge {
  background: linear-gradient(135deg, var(--emerald), var(--cyan));
  color: #022c22; font-weight: 800; font-size: 10px;
@@ -101,10 +101,10 @@
  .btn-primary { background: var(--forest); color: #FFFFFF; border: none; font-weight: 700; }
 .btn-primary:hover { background: #153b32; box-shadow: 0 4px 12px rgba(31,78,66,0.2); }
  .btn-primary:hover { background: linear-gradient(135deg, #34d399, #10b981); box-shadow: 0 4px 20px rgba(16,185,129,0.3); }
- .btn-indigo { background: linear-gradient(135deg, #6366f1, #4f46e5); color: #fff; border: none; }
+ .btn-indigo { background: linear-gradient(135deg, #6366f1, #4f46e5); color: #0F172A; border: none; }
  .btn-indigo:hover { box-shadow: 0 4px 20px rgba(99,102,241,0.3); }
  .btn-danger { background: var(--red-dim); color: #fca5a5; border: 1px solid rgba(244,63,94,0.3); }
- .btn-danger:hover { background: rgba(244,63,94,0.25); color: #fff; }
+ .btn-danger:hover { background: rgba(244,63,94,0.25); color: #0F172A; }
  .btn-ghost { background: transparent; border: 1px dashed var(--border); color: var(--text-secondary); }
  .btn-ghost:hover { border-color: var(--emerald); color: var(--emerald); }
  .btn-sm { height: 34px; padding: 0 14px; font-size: 12px; }
@@ -168,7 +168,7 @@
  height: 3px;
  background: linear-gradient(90deg, var(--emerald), var(--cyan));
  }
- .card-title { font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 6px; }
+ .card-title { font-size: 20px; font-weight: 800; color: #0F172A; margin-bottom: 6px; }
  .card-subtitle { font-size: 14px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.5; }
 
  /* ============================================================
@@ -195,7 +195,7 @@
  HERO / ONBOARDING (Step 1)
  ============================================================ */
  .hero-section { text-align: center; margin-bottom: 32px; }
- .hero-title { font-size: 32px; font-weight: 800; color: #fff; margin-bottom: 10px; }
+ .hero-title { font-size: 32px; font-weight: 800; color: #0F172A; margin-bottom: 10px; }
  .hero-title span { background: linear-gradient(135deg, var(--emerald), var(--cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
  .hero-desc { font-size: 16px; color: var(--text-secondary); max-width: 640px; margin: 0 auto 24px; line-height: 1.7; }
 
@@ -207,7 +207,7 @@
  }
  .how-step:hover { border-color: var(--emerald); transform: translateY(-2px); }
  .how-step-icon { font-size: 28px; margin-bottom: 8px; }
- .how-step-title { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+ .how-step-title { font-size: 13px; font-weight: 700; color: #0F172A; margin-bottom: 4px; }
  .how-step-desc { font-size: 11px; color: var(--text-muted); line-height: 1.5; }
 
  /* ============================================================
@@ -227,7 +227,7 @@
  box-shadow: 0 0 30px rgba(16,185,129,0.08);
  }
  .dropzone-icon { font-size: 40px; margin-bottom: 12px; }
- .dropzone-title { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+ .dropzone-title { font-size: 16px; font-weight: 700; color: #0F172A; margin-bottom: 6px; }
  .dropzone-hint { font-size: 13px; color: var(--text-muted); }
  .dropzone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
 
@@ -265,7 +265,7 @@
  .toolbar {
  display: flex; align-items: center; justify-content: space-between;
  flex-wrap: wrap; gap: 12px;
- background: var(--bg-card); border: 1px solid var(--border);
+ background: #FFFFFF; border: 1px solid #E2E8F0; box-shadow: 0 20px 40px rgba(0,0,0,0.15);
  border-radius: var(--radius-lg); padding: 14px 20px;
  margin-bottom: 16px;
  }
@@ -302,7 +302,7 @@
  .rtable tbody tr:hover td { background: rgba(255,255,255,0.02); }
  .rtable tbody tr.expanded-row td { background: rgba(11,15,25,0.6); }
 
- .bom-name { font-weight: 600; color: #fff; }
+ .bom-name { font-weight: 600; color: #0F172A; }
  .bom-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
  .process-name { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #cbd5e1; }
  .sim-score { font-family: 'JetBrains Mono', monospace; font-weight: 700; }
@@ -323,7 +323,7 @@
  .dqr-pill {
  width: 24px; height: 24px; border-radius: 50%;
  display: inline-flex; align-items: center; justify-content: center;
- font-size: 11px; font-weight: 800; color: #fff;
+ font-size: 11px; font-weight: 800; color: #0F172A;
  font-family: 'JetBrains Mono', monospace;
  }
  .dqr-1, .dqr-2 { background: var(--emerald); }
@@ -342,14 +342,14 @@
  background: var(--red-dim); color: #fca5a5; border: 1px solid rgba(244,63,94,0.3);
  border-radius: 6px; cursor: pointer; transition: all var(--transition);
  }
- .btn-remove-sm:hover { background: rgba(244,63,94,0.25); color: #fff; }
+ .btn-remove-sm:hover { background: rgba(244,63,94,0.25); color: #0F172A; }
  .approved-label { color: var(--emerald); font-weight: 700; font-size: 12px; }
 
  .expand-btn {
  background: none; border: none; color: var(--text-muted);
  cursor: pointer; font-size: 14px; padding: 4px; transition: color var(--transition);
  }
- .expand-btn:hover { color: #fff; }
+ .expand-btn:hover { color: #0F172A; }
 
  .expanded-detail {
  padding: 12px 16px 12px 48px;
@@ -374,7 +374,7 @@
  ============================================================ */
  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; margin-bottom: 28px; }
  .kpi-card {
- background: var(--bg-card); border: 1px solid var(--border);
+ background: #FFFFFF; border: 1px solid #E2E8F0; box-shadow: 0 20px 40px rgba(0,0,0,0.15);
  border-radius: var(--radius-xl); padding: 22px 24px;
  position: relative; overflow: hidden;
  }
@@ -382,7 +382,7 @@
  .kpi-card.danger::before { background: linear-gradient(90deg, var(--red), #fb7185); }
  .kpi-card.indigo::before { background: linear-gradient(90deg, var(--indigo), #8b5cf6); }
  .kpi-label { font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; }
- .kpi-value { font-size: 30px; font-weight: 800; color: #fff; }
+ .kpi-value { font-size: 30px; font-weight: 800; color: #0F172A; }
  .kpi-unit { font-size: 14px; color: var(--text-muted); font-weight: 500; }
 
  /* ============================================================
@@ -390,21 +390,21 @@
  ============================================================ */
  .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 28px; }
  .chart-card {
- background: var(--bg-card); border: 1px solid var(--border);
+ background: #FFFFFF; border: 1px solid #E2E8F0; box-shadow: 0 20px 40px rgba(0,0,0,0.15);
  border-radius: var(--radius-xl); padding: 24px;
  }
- .chart-card h3 { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 16px; }
+ .chart-card h3 { font-size: 14px; font-weight: 700; color: #0F172A; margin-bottom: 16px; }
  .chart-wrap { position: relative; height: 260px; }
 
  /* ============================================================
  WHAT-IF SIMULATOR
  ============================================================ */
  .sim-card {
- background: var(--bg-card); border: 1px solid var(--border);
+ background: #FFFFFF; border: 1px solid #E2E8F0; box-shadow: 0 20px 40px rgba(0,0,0,0.15);
  border-radius: var(--radius-xl); padding: 28px;
  margin-bottom: 28px;
  }
- .sim-card h3 { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 20px; }
+ .sim-card h3 { font-size: 16px; font-weight: 700; color: #0F172A; margin-bottom: 20px; }
  .sim-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
  .sim-sliders { display: flex; flex-direction: column; gap: 20px; }
  .slider-group label { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; }
@@ -435,7 +435,7 @@
  background: var(--bg-surface); border: 1px solid var(--border);
  border-radius: var(--radius-lg); padding: 20px;
  }
- .compliance-card h4 { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+ .compliance-card h4 { font-size: 14px; font-weight: 700; color: #0F172A; margin-bottom: 6px; }
  .compliance-card p { font-size: 12px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5; }
  .compliance-status {
  display: inline-flex; padding: 4px 12px; border-radius: 99px;
@@ -450,7 +450,7 @@
  ============================================================ */
  .export-section {
  display: flex; gap: 12px; flex-wrap: wrap;
- padding: 24px; background: var(--bg-card); border: 1px solid var(--border);
+ padding: 24px; background: #FFFFFF; border: 1px solid #E2E8F0; box-shadow: 0 20px 40px rgba(0,0,0,0.15);
  border-radius: var(--radius-xl); margin-bottom: 28px;
  }
 
@@ -464,7 +464,7 @@
  }
  .modal-overlay.open { display: flex; }
  .modal-box {
- background: var(--bg-card); border: 1px solid var(--border);
+ background: #FFFFFF; border: 1px solid #E2E8F0; box-shadow: 0 20px 40px rgba(0,0,0,0.15);
  border-radius: var(--radius-xl); width: min(640px, 95vw);
  padding: 32px; position: relative;
  }
@@ -476,13 +476,13 @@
  cursor: pointer; display: flex; align-items: center; justify-content: center;
  transition: all var(--transition);
  }
- .modal-close:hover { background: var(--bg-surface-hover); color: #fff; }
+ .modal-close:hover { background: var(--bg-surface-hover); color: #0F172A; }
 
  .cert-card {
  background: linear-gradient(135deg, #064e3b, #0f172a);
  border: 2px solid var(--emerald);
  border-radius: var(--radius-lg); padding: 32px;
- margin: 20px 0; color: #fff; position: relative;
+ margin: 20px 0; color: #0F172A; position: relative;
  }
  .cert-stamp {
  position: absolute; top: 20px; right: 24px;
@@ -511,7 +511,7 @@
  .toast {
  background: var(--bg-surface); border: 1px solid var(--border);
  border-radius: var(--radius-md); padding: 14px 20px;
- color: #fff; font-size: 13px; font-weight: 600;
+ color: #0F172A; font-size: 13px; font-weight: 600;
  box-shadow: var(--shadow-lg); display: flex; align-items: center; gap: 10px;
  animation: slideUp 0.3s ease;
  min-width: 280px;
@@ -586,8 +586,8 @@
  <header class="topbar">
  <div class="brand">
  <span class="brand-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></span>
- <span class="brand-name" style="color:#0F172A; font-weight:800;">E-Credits</span>
- <span class="brand-badge">Carbon Calculator</span>
+ <span class="brand-name" style="color:#0F172A; font-weight:800;">NetZeroCalc</span>
+ <span class="brand-badge">NET ZERO CALCULATOR</span>
  </div>
  <div class="topbar-actions">
  <button class="btn btn-sm" id="btnDownloadTemplate" style="background:linear-gradient(135deg, #15803d, #166534); color:#fff; font-weight:700;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>Download GHG Calculator Template (.xlsx)</button>
@@ -627,7 +627,7 @@
  ============================================================ -->
  <div class="step-panel active" id="step1">
  <div class="hero-section">
- <h1 class="hero-title">Calculate Your Product's <span>Carbon Footprint</span></h1>
+ <h1 class="hero-title">Calculate Net Zero &amp; <span>Carbon Footprint</span></h1>
  <p class="hero-desc">
  Upload your Bill of Materials (BOM), and we'll match each component to verified emission factors,
  calculate your total carbon footprint, and show you how many carbon credits you can generate.
@@ -1064,7 +1064,7 @@
  <button class="btn btn-primary" id="btnExportCSV">📊 Export CSV Report</button>
  <button class="btn btn-indigo" id="btnExportJSON">📋 Export JSON Data</button>
  <button class="btn btn-primary" id="btnShowBig4Report" style="background:linear-gradient(135deg, #0284c7, #0369a1);color:#fff;border:none;">📑 Big 4 GHG Audit Report</button>
- <button class="btn" id="btnShowCert">🏆 View E-Credits Certificate</button>
+ <button class="btn" id="btnShowCert">🏆 View NetZeroCalc Certificate</button>
  <button class="btn btn-ghost" onclick="goToStep(3)">Back to Review</button>
  </div>
  </div>
@@ -1215,7 +1215,7 @@
  <div class="modal-box" style="width: min(480px, 95vw); text-align: center; padding: 36px 32px;">
  <button class="modal-close" onclick="document.getElementById('otpModal').classList.remove('open')">✕</button>
  <div style="font-size: 42px; margin-bottom: 12px;">🔐</div>
- <h3 style="font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 6px;">Auditor Identity Verification</h3>
+ <h3 style="font-size: 20px; font-weight: 800; color: #0F172A; margin-bottom: 6px;">Auditor Identity Verification</h3>
  <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.5;">
  Under ISAE 3410 assurance compliance, downloading official Big 4 GHG Audit Reports requires a verified corporate Gmail address.
  </p>
@@ -1223,7 +1223,7 @@
  <div id="otpStepEmail">
  <div style="text-align: left; margin-bottom: 16px;">
  <label style="font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Corporate Gmail Address</label>
- <input type="email" id="otpEmailInput" placeholder="auditor@gmail.com" style="width: 100%; margin-top: 6px; padding: 12px 16px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-md); color: #fff; font-size: 14px; outline: none;">
+ <input type="email" id="otpEmailInput" placeholder="auditor@gmail.com" style="width: 100%; margin-top: 6px; padding: 12px 16px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-md); color: #0F172A; font-size: 14px; outline: none;">
  </div>
  <button class="btn btn-primary btn-lg" onclick="sendOtp()" style="width: 100%; justify-content: center;">
  ✓ Send 6-Digit OTP Code
@@ -1257,7 +1257,7 @@
  <h3 style="font-size:18px; font-weight:800; color:#fff;">Carbon Reduction Certificate</h3>
  <div class="cert-card">
  <div class="cert-stamp">VERIFIED</div>
- <h2>E-Credits Carbon Certificate</h2>
+ <h2>NetZeroCalc Carbon Certificate</h2>
  <div class="cert-project" id="certProject">—</div>
  <div class="cert-metrics">
  <div>
@@ -2439,7 +2439,7 @@
       showToast(' Generating Carbon Certificate PDF...', 'info');
       html2pdf().set(opt).from(staging).save().then(() => {
         if (staging.parentNode) document.body.removeChild(staging);
-        showToast(' E-Credits Carbon Certificate PDF downloaded successfully!', 'success');
+        showToast(' NetZeroCalc Carbon Certificate PDF downloaded successfully!', 'success');
       }).catch(err => {
         if (staging.parentNode) document.body.removeChild(staging);
         showToast(' Certificate export completed.', 'success');
@@ -2458,7 +2458,7 @@
  localStorage.setItem('e_credits_audit_state', JSON.stringify(data));
 
  // Sync with backend API
- const API = "https://e-credits-api.onrender.com";
+ const API = "https://netzerocalc-api.onrender.com";
  fetch(`${API}/projects`, {
  method: 'POST',
  headers: { 'Content-Type': 'application/json' },
@@ -2559,7 +2559,7 @@
       const dbSrc = document.getElementById('database').value || 'India_GHG_Factors';
       const framework = typeof currentFramework !== 'undefined' ? currentFramework : 'corporate';
 
-      const promptContext = `System: You are an expert GHG Protocol & ISO 14064 Carbon Accounting Assistant for E-Credits.
+      const promptContext = `System: You are an expert GHG Protocol & ISO 14064 Carbon Accounting Assistant for NetZeroCalc.
 Project: ${projName} (${geo}, ${targetYr}, Database: ${dbSrc}, Framework: ${framework}).
 BOM Items Matched: ${matchedItems.length}.
 User Question: ${text}
