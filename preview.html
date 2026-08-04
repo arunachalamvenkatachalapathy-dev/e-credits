@@ -98,7 +98,8 @@
  }
  .btn:hover { background: var(--bg-surface-hover); border-color: var(--border-hover); transform: translateY(-1px); }
  .btn:active { transform: translateY(0); }
- .btn-primary { background: linear-gradient(135deg, #10b981, #059669); color: #022c22; border: none; font-weight: 700; }
+ .btn-primary { background: var(--forest); color: #FFFFFF; border: none; font-weight: 700; }
+.btn-primary:hover { background: #153b32; box-shadow: 0 4px 12px rgba(31,78,66,0.2); }
  .btn-primary:hover { background: linear-gradient(135deg, #34d399, #10b981); box-shadow: 0 4px 20px rgba(16,185,129,0.3); }
  .btn-indigo { background: linear-gradient(135deg, #6366f1, #4f46e5); color: #fff; border: none; }
  .btn-indigo:hover { box-shadow: 0 4px 20px rgba(99,102,241,0.3); }
@@ -585,7 +586,7 @@
  <header class="topbar">
  <div class="brand">
  <span class="brand-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></span>
- <span class="brand-name">E-Credits</span>
+ <span class="brand-name" style="color:#0F172A; font-weight:800;">E-Credits</span>
  <span class="brand-badge">Carbon Calculator</span>
  </div>
  <div class="topbar-actions">
@@ -2532,7 +2533,7 @@
       sendAiMessage();
     }
 
-    async function sendAiMessage() {
+        async function sendAiMessage() {
       const input = document.getElementById('aiInputText');
       const text = input.value.trim();
       if (!text) return;
@@ -2541,34 +2542,65 @@
       const history = document.getElementById('aiChatHistory');
       
       const userBubble = document.createElement('div');
-      userBubble.style.cssText = 'background:var(--forest); color:#fff; padding:8px 12px; border-radius:10px; align-self:flex-end; max-width:85%;';
+      userBubble.style.cssText = 'background:var(--forest); color:#fff; padding:8px 12px; border-radius:10px; align-self:flex-end; max-width:85%; font-family:var(--font-sans);';
       userBubble.textContent = text;
       history.appendChild(userBubble);
 
       const aiBubble = document.createElement('div');
-      aiBubble.style.cssText = 'background:#1e293b; color:#e2e8f0; padding:10px 14px; border-radius:10px; align-self:flex-start; max-width:88%; border-left:3px solid #38bdf8;';
+      aiBubble.style.cssText = 'background:#FFFFFF; color:#0F172a; padding:10px 14px; border-radius:10px; align-self:flex-start; max-width:88%; border:1px solid #E2E8F0; border-left:3px solid var(--forest); font-family:var(--font-sans); box-shadow:0 2px 6px rgba(0,0,0,0.05);';
       aiBubble.textContent = 'Thinking...';
       history.appendChild(aiBubble);
       history.scrollTop = history.scrollHeight;
 
-      // Smart local AI response generator based on domain knowledge
-      setTimeout(() => {
-        let answer = '';
-        const q = text.toLowerCase();
-        if (q.includes('additionality')) {
-          answer = 'ISO 14064-2 Additionality (Clause 5.5) requires proving that project emission reductions exceed business-as-usual operations and are not required by existing regulations or financial returns alone.';
-        } else if (q.includes('scope 2') || q.includes('dual')) {
-          answer = 'Scope 2 Dual Reporting requires reporting Location-Based emissions (grid average EF, e.g. CEA 0.7314 kgCO2/kWh in India) and Market-Based emissions (contractual instruments, e.g. RECs zero-rated).';
-        } else if (q.includes('dqr') || q.includes('quality')) {
-          answer = 'Data Quality Ratings (DQR) score Technological, Geographical, and Temporal representativeness from 1 (Verified/Primary) to 5 (Extrapolated). Clean factors score 1-1-1.';
-        } else if (q.includes('india') || q.includes('cea')) {
-          answer = 'India GHG Factors (v6) use Central Electricity Authority (CEA) grid factors (0.7314 kgCO2e/kWh) and MoRTH/TERI logistics factors for verified Indian industry reporting.';
-        } else {
-          answer = `Based on your inventory: You have ${matchedItems.length} matched items. Practitioner sign-off is required for all line items before exporting ISO 14064-2 verifier reports.`;
+      // Construct rich site context prompt
+      const projName = document.getElementById('projectName').value || 'EV Battery Assembly Line (India)';
+      const geo = document.getElementById('geography').value || 'IN';
+      const targetYr = document.getElementById('targetYear').value || '2024';
+      const dbSrc = document.getElementById('database').value || 'India_GHG_Factors';
+      const framework = typeof currentFramework !== 'undefined' ? currentFramework : 'corporate';
+
+      const promptContext = `System: You are an expert GHG Protocol & ISO 14064 Carbon Accounting Assistant for E-Credits.
+Project: ${projName} (${geo}, ${targetYr}, Database: ${dbSrc}, Framework: ${framework}).
+BOM Items Matched: ${matchedItems.length}.
+User Question: ${text}
+Provide a clear, accurate, professional response.`;
+
+      try {
+        // Free Public Open AI completion API (Pollinations Open AI endpoint)
+        const res = await fetch('https://text.pollinations.ai/openai', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            messages: [{ role: 'system', content: 'You are an LCA & ISO 14064 expert.' }, { role: 'user', content: promptContext }],
+            model: 'openai'
+          })
+        });
+        
+        if (res.ok) {
+          const data = await res.json();
+          const reply = data.choices && data.choices[0] && data.choices[0].message ? data.choices[0].message.content : null;
+          if (reply) {
+            aiBubble.textContent = reply;
+            history.scrollTop = history.scrollHeight;
+            return;
+          }
         }
-        aiBubble.textContent = answer;
-        history.scrollTop = history.scrollHeight;
-      }, 600);
+      } catch(err) { console.log('Free API fallback:', err); }
+
+      // Smart domain fallback
+      const q = text.toLowerCase();
+      let answer = '';
+      if (q.includes('additionality')) {
+        answer = 'ISO 14064-2 Additionality (Clause 5.5) requires demonstrating that project emission reductions exceed baseline operations and are not mandated by law or business-as-usual returns.';
+      } else if (q.includes('scope 2') || q.includes('dual')) {
+        answer = 'Scope 2 Dual Reporting mandates reporting Location-Based emissions (grid baseline EF, e.g. CEA 0.7314 kgCO2e/kWh in India) alongside Market-Based emissions (contractual RECs zero-rated).';
+      } else if (q.includes('dqr') || q.includes('quality')) {
+        answer = 'Data Quality Ratings (DQR) score Technological, Geographical, and Temporal representativeness from 1 (Primary/Verified) to 5 (Extrapolated). Clean India GHG factors score 1-1-1.';
+      } else {
+        answer = `Project Context: '${projName}' under ${framework === 'project' ? 'ISO 14064-2' : 'GHG Protocol'}. Total matched activity items: ${matchedItems.length}. Practitioner review sign-off is required prior to report export.`;
+      }
+      aiBubble.textContent = answer;
+      history.scrollTop = history.scrollHeight;
     }
   </script>
 
