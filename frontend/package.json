@@ -2,7 +2,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
-    "build": "node -e \"const fs = require('fs'); fs.mkdirSync('dist', {recursive: true}); fs.copyFileSync('../preview.html', 'dist/index.html'); fs.copyFileSync('../preview.html', 'dist/preview.html');\"",
+    "build": "node build.js",
     "preview": "vite preview"
   },
   "dependencies": {
