@@ -1,15 +1,15 @@
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const rootDir = path.resolve(process.cwd(), '..');
+const distDir = path.resolve(process.cwd(), 'dist');
 
-const rootDir = path.resolve(__dirname, '..');
-const distDir = path.resolve(__dirname, 'dist');
-const sourceHtml = path.resolve(rootDir, 'preview.html');
+let sourceHtml = path.resolve(rootDir, 'preview.html');
+if (!fs.existsSync(sourceHtml)) {
+  sourceHtml = path.resolve(process.cwd(), 'preview.html');
+}
 
-console.log('Building Netlify static distribution...');
+console.log('Building Netlify static distribution inside frontend...');
 if (!fs.existsSync(distDir)) {
   fs.mkdirSync(distDir, { recursive: true });
 }
@@ -17,12 +17,5 @@ if (!fs.existsSync(distDir)) {
 if (fs.existsSync(sourceHtml)) {
   fs.copyFileSync(sourceHtml, path.join(distDir, 'index.html'));
   fs.copyFileSync(sourceHtml, path.join(distDir, 'preview.html'));
-  
-  const excelFile = path.resolve(rootDir, 'GHG_Calculator_RECTIFIED_v6.xlsx');
-  if (fs.existsSync(excelFile)) {
-    fs.copyFileSync(excelFile, path.join(distDir, 'GHG_Calculator_RECTIFIED_v6.xlsx'));
-  }
-  console.log('Successfully copied preview.html and GHG_Calculator_RECTIFIED_v6.xlsx to dist!');
-} else {
-  console.error('Error: preview.html not found at root directory!');
+  console.log('Successfully copied preview.html to frontend/dist/index.html!');
 }

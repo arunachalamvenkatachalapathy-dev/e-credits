@@ -1,16 +1,8 @@
 [build]
-  base = "frontend"
-  command = "npm run build"
+  command = "node build.js"
   publish = "dist"
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-
-# VITE_API_URL is intentionally NOT set here -- it must be added in the
-# Netlify dashboard under Site settings -> Environment variables, since it
-# points at your Render backend URL, which doesn't exist until you deploy
-# Part 1 of the setup guide. Committing a real backend URL into this file
-# would also make it harder to point staging vs production at different
-# backends later.
