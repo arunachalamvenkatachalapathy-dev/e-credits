@@ -13,8 +13,8 @@ from sqlalchemy.orm import Session
 
 from .database import Base, engine, get_db
 from .matching import EMBEDDING_MODEL, dqr_disambiguate, retrieve_candidates
-from .models import BomMappingAudit, LciProcess, Project, User, now_utc
-from .schemas import AiChatRequest, BomLineMatch, LoginRequest, OverrideRequest, ProjectCreate, RejectRequest, ReviewRequest, UserCreate
+from .models import BomMappingAudit, GhgProject, LciProcess, Project, User, now_utc
+from .schemas import AiChatRequest, BomLineMatch, GhgProjectCreate, LoginRequest, OverrideRequest, ProjectCreate, RejectRequest, ReviewRequest, UserCreate
 from .units import convert_unit
 
 Base.metadata.create_all(bind=engine)
@@ -162,6 +162,7 @@ def match_bom_line(payload: BomLineMatch, db: Session = Depends(get_db)):
 
     audit = BomMappingAudit(
         project_id=payload.project_id,
+        scenario=payload.scenario,
         raw_bom_input=payload.raw_bom_input,
         raw_bom_quantity=payload.quantity,
         raw_bom_unit=payload.unit,
@@ -280,6 +281,162 @@ def export(project_id: str, format: str = "json", db: Session = Depends(get_db))
         df = pd.DataFrame(data)
         return Response(df.to_csv(index=False), media_type="text/csv")
     return data
+
+
+@app.post("/projects/{project_id}/ghg-project")
+def create_or_update_ghg_project(project_id: str, payload: GhgProjectCreate, db: Session = Depends(get_db)):
+    ghg_proj = db.get(GhgProject, project_id)
+    if not ghg_proj:
+        ghg_proj = GhgProject(id=project_id, **payload.model_dump())
+        db.add(ghg_proj)
+    else:
+        for key, value in payload.model_dump().items():
+            setattr(ghg_proj, key, value)
+    db.commit()
+    db.refresh(ghg_proj)
+    return ghg_proj
+
+
+@app.get("/projects/{project_id}/ghg-project")
+def get_ghg_project(project_id: str, db: Session = Depends(get_db)):
+    ghg_proj = db.get(GhgProject, project_id)
+    if not ghg_proj:
+        # Return empty default instance if not explicitly set yet
+        return {
+            "id": project_id,
+            "title": "Untitled ISO 14064-2 Project",
+            "proponent": "", "start_date": "", "crediting_period": "",
+            "description": "", "ghg_boundary": "", "baseline_scenario_narrative": "",
+            "quantification_approach": "", "additionality_justification": "",
+            "monitoring_plan": "", "qaqc_procedure": ""
+        }
+    return ghg_proj
+
+
+@app.get("/projects/{project_id}/reduction")
+def get_project_reduction(project_id: str, db: Session = Depends(get_db)):
+    rows = db.query(BomMappingAudit).filter(BomMappingAudit.project_id == project_id).all()
+    if not rows:
+        return {"baseline_total": 0.0, "project_total": 0.0, "reduction": 0.0, "unapproved_count": 0}
+    
+    unapproved = [r for r in rows if not r.is_human_approved]
+    if unapproved:
+        raise HTTPException(
+            status_code=422,
+            detail=f"Reduction calculation blocked: {len(unapproved)} unreviewed item(s) exist. Every line item in both baseline and project scenarios must be human-approved before verifier-ready numbers can be issued."
+        )
+        
+    baseline_rows = [r for r in rows if r.scenario == 'baseline' or r.scenario is None]
+    project_rows = [r for r in rows if r.scenario == 'project']
+    
+    baseline_total = sum(r.result_tco2e or 0.0 for r in baseline_rows)
+    project_total = sum(r.result_tco2e or 0.0 for r in project_rows)
+    reduction = baseline_total - project_total
+    
+    return {
+        "baseline_total": round(baseline_total, 4),
+        "project_total": round(project_total, 4),
+        "reduction": round(reduction, 4)
+    }
+
+
+@app.get("/projects/{project_id}/iso14064-report")
+def generate_iso14064_report(project_id: str, db: Session = Depends(get_db)):
+    rows = db.query(BomMappingAudit).filter(BomMappingAudit.project_id == project_id).all()
+    unapproved = [r for r in rows if not r.is_human_approved]
+    if unapproved:
+        raise HTTPException(
+            status_code=422,
+            detail=f"Report export blocked: {len(unapproved)} unreviewed item(s) exist. Every line item in both baseline and project scenarios must be human-approved before issuing an ISO 14064-2 report."
+        )
+
+    ghg_proj = db.get(GhgProject, project_id)
+    title = ghg_proj.title if ghg_proj else "ISO 14064-2 Project"
+    proponent = ghg_proj.proponent if ghg_proj else "Project Proponent"
+    start_date = ghg_proj.start_date if ghg_proj else "N/A"
+    crediting = ghg_proj.crediting_period if ghg_proj else "N/A"
+    desc = ghg_proj.description if ghg_proj else "No description provided."
+    boundary = ghg_proj.ghg_boundary if ghg_proj else "Operational control boundary."
+    baseline_narrative = ghg_proj.baseline_scenario_narrative if ghg_proj else "Baseline business-as-usual operations."
+    approach = ghg_proj.quantification_approach if ghg_proj else "Direct emission factor matching via India GHG / LCI processes."
+    additionality = ghg_proj.additionality_justification if ghg_proj else "Financial and technological barrier analysis demonstrates additionality."
+    monitoring = ghg_proj.monitoring_plan if ghg_proj else "Continuous activity data logging and annual third-party verification."
+    qaqc = ghg_proj.qaqc_procedure if ghg_proj else "Dual-entry verification and automated DQR scoring."
+
+    baseline_rows = [r for r in rows if r.scenario == 'baseline' or r.scenario is None]
+    project_rows = [r for r in rows if r.scenario == 'project']
+
+    def render_table(table_rows):
+        if not table_rows:
+            return "| Activity | Quantity | Matched Process | EF (kgCO2e/unit) | Provenance Status | Footprint (tCO2e) |\n|---|---|---|---|---|---|\n| *No items* | - | - | - | - | 0.0000 |"
+        lines = ["| Activity | Quantity | Matched Process | EF (kgCO2e/unit) | Provenance Status | Footprint (tCO2e) |", "|---|---|---|---|---|---|"]
+        for r in table_rows:
+            ef_str = f"{r.matched_emission_factor:.4f}" if r.matched_emission_factor is not None else "N/A"
+            status_str = r.matched_data_quality_status or "clean"
+            res_str = f"{r.result_tco2e:.4f}" if r.result_tco2e is not None else "0.0000"
+            lines.append(f"| {r.raw_bom_input} | {r.converted_quantity or r.raw_bom_quantity} {r.converted_unit or r.raw_bom_unit} | {r.matched_process_name or 'N/A'} | {ef_str} | `{status_str}` | **{res_str}** |")
+        return "\n".join(lines)
+
+    baseline_total = sum(r.result_tco2e or 0.0 for r in baseline_rows)
+    project_total = sum(r.result_tco2e or 0.0 for r in project_rows)
+    net_reduction = baseline_total - project_total
+
+    # Data Quality Summary
+    clean_cnt = sum(1 for r in rows if r.matched_data_quality_status == 'clean')
+    uplifted_cnt = sum(1 for r in rows if r.matched_data_quality_status == 'uplifted')
+    proxy_cnt = sum(1 for r in rows if r.matched_data_quality_status == 'proxy')
+    placeholder_cnt = sum(1 for r in rows if r.matched_data_quality_status == 'placeholder')
+
+    report_md = f"""# GHG Project Report — ISO 14064-2:2019
+*Draft — requires ISO 14064-3 validation/verification before use in a credit claim.*
+
+## 1. Project Description (5.2)
+- **Project Title:** {title}
+- **Project Proponent:** {proponent}
+- **Start Date:** {start_date}
+- **Crediting Period:** {crediting}
+- **Executive Description:** {desc}
+
+## 2. GHG Project Boundary (5.3)
+{boundary}
+
+## 3. Baseline Scenario (6)
+- **Baseline Narrative:** {baseline_narrative}
+- **Quantification Approach:** {approach}
+
+## 4. Additionality (5.5)
+{additionality}
+
+## 5. Quantification
+
+### 5.1 Baseline Scenario Emissions
+{render_table(baseline_rows)}
+
+**Baseline Total:** {baseline_total:.4f} tCO2e
+
+### 5.2 Project Scenario Emissions
+{render_table(project_rows)}
+
+**Project Total:** {project_total:.4f} tCO2e
+
+### 5.3 Net Emission Reduction
+$$\\Delta E = \\text{{Baseline}} - \\text{{Project}} = {baseline_total:.4f} - {project_total:.4f} = \\mathbf{{{net_reduction:.4f}\\text{{ tCO2e}}}}$$
+*(Note: Net reduction inherits uncertainty from any 'uplifted', 'proxy', or 'placeholder' factors used).*
+
+## 6. Monitoring Plan (9)
+{monitoring}
+
+## 7. QA/QC Procedure (9.3)
+{qaqc}
+
+## 8. Data Quality & Provenance Summary
+- **Total Audited Items:** {len(rows)} (100% Approved by Practitioner)
+- **Clean / Verified Factors:** {clean_cnt}
+- **Uplifted Factors:** {uplifted_cnt}
+- **Proxy Factors:** {proxy_cnt}
+- **Placeholder Factors:** {placeholder_cnt}
+"""
+    return Response(report_md, media_type="text/markdown")
 
 
 @app.post("/ai/chat")

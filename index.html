@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="en">
 <head>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
  <meta charset="utf-8">
  <meta name="viewport" content="width=device-width, initial-scale=1">
  <title>E-Credits | Carbon Footprint Calculator &amp; Credit Generator</title>
@@ -749,6 +751,19 @@
  STEP 2: IMPORT DATA
  ============================================================ -->
  <div class="step-panel" id="step2">
+
+    <!-- ISO 14064-2 Scenario Selector Bar -->
+    <div id="scenarioBar" style="display:none; margin-bottom:20px; padding:12px 18px; background:var(--bg-surface); border:1px solid var(--forest); border-radius:10px; align-items:center; justify-content:space-between;">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span style="font-weight:700; font-size:13px; color:#fff;">🌱 ISO 14064-2 Scenario:</span>
+        <div style="display:flex; background:#0f172a; border-radius:6px; padding:3px; border:1px solid var(--border);">
+          <button id="btnScenarioBaseline" class="btn btn-sm" onclick="setScenario('baseline')" style="border-radius:4px; padding:4px 14px; background:var(--forest); color:#fff; font-weight:700;">🏢 Baseline Scenario</button>
+          <button id="btnScenarioProject" class="btn btn-sm" onclick="setScenario('project')" style="border-radius:4px; padding:4px 14px; background:transparent; color:var(--text-secondary); font-weight:600;">⚡ Project Scenario</button>
+        </div>
+      </div>
+      <div style="font-size:12px; color:var(--text-secondary);" id="scenarioStatusNote">Matching items for <strong>Baseline Scenario</strong></div>
+    </div>
+
  <div class="card">
  <div class="card-title">Import Your Bill of Materials</div>
  <div class="card-subtitle">Upload a CSV file with columns: <strong>description</strong>, <strong>quantity</strong>, <strong>unit</strong>. Or add items manually below.</div>
@@ -816,6 +831,19 @@
  STEP 3: REVIEW MATCHES
  ============================================================ -->
  <div class="step-panel" id="step3">
+
+    <!-- ISO 14064-2 Scenario Selector Bar -->
+    <div id="scenarioBarReview" style="display:none; margin-bottom:20px; padding:12px 18px; background:var(--bg-surface); border:1px solid var(--forest); border-radius:10px; align-items:center; justify-content:space-between;">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span style="font-weight:700; font-size:13px; color:#fff;">🌱 ISO 14064-2 Scenario:</span>
+        <div style="display:flex; background:#0f172a; border-radius:6px; padding:3px; border:1px solid var(--border);">
+          <button id="btnScenarioBaseline" class="btn btn-sm" onclick="setScenario('baseline')" style="border-radius:4px; padding:4px 14px; background:var(--forest); color:#fff; font-weight:700;">🏢 Baseline Scenario</button>
+          <button id="btnScenarioProject" class="btn btn-sm" onclick="setScenario('project')" style="border-radius:4px; padding:4px 14px; background:transparent; color:var(--text-secondary); font-weight:600;">⚡ Project Scenario</button>
+        </div>
+      </div>
+      <div style="font-size:12px; color:var(--text-secondary);" id="scenarioStatusNote">Matching items for <strong>Baseline Scenario</strong></div>
+    </div>
+
  <div class="toolbar">
  <div class="toolbar-left">
  <input class="search-input" placeholder="Search materials..." id="reviewSearch">

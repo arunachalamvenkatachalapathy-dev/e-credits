@@ -61,8 +61,28 @@ class LciProcess(Base):
     emission_factor: Mapped[float | None] = mapped_column(Float)
     emission_factor_source: Mapped[str | None] = mapped_column(Text)
     data_quality_status: Mapped[str | None] = mapped_column(String(20))
+    factor_status: Mapped[str | None] = mapped_column(String(20))
+    factor_source: Mapped[str | None] = mapped_column(Text)
     # one of: clean, uplifted, proxy, placeholder -- carries provenance
     # forward into every match instead of hiding it once selected
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now_utc)
+
+
+class GhgProject(Base):
+    __tablename__ = "ghg_projects"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    title: Mapped[str] = mapped_column(Text, nullable=False)
+    proponent: Mapped[str | None] = mapped_column(Text)
+    start_date: Mapped[str | None] = mapped_column(String(50))
+    crediting_period: Mapped[str | None] = mapped_column(String(50))
+    description: Mapped[str | None] = mapped_column(Text)
+    ghg_boundary: Mapped[str | None] = mapped_column(Text)
+    baseline_scenario_narrative: Mapped[str | None] = mapped_column(Text)
+    quantification_approach: Mapped[str | None] = mapped_column(Text)
+    additionality_justification: Mapped[str | None] = mapped_column(Text)
+    monitoring_plan: Mapped[str | None] = mapped_column(Text)
+    qaqc_procedure: Mapped[str | None] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now_utc)
 
 
@@ -70,7 +90,8 @@ class BomMappingAudit(Base):
     __tablename__ = "bom_mapping_audits"
 
     id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    project_id: Mapped[str] = mapped_column(String, ForeignKey("projects.id"), nullable=False, index=True)
+    project_id: Mapped[str | None] = mapped_column(String, nullable=True, index=True)
+    scenario: Mapped[str | None] = mapped_column(String(20), nullable=True) # 'baseline' | 'project' | None
     raw_bom_input: Mapped[str] = mapped_column(Text, nullable=False)
     raw_bom_quantity: Mapped[float] = mapped_column(Numeric(12, 4), nullable=False)
     raw_bom_unit: Mapped[str] = mapped_column(String(20), nullable=False)

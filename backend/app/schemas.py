@@ -29,6 +29,21 @@ class BomLineMatch(BaseModel):
     target_year: int = 2024
     database_source: str = "USLCI"
     system_model: str = "Cut-off"
+    scenario: str | None = None  # 'baseline' | 'project' | None
+
+
+class GhgProjectCreate(BaseModel):
+    title: str
+    proponent: str | None = None
+    start_date: str | None = None
+    crediting_period: str | None = None
+    description: str | None = None
+    ghg_boundary: str | None = None
+    baseline_scenario_narrative: str | None = None
+    quantification_approach: str | None = None
+    additionality_justification: str | None = None
+    monitoring_plan: str | None = None
+    qaqc_procedure: str | None = None
 
 
 class ReviewRequest(BaseModel):
