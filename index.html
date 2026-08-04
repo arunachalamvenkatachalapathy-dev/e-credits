@@ -2182,26 +2182,26 @@ User Question: ${text}
 Provide a clear, accurate, professional response.`;
 
       try {
-        // Free Public Open AI completion API (Pollinations Open AI endpoint)
-        const res = await fetch('https://text.pollinations.ai/openai', {
+        // Secure Gemini API backend route (No Pollinations AI / third-party free endpoints)
+        const res = await fetch('/ai/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            messages: [{ role: 'system', content: 'You are an LCA & ISO 14064 expert.' }, { role: 'user', content: promptContext }],
-            model: 'openai'
+            question: text,
+            rows: matchedItems
           })
         });
         
         if (res.ok) {
           const data = await res.json();
-          const reply = data.choices && data.choices[0] && data.choices[0].message ? data.choices[0].message.content : null;
-          if (reply) {
-            aiBubble.textContent = reply;
+          if (data.answer) {
+            aiBubble.textContent = data.answer;
             history.scrollTop = history.scrollHeight;
             return;
           }
         }
-      } catch(err) { console.log('Free API fallback:', err); }
+      } catch(err) { console.log('Backend Gemini API endpoint offline, using local fallback:', err); }
+
 
       // Smart domain fallback
       const q = text.toLowerCase();
