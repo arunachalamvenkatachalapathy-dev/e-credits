@@ -1,4 +1,10 @@
-<!DOCTYPE html>
+import re
+import os
+
+preview_path = r"C:\Users\user\.gemini\antigravity-ide\scratch\e-credits\preview.html"
+
+# Create a complete, gorgeous Stitch UI implementation of CarbonEngine / NetZeroCalc
+stitch_html = """<!DOCTYPE html>
 <html class="light" lang="en">
 <head>
   <meta charset="utf-8"/>
@@ -554,3 +560,9 @@
   </script>
 </body>
 </html>
+"""
+
+with open(preview_path, "w", encoding="utf-8") as f:
+    f.write(stitch_html)
+
+print("Successfully replaced preview.html with Stitch CarbonEngine Workbench UI!")
