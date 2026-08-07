@@ -12,6 +12,7 @@ complete_netzerocalc_html = """<!DOCTYPE html>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
   <script id="tailwind-config">
     tailwind.config = {
@@ -132,7 +133,7 @@ complete_netzerocalc_html = """<!DOCTYPE html>
 
     <!-- Footer Controls & Settings -->
     <div class="mt-auto pt-4 border-t border-outline-variant flex flex-col gap-1">
-      <a href="GHG_Calculator_RECTIFIED_v6.xlsx" download class="flex items-center gap-3 px-4 py-2.5 text-xs text-primary font-bold hover:bg-primary/5 rounded-xl transition-colors w-full text-left">
+      <a href="GHG_Calculator_RECTIFIED_v6.xlsx" download="GHG_Calculator_RECTIFIED_v6.xlsx" class="flex items-center gap-3 px-4 py-2.5 text-xs text-primary font-bold hover:bg-primary/5 rounded-xl transition-colors w-full text-left">
         <span class="material-symbols-outlined text-lg">download</span>
         Download GHG Template (.xlsx)
       </a>
@@ -268,10 +269,18 @@ complete_netzerocalc_html = """<!DOCTYPE html>
                 <h2 class="font-bold text-sm text-on-surface">BOM-to-LCI Mapping Engine</h2>
                 <p id="table-subtitle" class="text-xs text-on-surface-variant mt-0.5">Loaded 5 materials from active project queue.</p>
               </div>
-              <div class="flex gap-2">
+              <div class="flex flex-wrap gap-2">
                 <button onclick="approveAllLowRisk()" class="px-3 py-1.5 bg-primary text-on-primary rounded-lg font-bold text-xs hover:bg-primary-container transition-colors shadow-sm flex items-center gap-1">
                   <span class="material-symbols-outlined text-sm">done_all</span>
                   Approve All Low Risk
+                </button>
+                <button onclick="clearAllItems()" class="px-3 py-1.5 border border-error/30 text-error hover:bg-error-container/30 rounded-lg font-bold text-xs transition-colors flex items-center gap-1">
+                  <span class="material-symbols-outlined text-sm">delete_sweep</span>
+                  Clear Table
+                </button>
+                <button onclick="loadSampleDemo()" class="px-3 py-1.5 border border-secondary/30 text-secondary hover:bg-secondary-fixed/50 rounded-lg font-bold text-xs transition-colors flex items-center gap-1">
+                  <span class="material-symbols-outlined text-sm">restart_alt</span>
+                  Reset Sample BOM
                 </button>
                 <button onclick="exportCSV()" class="px-3 py-1.5 border border-outline-variant rounded-lg font-semibold text-xs text-on-surface hover:bg-surface-container-low transition-colors flex items-center gap-1">
                   <span class="material-symbols-outlined text-sm">file_download</span>
@@ -458,7 +467,7 @@ complete_netzerocalc_html = """<!DOCTYPE html>
         <span class="material-symbols-outlined text-primary">upload_file</span>
         Import Bill of Materials (BOM)
       </h2>
-      <p class="text-xs text-on-surface-variant mb-6">Upload CSV / XLSX files or manually add component items to your project.</p>
+      <p class="text-xs text-on-surface-variant mb-6">Upload CSV or XLSX Excel spreadsheets or manually add components.</p>
 
       <!-- Dropzone -->
       <div onclick="document.getElementById('csvFileInput').click()" class="border-2 border-dashed border-outline-variant hover:border-primary rounded-xl p-8 text-center cursor-pointer bg-surface-container-low transition-colors mb-6">
@@ -475,18 +484,18 @@ complete_netzerocalc_html = """<!DOCTYPE html>
       </div>
 
       <!-- Manual Form -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+      <form onsubmit="addManualItem(event)" class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
         <div class="md:col-span-3">
           <label class="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Item Description</label>
-          <input id="manualName" type="text" placeholder="e.g. Recycled Copper Tubing 10mm" class="w-full text-xs font-semibold p-2 border border-outline-variant rounded-lg outline-none focus:ring-1 focus:ring-primary"/>
+          <input id="manualName" type="text" required placeholder="e.g. Recycled Copper Tubing 10mm" class="w-full text-xs font-semibold p-2 border border-outline-variant rounded-lg outline-none focus:ring-1 focus:ring-primary bg-white"/>
         </div>
         <div>
           <label class="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Quantity</label>
-          <input id="manualQty" type="number" value="100" min="1" class="w-full text-xs font-semibold p-2 border border-outline-variant rounded-lg outline-none focus:ring-1 focus:ring-primary"/>
+          <input id="manualQty" type="number" required value="100" min="0.01" step="any" class="w-full text-xs font-semibold p-2 border border-outline-variant rounded-lg outline-none focus:ring-1 focus:ring-primary bg-white"/>
         </div>
         <div>
           <label class="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Unit</label>
-          <select id="manualUnit" class="w-full text-xs font-semibold p-2 border border-outline-variant rounded-lg outline-none focus:ring-1 focus:ring-primary">
+          <select id="manualUnit" class="w-full text-xs font-semibold p-2 border border-outline-variant rounded-lg outline-none focus:ring-1 focus:ring-primary bg-white">
             <option value="kg">kg</option>
             <option value="pcs">pcs</option>
             <option value="kWh">kWh</option>
@@ -495,9 +504,9 @@ complete_netzerocalc_html = """<!DOCTYPE html>
           </select>
         </div>
         <div class="flex items-end">
-          <button onclick="addManualItem()" class="w-full py-2 bg-primary text-white font-bold text-xs rounded-lg hover:bg-primary-container">Add Item</button>
+          <button type="submit" class="w-full py-2 bg-primary text-white font-bold text-xs rounded-lg hover:bg-primary-container transition-colors shadow-sm">Add Item</button>
         </div>
-      </div>
+      </form>
 
       <div class="flex justify-end gap-2 pt-4 border-t border-outline-variant">
         <button onclick="closeImportModal()" class="px-4 py-2 border border-outline-variant rounded-lg font-bold text-xs">Cancel</button>
@@ -566,7 +575,7 @@ complete_netzerocalc_html = """<!DOCTYPE html>
   </div>
 
   <script>
-    let sampleBOM = [
+    const demoItems = [
       { id: 1, name: "Aluminum Sheet, 5052-H32", qty: 1450, unit: "kg", process: "aluminium alloy production, AlMg3 | cutoff, S - RER", ef: 14.2, sim: 0.98, ter: 1, ger: 2, tir: 1, risk: "LOW", status: "Auto-Matched", approved: true },
       { id: 2, name: "Custom Polyurethane Foam Insert", qty: 320, unit: "pcs", process: "polyurethane production, flexible foam | cutoff, S - GLO", ef: 4.8, sim: 0.42, ter: 4, ger: 3, tir: 2, risk: "HIGH", status: "Manual Review", approved: false },
       { id: 3, name: "Copper Wire, 12 AWG", qty: 50, unit: "kg", process: "copper wire drawing | cutoff, S - GLO", ef: 6.5, sim: 0.94, ter: 1, ger: 1, tir: 1, risk: "LOW", status: "Auto-Matched", approved: true },
@@ -574,6 +583,7 @@ complete_netzerocalc_html = """<!DOCTYPE html>
       { id: 5, name: "Structural Steel Enclosure Bracket", qty: 850, unit: "kg", process: "steel production, converter, unalloyed | cutoff, S - GLO", ef: 1.85, sim: 0.88, ter: 2, ger: 2, tir: 1, risk: "MEDIUM", status: "Auto-Matched", approved: false }
     ];
 
+    let sampleBOM = [...demoItems];
     let currentRiskFilter = "ALL";
 
     function renderTable() {
@@ -590,72 +600,84 @@ complete_netzerocalc_html = """<!DOCTYPE html>
         return true;
       });
 
-      document.getElementById("table-subtitle").innerText = `Loaded ${filtered.length} of ${sampleBOM.length} materials in project queue.`;
+      document.getElementById("table-subtitle").innerText = sampleBOM.length === 0 ? 
+        "Table is empty. Click 'Import BOM' or 'New BOM Analysis' to add items." : 
+        `Loaded ${filtered.length} of ${sampleBOM.length} materials in project queue.`;
 
-      filtered.forEach(item => {
-        let co2e = ((item.qty * item.ef) / 1000).toFixed(3);
-        let riskClass = item.risk === "HIGH" ? "bg-error-container text-on-error-container border-error/20" :
-                        item.risk === "MEDIUM" ? "bg-amber-100 text-amber-900 border-amber-300" :
-                        "bg-primary/10 text-primary border-primary/20";
-
-        let tr = document.createElement("tr");
-        tr.className = "hover:bg-surface-container-low transition-colors cursor-pointer";
-        tr.onclick = () => toggleDrawer(item.id);
-
-        tr.innerHTML = `
-          <td class="px-4 py-3 text-outline-variant"><span id="chevron-${item.id}" class="material-symbols-outlined text-base transition-transform">chevron_right</span></td>
-          <td class="px-4 py-3 font-semibold text-on-surface">${item.name}</td>
-          <td class="px-4 py-3 font-mono-data text-right text-on-surface-variant">${item.qty.toLocaleString()} ${item.unit}</td>
-          <td class="px-4 py-3">
-            <div class="font-medium text-on-surface truncate max-w-[280px]">${item.process}</div>
-            <div class="text-[10px] text-on-surface-variant">${document.getElementById("dbSelect").value} • EF: ${item.ef} kgCO2e/${item.unit}</div>
-          </td>
-          <td class="px-4 py-3 text-center">
-            <div class="flex gap-1 justify-center">
-              <span class="dqr-pill dqr-${item.ter}">${item.ter}</span>
-              <span class="dqr-pill dqr-${item.ger}">${item.ger}</span>
-              <span class="dqr-pill dqr-${item.tir}">${item.tir}</span>
-            </div>
-          </td>
-          <td class="px-4 py-3 text-right font-mono-data font-bold ${item.sim < 0.6 ? 'text-error' : 'text-primary'}">${(item.sim * 100).toFixed(0)}%</td>
-          <td class="px-4 py-3">
-            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold border ${riskClass}">${item.risk}</span>
-          </td>
-          <td class="px-4 py-3 text-right font-mono-data font-bold text-on-surface">${co2e} t</td>
-          <td class="px-4 py-3 text-right" onclick="event.stopPropagation()">
-            ${item.approved ? 
-              `<span class="text-primary font-bold text-[11px] flex items-center justify-end gap-1"><span class="material-symbols-outlined text-sm">check_circle</span> Approved</span>` :
-              `<button onclick="approveRow(${item.id})" class="px-2.5 py-1 bg-primary text-white text-[11px] font-bold rounded-lg hover:bg-primary-container">Approve</button>`
-            }
-          </td>
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="9" class="p-8 text-center text-on-surface-variant font-medium">
+              No items match the current filter criteria.
+            </td>
+          </tr>
         `;
+      } else {
+        filtered.forEach(item => {
+          let co2e = ((item.qty * item.ef) / 1000).toFixed(3);
+          let riskClass = item.risk === "HIGH" ? "bg-error-container text-on-error-container border-error/20" :
+                          item.risk === "MEDIUM" ? "bg-amber-100 text-amber-900 border-amber-300" :
+                          "bg-primary/10 text-primary border-primary/20";
 
-        tbody.appendChild(tr);
+          let tr = document.createElement("tr");
+          tr.className = "hover:bg-surface-container-low transition-colors cursor-pointer";
+          tr.onclick = () => toggleDrawer(item.id);
 
-        // Drawer row
-        let drawerTr = document.createElement("tr");
-        drawerTr.id = `drawer-${item.id}`;
-        drawerTr.className = "bg-surface-container-low/40 hidden";
-        drawerTr.innerHTML = `
-          <td colspan="9" class="p-4 pl-12 border-b border-outline-variant/40">
-            <div class="flex gap-6 items-start text-xs">
-              <div class="w-64 shrink-0 bg-white p-3 rounded-lg border border-outline-variant">
-                <div class="font-bold text-on-surface mb-2 uppercase text-[10px] tracking-wider">Data Quality Rating (DQR)</div>
-                <div class="space-y-1.5 text-[11px]">
-                  <div class="flex justify-between"><span>Technological (TeR):</span> <span class="font-bold">${item.ter}/5</span></div>
-                  <div class="flex justify-between"><span>Geographical (GeR):</span> <span class="font-bold">${item.ger}/5</span></div>
-                  <div class="flex justify-between"><span>Temporal (TiR):</span> <span class="font-bold">${item.tir}/5</span></div>
+          tr.innerHTML = `
+            <td class="px-4 py-3 text-outline-variant"><span id="chevron-${item.id}" class="material-symbols-outlined text-base transition-transform">chevron_right</span></td>
+            <td class="px-4 py-3 font-semibold text-on-surface">${item.name}</td>
+            <td class="px-4 py-3 font-mono-data text-right text-on-surface-variant">${item.qty.toLocaleString()} ${item.unit}</td>
+            <td class="px-4 py-3">
+              <div class="font-medium text-on-surface truncate max-w-[280px]">${item.process}</div>
+              <div class="text-[10px] text-on-surface-variant">${document.getElementById("dbSelect").value} • EF: ${item.ef} kgCO2e/${item.unit}</div>
+            </td>
+            <td class="px-4 py-3 text-center">
+              <div class="flex gap-1 justify-center">
+                <span class="dqr-pill dqr-${item.ter}">${item.ter}</span>
+                <span class="dqr-pill dqr-${item.ger}">${item.ger}</span>
+                <span class="dqr-pill dqr-${item.tir}">${item.tir}</span>
+              </div>
+            </td>
+            <td class="px-4 py-3 text-right font-mono-data font-bold ${item.sim < 0.6 ? 'text-error' : 'text-primary'}">${(item.sim * 100).toFixed(0)}%</td>
+            <td class="px-4 py-3">
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold border ${riskClass}">${item.risk}</span>
+            </td>
+            <td class="px-4 py-3 text-right font-mono-data font-bold text-on-surface">${co2e} t</td>
+            <td class="px-4 py-3 text-right" onclick="event.stopPropagation()">
+              ${item.approved ? 
+                `<span class="text-primary font-bold text-[11px] flex items-center justify-end gap-1"><span class="material-symbols-outlined text-sm">check_circle</span> Approved</span>` :
+                `<button onclick="approveRow(${item.id})" class="px-2.5 py-1 bg-primary text-white text-[11px] font-bold rounded-lg hover:bg-primary-container">Approve</button>`
+              }
+            </td>
+          `;
+
+          tbody.appendChild(tr);
+
+          // Drawer row
+          let drawerTr = document.createElement("tr");
+          drawerTr.id = `drawer-${item.id}`;
+          drawerTr.className = "bg-surface-container-low/40 hidden";
+          drawerTr.innerHTML = `
+            <td colspan="9" class="p-4 pl-12 border-b border-outline-variant/40">
+              <div class="flex gap-6 items-start text-xs">
+                <div class="w-64 shrink-0 bg-white p-3 rounded-lg border border-outline-variant">
+                  <div class="font-bold text-on-surface mb-2 uppercase text-[10px] tracking-wider">Data Quality Rating (DQR)</div>
+                  <div class="space-y-1.5 text-[11px]">
+                    <div class="flex justify-between"><span>Technological (TeR):</span> <span class="font-bold">${item.ter}/5</span></div>
+                    <div class="flex justify-between"><span>Geographical (GeR):</span> <span class="font-bold">${item.ger}/5</span></div>
+                    <div class="flex justify-between"><span>Temporal (TiR):</span> <span class="font-bold">${item.tir}/5</span></div>
+                  </div>
+                </div>
+                <div class="flex-1 bg-white p-3 rounded-lg border border-outline-variant">
+                  <div class="font-bold text-on-surface mb-1">Automated Audit Reasoning</div>
+                  <p class="text-on-surface-variant text-[11px]">Matched via high-confidence vector embedding algorithm against verified LCI factors in target database.</p>
                 </div>
               </div>
-              <div class="flex-1 bg-white p-3 rounded-lg border border-outline-variant">
-                <div class="font-bold text-on-surface mb-1">Automated Audit Reasoning</div>
-                <p class="text-on-surface-variant text-[11px]">Matched via high-confidence vector embedding algorithm against verified LCI factors in target database.</p>
-              </div>
-            </div>
-          </td>
-        `;
-        tbody.appendChild(drawerTr);
-      });
+            </td>
+          `;
+          tbody.appendChild(drawerTr);
+        });
+      }
 
       updateKPIs();
     }
@@ -681,6 +703,16 @@ complete_netzerocalc_html = """<!DOCTYPE html>
 
     function approveAllLowRisk() {
       sampleBOM.forEach(i => { if (i.risk === "LOW") i.approved = true; });
+      renderTable();
+    }
+
+    function clearAllItems() {
+      sampleBOM = [];
+      renderTable();
+    }
+
+    function loadSampleDemo() {
+      sampleBOM = [...demoItems];
       renderTable();
     }
 
@@ -753,14 +785,16 @@ complete_netzerocalc_html = """<!DOCTYPE html>
     function closeBig4Modal() { document.getElementById("big4Modal").classList.remove("open"); }
 
     function openCertModal() { document.getElementById("certModal").classList.add("open"); }
+    function closeCertModal() { document.getElementById("closeCertModal") || closeCertModal(); }
     function closeCertModal() { document.getElementById("certModal").classList.remove("open"); }
 
-    function addManualItem() {
+    function addManualItem(evt) {
+      if (evt) evt.preventDefault();
       let name = document.getElementById("manualName").value.trim();
       let qty = parseFloat(document.getElementById("manualQty").value);
       let unit = document.getElementById("manualUnit").value;
 
-      if (!name || isNaN(qty)) return;
+      if (!name || isNaN(qty) || qty <= 0) return;
 
       sampleBOM.unshift({
         id: Date.now(),
@@ -785,35 +819,58 @@ complete_netzerocalc_html = """<!DOCTYPE html>
       let file = evt.target.files[0];
       if (!file) return;
 
-      Papa.parse(file, {
-        header: true,
-        skipEmptyLines: true,
-        complete: function(results) {
-          if (results.data && results.data.length > 0) {
-            results.data.forEach((row, idx) => {
-              let name = row.description || row.Description || row.material || `Imported Item ${idx+1}`;
-              let qty = parseFloat(row.quantity || row.Quantity || 100);
-              let unit = row.unit || row.Unit || 'kg';
+      let filename = file.name.toLowerCase();
 
-              sampleBOM.unshift({
-                id: Date.now() + idx,
-                name: name,
-                qty: qty,
-                unit: unit,
-                process: `${name} (Matched Process)`,
-                ef: 3.5,
-                sim: 0.85,
-                ter: 2, ger: 1, tir: 1,
-                risk: "LOW",
-                status: "Auto-Matched",
-                approved: false
-              });
-            });
-            closeImportModal();
-            renderTable();
+      if (filename.endsWith('.csv')) {
+        Papa.parse(file, {
+          header: true,
+          skipEmptyLines: true,
+          complete: function(results) {
+            if (results.data && results.data.length > 0) {
+              parseRows(results.data);
+            }
           }
+        });
+      } else if (filename.endsWith('.xlsx') || filename.endsWith('.xls')) {
+        let reader = new FileReader();
+        reader.onload = function(e) {
+          let data = new Uint8Array(e.target.result);
+          let workbook = XLSX.read(data, { type: 'array' });
+          let firstSheetName = workbook.SheetNames[0];
+          let worksheet = workbook.Sheets[firstSheetName];
+          let jsonRows = XLSX.utils.sheet_to_json(worksheet);
+          if (jsonRows && jsonRows.length > 0) {
+            parseRows(jsonRows);
+          }
+        };
+        reader.readAsArrayBuffer(file);
+      }
+    }
+
+    function parseRows(rows) {
+      rows.forEach((row, idx) => {
+        let name = row.description || row.Description || row.item || row.Item || row.material || row.Material || `Imported Item ${idx+1}`;
+        let qty = parseFloat(row.quantity || row.Quantity || row.qty || row.Qty || 100);
+        let unit = row.unit || row.Unit || 'kg';
+
+        if (name) {
+          sampleBOM.unshift({
+            id: Date.now() + idx,
+            name: name,
+            qty: isNaN(qty) ? 100 : qty,
+            unit: unit,
+            process: `${name} (Matched LCI Process)`,
+            ef: unit === 'kWh' ? 0.716 : 2.85,
+            sim: 0.92,
+            ter: 1, ger: 2, tir: 1,
+            risk: "LOW",
+            status: "Auto-Matched",
+            approved: false
+          });
         }
       });
+      closeImportModal();
+      renderTable();
     }
 
     function exportCSV() {
@@ -840,4 +897,4 @@ complete_netzerocalc_html = """<!DOCTYPE html>
 with open(preview_path, "w", encoding="utf-8") as f:
     f.write(complete_netzerocalc_html)
 
-print("Successfully generated complete preview.html!")
+print("Successfully updated preview.html with Clear Table, Reset Demo, and XLSX upload parser!")
