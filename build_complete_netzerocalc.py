@@ -1,4 +1,8 @@
-<!DOCTYPE html>
+import os
+
+preview_path = r"C:\Users\user\.gemini\antigravity-ide\scratch\e-credits\preview.html"
+
+complete_netzerocalc_html = """<!DOCTYPE html>
 <html class="light" lang="en">
 <head>
   <meta charset="utf-8"/>
@@ -816,10 +820,10 @@
     }
 
     function exportCSV() {
-      let csvContent = "data:text/csv;charset=utf-8,Item,Quantity,Unit,Matched Process,Emission Factor,Risk,Footprint (tCO2e)\n";
+      let csvContent = "data:text/csv;charset=utf-8,Item,Quantity,Unit,Matched Process,Emission Factor,Risk,Footprint (tCO2e)\\n";
       sampleBOM.forEach(i => {
         let co2e = ((i.qty * i.ef) / 1000).toFixed(3);
-        csvContent += `"${i.name}",${i.qty},"${i.unit}","${i.process}",${i.ef},"${i.risk}",${co2e}\n`;
+        csvContent += `"${i.name}",${i.qty},"${i.unit}","${i.process}",${i.ef},"${i.risk}",${co2e}\\n`;
       });
       let encodedUri = encodeURI(csvContent);
       let link = document.createElement("a");
@@ -834,3 +838,9 @@
   </script>
 </body>
 </html>
+"""
+
+with open(preview_path, "w", encoding="utf-8") as f:
+    f.write(complete_netzerocalc_html)
+
+print("Successfully updated preview.html with NetZeroCalc full interactive app!")
