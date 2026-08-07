@@ -12,8 +12,6 @@ complete_netzerocalc_html = """<!DOCTYPE html>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
   <script id="tailwind-config">
     tailwind.config = {
@@ -303,7 +301,6 @@ complete_netzerocalc_html = """<!DOCTYPE html>
                   </tr>
                 </thead>
                 <tbody id="bomTableBody" class="divide-y divide-outline-variant/40 font-medium text-xs">
-                  <!-- JS dynamically renders rows & expandable DQR drawers here -->
                 </tbody>
               </table>
             </div>
@@ -843,4 +840,4 @@ complete_netzerocalc_html = """<!DOCTYPE html>
 with open(preview_path, "w", encoding="utf-8") as f:
     f.write(complete_netzerocalc_html)
 
-print("Successfully updated preview.html with NetZeroCalc full interactive app!")
+print("Successfully generated complete preview.html!")
