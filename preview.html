@@ -895,11 +895,11 @@
 
       if (filename.endsWith('.csv')) {
         Papa.parse(file, {
-          header: true,
-          skipEmptyLines: true,
+          header: false,
+          skipEmptyLines: 'greedy',
           complete: function(results) {
             if (results.data && results.data.length > 0) {
-              parseRows(results.data);
+              parseMatrix(results.data);
             }
           }
         });
@@ -910,38 +910,100 @@
           let workbook = XLSX.read(data, { type: 'array' });
           let firstSheetName = workbook.SheetNames[0];
           let worksheet = workbook.Sheets[firstSheetName];
-          let jsonRows = XLSX.utils.sheet_to_json(worksheet);
-          if (jsonRows && jsonRows.length > 0) {
-            parseRows(jsonRows);
+          let matrix = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+          if (matrix && matrix.length > 0) {
+            parseMatrix(matrix);
           }
         };
         reader.readAsArrayBuffer(file);
       }
     }
 
-    function parseRows(rows) {
-      rows.forEach((row, idx) => {
-        let name = row.description || row.Description || row.item || row.Item || row.material || row.Material || `Imported Item ${idx+1}`;
-        let qty = parseFloat(row.quantity || row.Quantity || row.qty || row.Qty || 100);
-        let unit = row.unit || row.Unit || 'kg';
+    function parseMatrix(matrix) {
+      let candidateRows = [];
 
-        if (name) {
-          let match = matchMaterial(name, unit);
-          sampleBOM.unshift({
-            id: Date.now() + idx,
-            name: name,
-            qty: isNaN(qty) ? 100 : qty,
-            unit: unit,
-            process: match.process,
-            ef: match.ef,
-            sim: match.sim,
-            ter: match.ter, ger: match.ger, tir: match.tir,
-            risk: match.risk,
-            status: match.status,
-            approved: false
-          });
+      matrix.forEach((row, rIdx) => {
+        if (!Array.isArray(row) || row.length === 0) return;
+
+        let cells = row.map(c => (c !== null && c !== undefined) ? String(c).trim() : '');
+        let firstCell = cells[0] || '';
+        let firstLower = firstCell.toLowerCase();
+
+        // Skip headers, totals, notes, formulas
+        if (!firstCell ||
+            firstLower.startsWith('scope ') ||
+            firstLower.startsWith('category / item') ||
+            firstLower.startsWith('category') ||
+            firstLower.includes('total') ||
+            firstLower.includes('note:') ||
+            firstLower.includes('formula')) {
+          return;
         }
+
+        let name = firstCell;
+        let rawQty = cells[1] || '';
+        let unit = cells[2] || 'kg';
+        let rawEf = cells[3] || '';
+
+        let qty = parseFloat(rawQty);
+        let ef = parseFloat(rawEf);
+
+        if (isNaN(qty)) {
+          let num1 = parseFloat(cells[0]);
+          let num2 = parseFloat(cells[2]);
+          if (!isNaN(num1) && isNaN(parseFloat(name))) {
+            qty = num1;
+            name = cells[1] || name;
+          } else if (!isNaN(num2)) {
+            qty = num2;
+          }
+        }
+
+        if (!name || name.length < 2) return;
+
+        // Skip subheaders with no quantity and no unit
+        if ((isNaN(qty) || qty === 0) && (!cells[2] || cells[2].length === 0 || cells[2] === '0')) {
+          return;
+        }
+
+        candidateRows.push({
+          rawName: name,
+          qty: isNaN(qty) ? 0 : qty,
+          unit: unit || 'kg',
+          ef: (!isNaN(ef) && ef > 0) ? ef : null,
+          rowIdx: rIdx
+        });
       });
+
+      let activeRows = candidateRows.filter(r => r.qty > 0);
+      let itemsToImport = activeRows.length > 0 ? activeRows : candidateRows.map(r => ({...r, qty: r.qty || 100}));
+
+      if (itemsToImport.length === 0) {
+        alert("No valid BOM materials found in the uploaded file.");
+        return;
+      }
+
+      itemsToImport.forEach((item, idx) => {
+        let match = matchMaterial(item.rawName, item.unit);
+        let finalEf = item.ef !== null ? item.ef : match.ef;
+
+        sampleBOM.unshift({
+          id: Date.now() + idx,
+          name: item.rawName,
+          qty: item.qty,
+          unit: item.unit,
+          process: item.ef !== null ? `${item.rawName} (Template Factor: ${item.ef} kgCO₂e/${item.unit})` : match.process,
+          ef: finalEf,
+          sim: item.ef !== null ? 0.99 : match.sim,
+          ter: item.ef !== null ? 1 : match.ter,
+          ger: item.ef !== null ? 1 : match.ger,
+          tir: item.ef !== null ? 1 : match.tir,
+          risk: item.ef !== null ? "LOW" : match.risk,
+          status: "Auto-Matched",
+          approved: true
+        });
+      });
+
       closeImportModal();
       renderTable();
     }
