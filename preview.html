@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 
   <script id="tailwind-config">
     tailwind.config = {
@@ -160,13 +161,18 @@
       </div>
 
       <div class="flex items-center gap-3">
-        <a id="backend-status-pill" href="http://localhost:8000/docs" target="_blank" title="Click to view FastAPI Backend API Docs (Swagger UI)" class="flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-colors">
+        <div id="saveIndicator" class="hidden flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-surface-container-high text-on-surface-variant border border-outline-variant/50 transition-colors">
+          <span class="material-symbols-outlined text-sm">cloud_done</span>
+          <span>Saved</span>
+        </div>
+        
+        <a id="backend-status-pill" href="https://e-credits-api.onrender.com/docs" target="_blank" title="Click to view FastAPI Backend API Docs (Swagger UI)" class="flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-colors">
           <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span> NetZero API Active 🔗
         </a>
         
         <button id="auditorLoginBtn" onclick="openGoogleKycModal()" class="flex items-center gap-1.5 px-3 py-1.5 bg-surface-container-high border border-outline-variant rounded-lg text-xs font-bold text-on-surface hover:bg-surface-container-highest transition-colors">
           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
-          <span id="auditorLoginText">Auditor Google Login</span>
+          <span id="auditorLoginText">User Google Login</span>
         </button>
 
         <div class="hidden lg:block relative w-64">
@@ -637,7 +643,7 @@
     </div>
   </div>
 
-  <!-- Google OAuth & Lead Auditor KYC Verification Modal -->
+  <!-- Google OAuth & User Account Verification Modal -->
   <div id="googleKycModal" class="modal-overlay">
     <div class="bg-white rounded-2xl p-8 max-w-md w-full sci-shadow relative border border-outline-variant text-on-surface">
       <button onclick="closeGoogleKycModal()" class="absolute top-4 right-4 text-on-surface-variant hover:text-on-surface font-bold text-xl">✕</button>
@@ -646,36 +652,54 @@
         <div class="inline-flex p-3 rounded-full bg-primary/10 text-primary mb-1">
           <svg class="w-8 h-8" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
         </div>
-        <h2 class="text-xl font-black text-on-surface">Auditor Identity Verification</h2>
-        <p class="text-xs text-on-surface-variant">Sign in with Google OAuth & Lead Auditor KYC credentials to sign ISAE 3410 Assurance Statements & issue E-Credits.</p>
+        <h2 class="text-xl font-black text-on-surface">User & Practitioner Sign-In</h2>
+        <p class="text-xs text-on-surface-variant">Sign in with Google OAuth or User credentials to save data in real-time and export ISO 14064 Assurance Reports & E-Credits.</p>
       </div>
 
-      <button onclick="simulateGoogleOAuth()" class="w-full py-3 bg-white border border-outline-variant hover:bg-surface-container-high rounded-xl font-bold text-xs text-on-surface flex items-center justify-center gap-3 transition-all sci-shadow mb-4">
-        <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
-        Sign in with Google OAuth
-      </button>
+      <div id="g_id_onload"
+           data-client_id="YOUR_GOOGLE_CLIENT_ID_HERE.apps.googleusercontent.com"
+           data-context="signin"
+           data-ux_mode="popup"
+           data-callback="handleGoogleCredentialResponse"
+           data-auto_prompt="false">
+      </div>
+      
+      <div class="flex justify-center mb-4">
+        <div class="g_id_signin"
+             data-type="standard"
+             data-shape="rectangular"
+             data-theme="outline"
+             data-text="signin_with"
+             data-size="large"
+             data-logo_alignment="left">
+        </div>
+      </div>
+      
+      <div class="text-[10px] text-center text-error mb-4">
+        (Note: Google Sign-In requires a valid Client ID. Edit the source code to replace "YOUR_GOOGLE_CLIENT_ID_HERE".)
+      </div>
 
       <div class="relative my-4 text-center">
         <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-outline-variant/60"></div></div>
-        <span class="relative bg-white px-3 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">or KYC Lead Auditor Credentials</span>
+        <span class="relative bg-white px-3 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">or User Account Credentials</span>
       </div>
 
       <form onsubmit="submitKycForm(event)" class="space-y-3 text-left">
         <div>
-          <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Auditor Full Name</label>
+          <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">User / Auditor Full Name</label>
           <input id="kycAuditorName" type="text" required value="Dr. Rajesh V. Sharma" class="w-full text-xs font-semibold p-2 border border-outline-variant rounded-lg outline-none focus:ring-1 focus:ring-primary bg-white"/>
         </div>
         <div>
-          <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Assurance Body / Organization</label>
+          <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Company / Assurance Body</label>
           <input id="kycAssuranceBody" type="text" required value="KPMG Sustainability Services India" class="w-full text-xs font-semibold p-2 border border-outline-variant rounded-lg outline-none focus:ring-1 focus:ring-primary bg-white"/>
         </div>
         <div>
-          <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">ISO 14064 Lead Auditor Cert No.</label>
+          <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">License / Registration ID</label>
           <input id="kycCertNo" type="text" required value="IRCA-ISO14064-2026-88492" class="w-full text-xs font-semibold p-2 border border-outline-variant rounded-lg outline-none focus:ring-1 focus:ring-primary bg-white"/>
         </div>
 
         <button type="submit" class="w-full py-2.5 bg-primary text-white font-bold text-xs rounded-xl hover:bg-primary-container transition-colors shadow-sm mt-4">
-          Complete KYC & Authenticate Auditor
+          Authenticate User & Enable Realtime Sync
         </button>
       </form>
     </div>
@@ -1015,10 +1039,15 @@
             </td>
             <td class="px-4 py-3 text-right font-mono-data font-bold text-on-surface">${co2e} t</td>
             <td class="px-4 py-3 text-right" onclick="event.stopPropagation()">
-              ${item.approved ? 
-                `<span class="text-primary font-bold text-[11px] flex items-center justify-end gap-1"><span class="material-symbols-outlined text-sm">check_circle</span> Approved</span>` :
-                `<button onclick="approveRow(${item.id})" class="px-2.5 py-1 bg-primary text-white text-[11px] font-bold rounded-lg hover:bg-primary-container">Approve</button>`
-              }
+              <div class="flex items-center justify-end gap-1.5">
+                ${item.approved ? 
+                  `<span class="text-primary font-bold text-[11px] flex items-center gap-1"><span class="material-symbols-outlined text-sm">check_circle</span> Approved</span>` :
+                  `<button onclick="approveRow(${item.id})" class="px-2.5 py-1 bg-primary text-white text-[11px] font-bold rounded-lg hover:bg-primary-container">Approve</button>`
+                }
+                <button onclick="deleteRow(${item.id})" title="Delete this item" class="p-1 text-error/60 hover:text-error hover:bg-error-container/30 rounded-lg transition-colors">
+                  <span class="material-symbols-outlined text-sm">delete</span>
+                </button>
+              </div>
             </td>
           `;
 
@@ -1183,7 +1212,16 @@
     }
 
     function clearAllItems() {
+      if (!confirm('Are you sure you want to clear ALL BOM items? This cannot be undone.')) return;
       sampleBOM = [];
+      renderTable();
+    }
+
+    function deleteRow(id) {
+      let item = sampleBOM.find(i => i.id === id);
+      if (!item) return;
+      if (!confirm(`Delete "${item.name}" from BOM?`)) return;
+      sampleBOM = sampleBOM.filter(i => i.id !== id);
       renderTable();
     }
 
@@ -1283,17 +1321,42 @@
       name: "Dr. Rajesh V. Sharma",
       body: "KPMG Sustainability Services India",
       cert: "IRCA-ISO14064-2026-88492",
-      authenticated: false
+      authenticated: false,
+      picture: null
     };
+
+    const BACKEND_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+        ? 'http://localhost:8000'
+        : 'https://e-credits-api.onrender.com';
+
+    // Update backend link on load
+    document.addEventListener("DOMContentLoaded", () => {
+      let bLink = document.getElementById("backend-status-pill");
+      if(bLink) bLink.href = BACKEND_URL + "/docs";
+    });
 
     function openGoogleKycModal() { document.getElementById("googleKycModal").classList.add("open"); }
     function closeGoogleKycModal() { document.getElementById("googleKycModal").classList.remove("open"); }
 
-    function simulateGoogleOAuth() {
+    function handleGoogleCredentialResponse(response) {
+      // Decode JWT token
+      const base64Url = response.credential.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+      
+      const payload = JSON.parse(jsonPayload);
+      
+      currentAuditor.name = payload.name;
+      currentAuditor.body = "Google Authenticated User";
+      currentAuditor.cert = payload.email;
+      currentAuditor.picture = payload.picture;
       currentAuditor.authenticated = true;
+      
       updateAuditorUiState();
       closeGoogleKycModal();
-      showSmsToast("Google OAuth Authentication successful! Lead Auditor identity verified.");
+      showSmsToast(`Google Sign-In successful! Welcome, ${payload.name}`);
     }
 
     function submitKycForm(e) {
@@ -1311,11 +1374,24 @@
       let btnText = document.getElementById("auditorLoginText");
       let btn = document.getElementById("auditorLoginBtn");
       if (currentAuditor.authenticated) {
-        if (btnText) btnText.innerText = `Verified: ${currentAuditor.name}`;
-        if (btn) btn.className = "flex items-center gap-1.5 px-3 py-1.5 bg-emerald-100 border border-emerald-300 rounded-lg text-xs font-extrabold text-emerald-900";
+        if (btnText) btnText.innerHTML = currentAuditor.picture 
+            ? `<div class="flex items-center gap-1.5"><img src="${currentAuditor.picture}" class="w-4 h-4 rounded-full" /> <span>Verified: ${currentAuditor.name}</span></div>` 
+            : `Verified: ${currentAuditor.name}`;
+        if (btn) {
+          btn.className = "flex items-center gap-1.5 px-3 py-1.5 bg-emerald-100 border border-emerald-300 rounded-lg text-xs font-extrabold text-emerald-900";
+          // Remove default SVG icon if picture is present
+          if (currentAuditor.picture) {
+             let svg = btn.querySelector('svg');
+             if (svg) svg.style.display = 'none';
+          }
+        }
       } else {
-        if (btnText) btnText.innerText = "Auditor Google Login";
-        if (btn) btn.className = "flex items-center gap-1.5 px-3 py-1.5 bg-surface-container-high border border-outline-variant rounded-lg text-xs font-bold text-on-surface hover:bg-surface-container-highest transition-colors";
+        if (btnText) btnText.innerText = "User Google Login";
+        if (btn) {
+           btn.className = "flex items-center gap-1.5 px-3 py-1.5 bg-surface-container-high border border-outline-variant rounded-lg text-xs font-bold text-on-surface hover:bg-surface-container-highest transition-colors";
+           let svg = btn.querySelector('svg');
+           if (svg) svg.style.display = 'block';
+        }
       }
 
       let b4Stamp = document.getElementById("b4AuditStamp");
@@ -1656,6 +1732,7 @@
       saveState();
     }
 
+    let saveTimeout = null;
     function saveState() {
       try {
         localStorage.setItem('netzerocalc_bom', JSON.stringify(sampleBOM));
@@ -1665,7 +1742,50 @@
           std: document.getElementById("standardSelect")?.value || ''
         };
         localStorage.setItem('netzerocalc_meta', JSON.stringify(meta));
+
+        // Debounced Real-Time Backend Persistence
+        clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(syncToBackend, 600);
       } catch(e) {}
+    }
+
+    async function syncToBackend() {
+      let indicator = document.getElementById("saveIndicator");
+      if(indicator) {
+        indicator.classList.remove("hidden");
+        indicator.className = "flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-300 transition-colors";
+        indicator.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">sync</span><span>Saving...</span>';
+      }
+      
+      try {
+        let payload = {
+          project_name: document.getElementById("projectNameInput")?.value || 'EV Battery Assembly Line (India)',
+          company_name: document.getElementById("companyNameInput")?.value || 'Tata Motors ESG Division',
+          standard: document.getElementById("standardSelect")?.value || 'ISO 14064-1 & GHG Protocol Scope 1-3',
+          bom_items: sampleBOM,
+          updated_at: new Date().toISOString()
+        };
+        let res = await fetch(BACKEND_URL + '/projects', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          signal: AbortSignal.timeout(2000)
+        });
+        
+        if (res.ok && indicator) {
+           indicator.className = "flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 transition-colors";
+           indicator.innerHTML = '<span class="material-symbols-outlined text-sm">cloud_done</span><span>Saved</span>';
+           setTimeout(() => { if(indicator) indicator.classList.add("hidden"); }, 2000);
+        } else if (indicator) {
+           indicator.className = "flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-error-container text-error border border-error/50 transition-colors";
+           indicator.innerHTML = '<span class="material-symbols-outlined text-sm">cloud_off</span><span>Save Error</span>';
+        }
+      } catch(e) {
+        if(indicator) {
+           indicator.className = "flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-error-container text-error border border-error/50 transition-colors";
+           indicator.innerHTML = '<span class="material-symbols-outlined text-sm">cloud_off</span><span>Offline</span>';
+        }
+      }
     }
 
     function loadState() {
@@ -1688,7 +1808,7 @@
 
     async function checkBackendHealth() {
       try {
-        let res = await fetch('http://localhost:8000/health', { signal: AbortSignal.timeout(1500) });
+        let res = await fetch(BACKEND_URL + '/health', { signal: AbortSignal.timeout(1500) });
         if (res.ok) {
           let el = document.getElementById("backend-status-pill");
           if (el) {
