@@ -466,14 +466,23 @@
       <p class="text-xs text-on-surface-variant mb-6">Upload CSV or XLSX Excel spreadsheets or manually add components.</p>
 
       <!-- Dropzone -->
-      <div onclick="document.getElementById('csvFileInput').click()" class="border-2 border-dashed border-outline-variant hover:border-primary rounded-xl p-8 text-center cursor-pointer bg-surface-container-low transition-colors mb-6">
+      <div onclick="document.getElementById('csvFileInput').click()" class="border-2 border-dashed border-outline-variant hover:border-primary rounded-xl p-6 text-center cursor-pointer bg-surface-container-low transition-colors mb-4">
         <input type="file" id="csvFileInput" accept=".csv,.xlsx,.xls" onchange="handleFileUpload(event)" class="hidden"/>
-        <span class="material-symbols-outlined text-4xl text-primary mb-2">cloud_upload</span>
-        <div class="font-bold text-xs text-on-surface mb-1">Click to browse or drag & drop CSV/XLSX</div>
-        <div class="text-[11px] text-on-surface-variant">Supports columns: Description, Quantity, Unit</div>
+        <span class="material-symbols-outlined text-3xl text-primary mb-1">cloud_upload</span>
+        <div class="font-bold text-xs text-on-surface mb-0.5">Click to browse or drag & drop CSV/XLSX</div>
+        <div class="text-[11px] text-on-surface-variant">Supports standard BOM files & GHG Master Calculator templates</div>
       </div>
 
-      <div class="relative flex py-2 items-center mb-6">
+      <!-- Paste CSV Collapsible -->
+      <details class="mb-4 text-xs">
+        <summary class="font-bold text-primary cursor-pointer hover:underline py-1">📋 Or paste raw CSV text</summary>
+        <div class="mt-2 space-y-2">
+          <textarea id="pasteCsvArea" rows="4" placeholder="Category / Item,Quantity (Input),Unit,Emission Factor&#10;Diesel Generator (DG Sets),65,Liters,2.656&#10;CNG Vehicles,15,kg,2.686&#10;Taxi Travel,256,km,0.14" class="w-full text-xs font-mono p-2 border border-outline-variant rounded-lg bg-white outline-none focus:ring-1 focus:ring-primary"></textarea>
+          <button type="button" onclick="handlePastedCsv()" class="px-3 py-1.5 bg-primary text-white font-bold text-xs rounded-lg hover:bg-primary-container">Import Pasted CSV</button>
+        </div>
+      </details>
+
+      <div class="relative flex py-2 items-center mb-4">
         <div class="flex-grow border-t border-outline-variant"></div>
         <span class="flex-shrink mx-4 text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">or add item manually</span>
         <div class="flex-grow border-t border-outline-variant"></div>
@@ -493,10 +502,17 @@
           <label class="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Unit</label>
           <select id="manualUnit" class="w-full text-xs font-semibold p-2 border border-outline-variant rounded-lg outline-none focus:ring-1 focus:ring-primary bg-white">
             <option value="kg">kg</option>
-            <option value="pcs">pcs</option>
+            <option value="Liters">Liters</option>
             <option value="kWh">kWh</option>
-            <option value="tkm">tkm</option>
+            <option value="km">km</option>
+            <option value="pcs">pcs</option>
+            <option value="INR">INR</option>
+            <option value="tonne-km">tonne-km</option>
+            <option value="p-km">p-km</option>
+            <option value="m3">m3</option>
             <option value="m">m</option>
+            <option value="Units">Units</option>
+            <option value="Nights">Nights</option>
           </select>
         </div>
         <div class="flex items-end">
@@ -885,6 +901,21 @@
       document.getElementById("manualName").value = "";
       closeImportModal();
       renderTable();
+    }
+
+    function handlePastedCsv() {
+      let rawText = document.getElementById("pasteCsvArea").value;
+      if (!rawText || !rawText.trim()) return;
+      Papa.parse(rawText, {
+        header: false,
+        skipEmptyLines: 'greedy',
+        complete: function(results) {
+          if (results.data && results.data.length > 0) {
+            parseMatrix(results.data);
+            document.getElementById("pasteCsvArea").value = "";
+          }
+        }
+      });
     }
 
     function handleFileUpload(evt) {
