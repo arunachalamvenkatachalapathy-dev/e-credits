@@ -699,6 +699,11 @@
       };
     }
 
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+
     const CREDIT_RATE_INR = 2900; // ₹ per tCO₂e (Indian Carbon Market rate)
 
     const demoItems = [
@@ -751,11 +756,11 @@
 
           tr.innerHTML = `
             <td class="px-4 py-3 text-outline-variant"><span id="chevron-${item.id}" class="material-symbols-outlined text-base transition-transform">chevron_right</span></td>
-            <td class="px-4 py-3 font-semibold text-on-surface">${item.name}</td>
-            <td class="px-4 py-3 font-mono-data text-right text-on-surface-variant">${item.qty.toLocaleString()} ${item.unit}</td>
+            <td class="px-4 py-3 font-semibold text-on-surface">${escapeHtml(item.name)}</td>
+            <td class="px-4 py-3 font-mono-data text-right text-on-surface-variant">${item.qty.toLocaleString()} ${escapeHtml(item.unit)}</td>
             <td class="px-4 py-3">
-              <div class="font-medium text-on-surface truncate max-w-[280px]">${item.process}</div>
-              <div class="text-[10px] text-on-surface-variant">${document.getElementById("dbSelect").value} • EF: ${item.ef} kgCO2e/${item.unit}</div>
+              <div class="font-medium text-on-surface truncate max-w-[280px]">${escapeHtml(item.process)}</div>
+              <div class="text-[10px] text-on-surface-variant">${escapeHtml(document.getElementById("dbSelect").value)} • EF: ${item.ef} kgCO2e/${escapeHtml(item.unit)}</div>
             </td>
             <td class="px-4 py-3 text-center">
               <div class="flex gap-1 justify-center">
@@ -1088,7 +1093,11 @@
       let csvContent = "data:text/csv;charset=utf-8,Item,Quantity,Unit,Matched Process,Emission Factor,Risk,Footprint (tCO2e)\n";
       sampleBOM.forEach(i => {
         let co2e = ((i.qty * i.ef) / 1000).toFixed(3);
-        csvContent += `"${i.name}",${i.qty},"${i.unit}","${i.process}",${i.ef},"${i.risk}",${co2e}\n`;
+        let safeName = String(i.name || '').replace(/"/g, '""');
+        let safeUnit = String(i.unit || '').replace(/"/g, '""');
+        let safeProc = String(i.process || '').replace(/"/g, '""');
+        let safeRisk = String(i.risk || '').replace(/"/g, '""');
+        csvContent += `"${safeName}",${i.qty},"${safeUnit}","${safeProc}",${i.ef},"${safeRisk}",${co2e}\n`;
       });
       let encodedUri = encodeURI(csvContent);
       let link = document.createElement("a");
