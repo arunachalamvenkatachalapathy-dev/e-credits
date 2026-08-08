@@ -242,7 +242,7 @@
                   <label class="font-bold text-[11px] text-on-surface-variant uppercase tracking-wider">Min Confidence</label>
                   <span id="scoreVal" class="text-xs font-bold text-primary font-mono-data">75%</span>
                 </div>
-                <input id="scoreSlider" oninput="document.getElementById('scoreVal').innerText = this.value + '%'; filterTable();" type="range" min="50" max="95" value="75" class="w-full accent-primary h-1.5 bg-surface-dim rounded-lg cursor-pointer">
+                <input id="scoreSlider" oninput="document.getElementById('scoreVal').innerText = this.value + '%'; filterTable();" type="range" min="0" max="95" value="75" class="w-full accent-primary h-1.5 bg-surface-dim rounded-lg cursor-pointer">
               </div>
 
               <!-- Risk Filter Chips -->
@@ -263,7 +263,7 @@
             <div class="p-4 border-b border-outline-variant flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-[#F8FAFC]">
               <div>
                 <h2 class="font-bold text-sm text-on-surface">BOM-to-LCI Mapping Engine</h2>
-                <p id="table-subtitle" class="text-xs text-on-surface-variant mt-0.5">Loaded 5 materials from active project queue.</p>
+                <p id="table-subtitle" class="text-xs text-on-surface-variant mt-0.5">No items loaded. Import a BOM or add items manually to get started.</p>
               </div>
               <div class="flex flex-wrap gap-2">
                 <button onclick="approveAllLowRisk()" class="px-3 py-1.5 bg-primary text-on-primary rounded-lg font-bold text-xs hover:bg-primary-container transition-colors shadow-sm flex items-center gap-1">
@@ -276,7 +276,7 @@
                 </button>
                 <button onclick="loadSampleDemo()" class="px-3 py-1.5 border border-secondary/30 text-secondary hover:bg-secondary-fixed/50 rounded-lg font-bold text-xs transition-colors flex items-center gap-1">
                   <span class="material-symbols-outlined text-sm">restart_alt</span>
-                  Reset Sample BOM
+                  Load Sample Data
                 </button>
                 <button onclick="exportCSV()" class="px-3 py-1.5 border border-outline-variant rounded-lg font-semibold text-xs text-on-surface hover:bg-surface-container-low transition-colors flex items-center gap-1">
                   <span class="material-symbols-outlined text-sm">file_download</span>
@@ -579,7 +579,7 @@
       { id: 5, name: "Structural Steel Enclosure Bracket", qty: 850, unit: "kg", process: "steel production, converter, unalloyed | cutoff, S - GLO", ef: 1.85, sim: 0.88, ter: 2, ger: 2, tir: 1, risk: "MEDIUM", status: "Auto-Matched", approved: false }
     ];
 
-    let sampleBOM = [...demoItems];
+    let sampleBOM = [];
     let currentRiskFilter = "ALL";
 
     function renderTable() {
@@ -708,7 +708,13 @@
     }
 
     function loadSampleDemo() {
-      sampleBOM = [...demoItems];
+      // Append demo items that aren't already in the list
+      demoItems.forEach(demo => {
+        let exists = sampleBOM.some(item => item.name === demo.name);
+        if (!exists) {
+          sampleBOM.push({...demo, id: Date.now() + demo.id});
+        }
+      });
       renderTable();
     }
 
@@ -781,7 +787,6 @@
     function closeBig4Modal() { document.getElementById("big4Modal").classList.remove("open"); }
 
     function openCertModal() { document.getElementById("certModal").classList.add("open"); }
-    function closeCertModal() { document.getElementById("closeCertModal") || closeCertModal(); }
     function closeCertModal() { document.getElementById("certModal").classList.remove("open"); }
 
     function addManualItem(evt) {
