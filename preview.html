@@ -177,6 +177,37 @@
     <!-- Scrollable Content Canvas -->
     <div class="flex-1 overflow-y-auto p-6 lg:p-8 max-w-[1400px] w-full mx-auto flex flex-col gap-6">
       
+      <!-- Project Metadata Header Card -->
+      <div class="bg-surface-container-lowest sci-border rounded-xl p-4 sci-shadow flex flex-wrap lg:flex-nowrap justify-between items-center gap-4">
+        <div class="flex items-center gap-3 flex-1 min-w-[280px]">
+          <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold text-xl sci-border shrink-0">
+            <span class="material-symbols-outlined text-primary">badge</span>
+          </div>
+          <div class="flex-1">
+            <label class="block text-[10px] font-extrabold text-on-surface-variant uppercase tracking-wider mb-0.5">Project Name</label>
+            <input id="projectNameInput" onchange="updateProjectHeader()" type="text" value="EV Battery Assembly Line (India)" class="w-full text-sm font-black text-primary bg-surface-container-low border border-outline-variant/60 rounded-lg px-2.5 py-1 outline-none focus:ring-1 focus:ring-primary"/>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3 flex-1 min-w-[240px]">
+          <div class="flex-1">
+            <label class="block text-[10px] font-extrabold text-on-surface-variant uppercase tracking-wider mb-0.5">Reporting Organization</label>
+            <input id="companyNameInput" onchange="updateProjectHeader()" type="text" value="Tata Motors ESG Division" class="w-full text-xs font-bold text-on-surface bg-surface-container-low border border-outline-variant/60 rounded-lg px-2.5 py-1 outline-none focus:ring-1 focus:ring-primary"/>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3 min-w-[200px]">
+          <div>
+            <label class="block text-[10px] font-extrabold text-on-surface-variant uppercase tracking-wider mb-0.5">Assurance Framework</label>
+            <select id="standardSelect" onchange="updateProjectHeader()" class="text-xs font-semibold bg-surface-container-low border border-outline-variant/60 rounded-lg px-2.5 py-1 text-on-surface outline-none focus:ring-1 focus:ring-primary">
+              <option value="ISO 14064-1 & GHG Protocol Scope 1-3" selected>ISO 14064-1 & GHG Protocol</option>
+              <option value="ISO 14064-2 Project Accounting">ISO 14064-2 Project</option>
+              <option value="EU CBAM Embedded Emissions">EU CBAM Disclosure</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
       <!-- Interactive Workflow Progress Banner -->
       <div class="bg-surface-container-lowest sci-border rounded-xl p-4 sci-shadow flex flex-wrap md:flex-nowrap justify-between items-center gap-4">
         <div class="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity" onclick="switchView('workbench'); openImportModal();">
@@ -379,11 +410,11 @@
               </thead>
               <tbody class="divide-y divide-outline-variant/40 font-medium">
                 <tr class="hover:bg-surface-container-low">
-                  <td class="px-4 py-3 font-bold text-primary">EV Battery Assembly Line (India)</td>
-                  <td class="px-4 py-3">GHG Protocol / ISO 14064-1</td>
-                  <td class="px-4 py-3 font-mono-data">5 / 5 Items (100%)</td>
+                  <td id="projTableTitle" class="px-4 py-3 font-bold text-primary">EV Battery Assembly Line (India)</td>
+                  <td id="projTableStd" class="px-4 py-3">ISO 14064-1 & GHG Protocol Scope 1-3</td>
+                  <td class="px-4 py-3 font-mono-data">Active Project Queue</td>
                   <td class="px-4 py-3"><span class="px-2.5 py-0.5 rounded-full bg-primary/10 text-primary font-bold text-[10px] border border-primary/20">ACTIVE WORKSPACE</span></td>
-                  <td class="px-4 py-3 text-right font-mono-data">2026-08-07</td>
+                  <td class="px-4 py-3 text-right font-mono-data">2026-08-08</td>
                 </tr>
                 <tr class="hover:bg-surface-container-low">
                   <td class="px-4 py-3 font-bold text-on-surface">Solar Array Decarbonization Project</td>
@@ -588,7 +619,7 @@
         </div>
 
         <div class="text-xs space-y-3 text-on-surface-variant leading-relaxed">
-          <p>We have performed a limited assurance engagement on the Carbon Footprint & Scope 3 inventory calculations for <strong class="text-on-surface">EV Battery Assembly Line (India)</strong> using <strong id="b4Db" class="text-on-surface">India GHG Factors v6</strong>.</p>
+          <p>We have performed an independent practitioner limited assurance engagement on the Carbon Footprint & GHG Inventory calculations for <strong id="b4Title" class="text-on-surface font-bold">EV Battery Assembly Line (India)</strong> (<strong id="b4Company" class="text-on-surface font-bold">Tata Motors ESG Division</strong>) under <strong id="b4Std" class="text-on-surface font-bold">ISO 14064-1 & GHG Protocol Scope 1-3</strong> using <strong id="b4Db" class="text-on-surface font-bold">India GHG Factors v6</strong>.</p>
           <div class="p-4 bg-surface-container-low rounded-xl border border-outline-variant/60 font-medium">
             <strong>Practitioner Conclusion:</strong> Based on the audit procedures performed, nothing has come to our attention that causes us to believe that the quantified GHG Inventory footprint of <strong id="b4Total" class="text-primary font-mono-data font-bold">0.000 tCO₂e</strong> is not prepared in all material respects in accordance with GHG Protocol and ISO 14064-1:2018 requirements.
           </div>
@@ -610,7 +641,7 @@
       <div class="text-center space-y-4">
         <div class="inline-block px-3 py-1 bg-primary/10 text-primary font-extrabold text-[10px] tracking-widest rounded-full uppercase border border-primary/20">VERIFIED E-CREDIT YIELD</div>
         <h2 class="text-2xl font-black text-on-surface">Carbon Reduction Certificate</h2>
-        <p class="text-xs text-on-surface-variant">Issued to: <strong class="text-on-surface">EV Battery Assembly Line (India)</strong></p>
+        <p class="text-xs text-on-surface-variant">Issued to: <strong id="certProjectName" class="text-on-surface font-bold">EV Battery Assembly Line (India) (Tata Motors ESG Division)</strong></p>
         
         <div class="grid grid-cols-2 gap-4 p-6 bg-surface-container-low rounded-xl border border-outline-variant/60 my-4">
           <div>
@@ -631,29 +662,29 @@
   </div>
 
   <script>
-    // Material keyword-to-LCI database for intelligent matching
+    // Material keyword-to-LCI database for intelligent matching & scope classification
     const materialDB = [
-      { keywords: ["alumin", "aluminium", "aluminum", "bauxite"], process: "aluminium alloy production, AlMg3 | cutoff, S - IN", ef: 14.2, ter: 1, ger: 2, tir: 1, sim: 0.96 },
-      { keywords: ["steel", "mild steel", "stainless", "ms ", "iron", "cast iron"], process: "steel production, converter, unalloyed | cutoff, S - IN", ef: 1.85, ter: 1, ger: 1, tir: 1, sim: 0.94 },
-      { keywords: ["copper", "cu ", "bus bar"], process: "copper wire drawing, technology mix | cutoff, S - IN", ef: 6.5, ter: 1, ger: 1, tir: 1, sim: 0.93 },
-      { keywords: ["pvc", "polyvinyl", "vinyl"], process: "polyvinylchloride production, emulsion | cutoff, S - GLO", ef: 2.41, ter: 2, ger: 3, tir: 1, sim: 0.87 },
-      { keywords: ["cable", "wire", "conductor"], process: "cable production, three-conductor | cutoff, S - GLO", ef: 3.2, ter: 2, ger: 2, tir: 1, sim: 0.85 },
-      { keywords: ["plastic", "hdpe", "ldpe", "pp ", "polypropylene", "polyethylene", "nylon", "abs"], process: "polyethylene production, high density | cutoff, S - IN", ef: 2.52, ter: 1, ger: 2, tir: 1, sim: 0.91 },
-      { keywords: ["rubber", "gasket", "elastomer", "silicone", "neoprene"], process: "synthetic rubber production | cutoff, S - GLO", ef: 3.18, ter: 2, ger: 3, tir: 2, sim: 0.78 },
-      { keywords: ["glass", "fiberglass", "borosilicate"], process: "flat glass production, uncoated | cutoff, S - IN", ef: 1.24, ter: 1, ger: 1, tir: 1, sim: 0.92 },
-      { keywords: ["cement", "concrete", "mortar"], process: "cement production, Portland | cutoff, S - IN", ef: 0.93, ter: 1, ger: 1, tir: 1, sim: 0.97 },
-      { keywords: ["paint", "coating", "primer", "epoxy"], process: "alkyd paint production, solvent-based | cutoff, S - GLO", ef: 3.56, ter: 2, ger: 3, tir: 2, sim: 0.74 },
-      { keywords: ["wood", "timber", "plywood", "mdf"], process: "plywood production, for outdoor use | cutoff, S - IN", ef: 0.68, ter: 1, ger: 1, tir: 1, sim: 0.90 },
-      { keywords: ["paper", "cardboard", "packaging"], process: "corrugated board box production | cutoff, S - IN", ef: 1.12, ter: 1, ger: 1, tir: 1, sim: 0.89 },
-      { keywords: ["electric", "electricity", "grid", "power", "kwh"], process: "Electricity Grid Mix CEA India 2024", ef: 0.716, ter: 1, ger: 1, tir: 1, sim: 0.99 },
-      { keywords: ["diesel", "fuel", "petrol", "gasoline"], process: "diesel, burned in industrial boiler | cutoff, S - IN", ef: 3.17, ter: 1, ger: 1, tir: 1, sim: 0.95 },
-      { keywords: ["water", "h2o"], process: "tap water production, conventional treatment | cutoff, S - IN", ef: 0.000344, ter: 1, ger: 1, tir: 1, sim: 0.98 },
-      { keywords: ["transport", "logistics", "freight", "shipping"], process: "transport, freight, lorry 16-32t, EURO5 | cutoff, S - IN", ef: 0.107, ter: 2, ger: 2, tir: 1, sim: 0.82 },
-      { keywords: ["polyurethane", "pu ", "foam"], process: "polyurethane production, flexible foam | cutoff, S - GLO", ef: 4.8, ter: 3, ger: 3, tir: 2, sim: 0.65 },
-      { keywords: ["brass", "bronze", "zinc", "tin", "lead", "solder"], process: "brass production | cutoff, S - GLO", ef: 4.2, ter: 2, ger: 3, tir: 2, sim: 0.80 },
-      { keywords: ["lithium", "battery", "cell", "li-ion"], process: "battery cell production, Li-ion, NMC | cutoff, S - GLO", ef: 12.5, ter: 2, ger: 3, tir: 1, sim: 0.88 },
-      { keywords: ["solar", "pv ", "photovoltaic", "panel"], process: "photovoltaic panel production, multi-Si | cutoff, S - GLO", ef: 35.0, ter: 2, ger: 3, tir: 1, sim: 0.86 },
-      { keywords: ["extrusion", "profile", "extruded"], process: "aluminium extrusion profile production | cutoff, S - IN", ef: 15.8, ter: 1, ger: 1, tir: 1, sim: 0.93 }
+      { keywords: ["alumin", "aluminium", "aluminum", "bauxite"], process: "aluminium alloy production, AlMg3 | cutoff, S - IN", ef: 14.2, ter: 1, ger: 2, tir: 1, sim: 0.96, scope: "Scope 3" },
+      { keywords: ["steel", "mild steel", "stainless", "ms ", "iron", "cast iron"], process: "steel production, converter, unalloyed | cutoff, S - IN", ef: 1.85, ter: 1, ger: 1, tir: 1, sim: 0.94, scope: "Scope 3" },
+      { keywords: ["copper", "cu ", "bus bar"], process: "copper wire drawing, technology mix | cutoff, S - IN", ef: 6.5, ter: 1, ger: 1, tir: 1, sim: 0.93, scope: "Scope 3" },
+      { keywords: ["pvc", "polyvinyl", "vinyl"], process: "polyvinylchloride production, emulsion | cutoff, S - GLO", ef: 2.41, ter: 2, ger: 3, tir: 1, sim: 0.87, scope: "Scope 3" },
+      { keywords: ["cable", "wire", "conductor"], process: "cable production, three-conductor | cutoff, S - GLO", ef: 3.2, ter: 2, ger: 2, tir: 1, sim: 0.85, scope: "Scope 3" },
+      { keywords: ["plastic", "hdpe", "ldpe", "pp ", "polypropylene", "polyethylene", "nylon", "abs"], process: "polyethylene production, high density | cutoff, S - IN", ef: 2.52, ter: 1, ger: 2, tir: 1, sim: 0.91, scope: "Scope 3" },
+      { keywords: ["rubber", "gasket", "elastomer", "silicone", "neoprene"], process: "synthetic rubber production | cutoff, S - GLO", ef: 3.18, ter: 2, ger: 3, tir: 2, sim: 0.78, scope: "Scope 3" },
+      { keywords: ["glass", "fiberglass", "borosilicate"], process: "flat glass production, uncoated | cutoff, S - IN", ef: 1.24, ter: 1, ger: 1, tir: 1, sim: 0.92, scope: "Scope 3" },
+      { keywords: ["cement", "concrete", "mortar"], process: "cement production, Portland | cutoff, S - IN", ef: 0.93, ter: 1, ger: 1, tir: 1, sim: 0.97, scope: "Scope 3" },
+      { keywords: ["paint", "coating", "primer", "epoxy"], process: "alkyd paint production, solvent-based | cutoff, S - GLO", ef: 3.56, ter: 2, ger: 3, tir: 2, sim: 0.74, scope: "Scope 3" },
+      { keywords: ["wood", "timber", "plywood", "mdf"], process: "plywood production, for outdoor use | cutoff, S - IN", ef: 0.68, ter: 1, ger: 1, tir: 1, sim: 0.90, scope: "Scope 3" },
+      { keywords: ["paper", "cardboard", "packaging"], process: "corrugated board box production | cutoff, S - IN", ef: 1.12, ter: 1, ger: 1, tir: 1, sim: 0.89, scope: "Scope 3" },
+      { keywords: ["electric", "electricity", "grid", "power", "kwh"], process: "Electricity Grid Mix CEA India 2024", ef: 0.716, ter: 1, ger: 1, tir: 1, sim: 0.99, scope: "Scope 2" },
+      { keywords: ["diesel", "fuel", "petrol", "gasoline", "cng", "lpg", "generator", "dg set"], process: "diesel, burned in industrial boiler | cutoff, S - IN", ef: 2.656, ter: 1, ger: 1, tir: 1, sim: 0.95, scope: "Scope 1" },
+      { keywords: ["water", "h2o"], process: "tap water production, conventional treatment | cutoff, S - IN", ef: 0.000344, ter: 1, ger: 1, tir: 1, sim: 0.98, scope: "Scope 3" },
+      { keywords: ["transport", "logistics", "freight", "shipping", "taxi", "vehicle", "travel"], process: "transport, freight, lorry 16-32t, EURO5 | cutoff, S - IN", ef: 0.107, ter: 2, ger: 2, tir: 1, sim: 0.82, scope: "Scope 3" },
+      { keywords: ["polyurethane", "pu ", "foam"], process: "polyurethane production, flexible foam | cutoff, S - GLO", ef: 4.8, ter: 3, ger: 3, tir: 2, sim: 0.65, scope: "Scope 3" },
+      { keywords: ["brass", "bronze", "zinc", "tin", "lead", "solder"], process: "brass production | cutoff, S - GLO", ef: 4.2, ter: 2, ger: 3, tir: 2, sim: 0.80, scope: "Scope 3" },
+      { keywords: ["lithium", "battery", "cell", "li-ion"], process: "battery cell production, Li-ion, NMC | cutoff, S - GLO", ef: 12.5, ter: 2, ger: 3, tir: 1, sim: 0.88, scope: "Scope 3" },
+      { keywords: ["solar", "pv ", "photovoltaic", "panel"], process: "photovoltaic panel production, multi-Si | cutoff, S - GLO", ef: 35.0, ter: 2, ger: 3, tir: 1, sim: 0.86, scope: "Scope 3" },
+      { keywords: ["extrusion", "profile", "extruded"], process: "aluminium extrusion profile production | cutoff, S - IN", ef: 15.8, ter: 1, ger: 1, tir: 1, sim: 0.93, scope: "Scope 3" }
     ];
 
     function matchMaterial(name, unit) {
@@ -683,18 +714,21 @@
           ger: bestMatch.ger,
           tir: bestMatch.tir,
           risk: risk,
+          scope: bestMatch.scope || "Scope 3",
           status: risk === "HIGH" ? "Manual Review" : "Auto-Matched"
         };
       }
 
       // Fallback for unrecognized materials
       let fallbackEf = unit === 'kWh' ? 0.716 : unit === 'tkm' ? 0.107 : unit === 'm' ? 1.8 : 2.0;
+      let fallbackScope = unit === 'kWh' ? 'Scope 2' : (unit === 'Liters' || unit === 'scm') ? 'Scope 1' : 'Scope 3';
       return {
         process: `${name} — No exact LCI match found (manual verification required)`,
         ef: fallbackEf,
         sim: 0.35,
         ter: 4, ger: 4, tir: 3,
         risk: "HIGH",
+        scope: fallbackScope,
         status: "Manual Review"
       };
     }
@@ -707,11 +741,11 @@
     const CREDIT_RATE_INR = 2900; // ₹ per tCO₂e (Indian Carbon Market rate)
 
     const demoItems = [
-      { id: 1, name: "Aluminum Sheet, 5052-H32", qty: 1450, unit: "kg", process: "aluminium alloy production, AlMg3 | cutoff, S - IN", ef: 14.2, sim: 0.98, ter: 1, ger: 2, tir: 1, risk: "LOW", status: "Auto-Matched", approved: true },
-      { id: 2, name: "Custom Polyurethane Foam Insert", qty: 320, unit: "pcs", process: "polyurethane production, flexible foam | cutoff, S - GLO", ef: 4.8, sim: 0.42, ter: 4, ger: 3, tir: 2, risk: "HIGH", status: "Manual Review", approved: false },
-      { id: 3, name: "Copper Wire, 12 AWG", qty: 50, unit: "kg", process: "copper wire drawing, technology mix | cutoff, S - IN", ef: 6.5, sim: 0.94, ter: 1, ger: 1, tir: 1, risk: "LOW", status: "Auto-Matched", approved: true },
-      { id: 4, name: "Grid Electricity (Maharashtra Substation)", qty: 12000, unit: "kWh", process: "Electricity Grid Mix CEA India 2024", ef: 0.716, sim: 0.99, ter: 1, ger: 1, tir: 1, risk: "LOW", status: "Auto-Matched", approved: true },
-      { id: 5, name: "Structural Steel Enclosure Bracket", qty: 850, unit: "kg", process: "steel production, converter, unalloyed | cutoff, S - IN", ef: 1.85, sim: 0.88, ter: 2, ger: 2, tir: 1, risk: "MEDIUM", status: "Auto-Matched", approved: false }
+      { id: 1, name: "Aluminum Sheet, 5052-H32", qty: 1450, unit: "kg", process: "aluminium alloy production, AlMg3 | cutoff, S - IN", ef: 14.2, sim: 0.98, ter: 1, ger: 2, tir: 1, risk: "LOW", scope: "Scope 3", status: "Auto-Matched", approved: true },
+      { id: 2, name: "Custom Polyurethane Foam Insert", qty: 320, unit: "pcs", process: "polyurethane production, flexible foam | cutoff, S - GLO", ef: 4.8, sim: 0.42, ter: 4, ger: 3, tir: 2, risk: "HIGH", scope: "Scope 3", status: "Manual Review", approved: false },
+      { id: 3, name: "Copper Wire, 12 AWG", qty: 50, unit: "kg", process: "copper wire drawing, technology mix | cutoff, S - IN", ef: 6.5, sim: 0.94, ter: 1, ger: 1, tir: 1, risk: "LOW", scope: "Scope 3", status: "Auto-Matched", approved: true },
+      { id: 4, name: "Grid Electricity (Maharashtra Substation)", qty: 12000, unit: "kWh", process: "Electricity Grid Mix CEA India 2024", ef: 0.716, sim: 0.99, ter: 1, ger: 1, tir: 1, risk: "LOW", scope: "Scope 2", status: "Auto-Matched", approved: true },
+      { id: 5, name: "Structural Steel Enclosure Bracket", qty: 850, unit: "kg", process: "steel production, converter, unalloyed | cutoff, S - IN", ef: 1.85, sim: 0.88, ter: 2, ger: 2, tir: 1, risk: "MEDIUM", scope: "Scope 3", status: "Auto-Matched", approved: false }
     ];
 
     let sampleBOM = [];
@@ -750,23 +784,45 @@
                           item.risk === "MEDIUM" ? "bg-amber-100 text-amber-900 border-amber-300" :
                           "bg-primary/10 text-primary border-primary/20";
 
+          let scopeClass = item.scope === "Scope 1" ? "bg-purple-100 text-purple-900 border-purple-300" :
+                           item.scope === "Scope 2" ? "bg-blue-100 text-blue-900 border-blue-300" :
+                           "bg-amber-100 text-amber-900 border-amber-300";
+
           let tr = document.createElement("tr");
           tr.className = "hover:bg-surface-container-low transition-colors cursor-pointer";
           tr.onclick = () => toggleDrawer(item.id);
 
+          // Build LCI Process Dropdown Options
+          let optionsHtml = '';
+          let matchedFound = false;
+          materialDB.forEach((mat, mIdx) => {
+            let selected = (mat.process === item.process) ? 'selected' : '';
+            if (selected) matchedFound = true;
+            optionsHtml += `<option value="${mIdx}" ${selected}>${escapeHtml(mat.process)} (${mat.ef} kgCO₂e/${escapeHtml(item.unit)})</option>`;
+          });
+          if (!matchedFound && item.process) {
+            optionsHtml = `<option value="custom" selected>⚠️ ${escapeHtml(item.process)} (${item.ef} kgCO₂e/${escapeHtml(item.unit)})</option>` + optionsHtml;
+          }
+
           tr.innerHTML = `
             <td class="px-4 py-3 text-outline-variant"><span id="chevron-${item.id}" class="material-symbols-outlined text-base transition-transform">chevron_right</span></td>
-            <td class="px-4 py-3 font-semibold text-on-surface">${escapeHtml(item.name)}</td>
-            <td class="px-4 py-3 font-mono-data text-right text-on-surface-variant">${item.qty.toLocaleString()} ${escapeHtml(item.unit)}</td>
             <td class="px-4 py-3">
-              <div class="font-medium text-on-surface truncate max-w-[280px]">${escapeHtml(item.process)}</div>
-              <div class="text-[10px] text-on-surface-variant">${escapeHtml(document.getElementById("dbSelect").value)} • EF: ${item.ef} kgCO2e/${escapeHtml(item.unit)}</div>
+              <div class="font-semibold text-on-surface flex items-center gap-2">
+                ${escapeHtml(item.name)}
+                <span class="px-1.5 py-0.5 rounded text-[9px] font-extrabold border ${scopeClass}">${item.scope || 'Scope 3'}</span>
+              </div>
+            </td>
+            <td class="px-4 py-3 font-mono-data text-right text-on-surface-variant">${item.qty.toLocaleString()} ${escapeHtml(item.unit)}</td>
+            <td class="px-4 py-3" onclick="event.stopPropagation()">
+              <select onchange="changeRowLciProcess(${item.id}, this.value)" class="w-full text-xs font-medium bg-white border border-outline-variant rounded-lg p-1.5 outline-none focus:ring-1 focus:ring-primary truncate max-w-[320px]">
+                ${optionsHtml}
+              </select>
             </td>
             <td class="px-4 py-3 text-center">
               <div class="flex gap-1 justify-center">
-                <span class="dqr-pill dqr-${item.ter}">${item.ter}</span>
-                <span class="dqr-pill dqr-${item.ger}">${item.ger}</span>
-                <span class="dqr-pill dqr-${item.tir}">${item.tir}</span>
+                <span class="dqr-pill dqr-${item.ter || 1}">${item.ter || 1}</span>
+                <span class="dqr-pill dqr-${item.ger || 1}">${item.ger || 1}</span>
+                <span class="dqr-pill dqr-${item.tir || 1}">${item.tir || 1}</span>
               </div>
             </td>
             <td class="px-4 py-3 text-right font-mono-data font-bold ${item.sim < 0.6 ? 'text-error' : 'text-primary'}">${(item.sim * 100).toFixed(0)}%</td>
@@ -790,18 +846,18 @@
           drawerTr.className = "bg-surface-container-low/40 hidden";
           drawerTr.innerHTML = `
             <td colspan="9" class="p-4 pl-12 border-b border-outline-variant/40">
-              <div class="flex gap-6 items-start text-xs">
+              <div class="flex flex-col md:flex-row gap-6 items-start text-xs">
                 <div class="w-64 shrink-0 bg-white p-3 rounded-lg border border-outline-variant">
                   <div class="font-bold text-on-surface mb-2 uppercase text-[10px] tracking-wider">Data Quality Rating (DQR)</div>
                   <div class="space-y-1.5 text-[11px]">
-                    <div class="flex justify-between"><span>Technological (TeR):</span> <span class="font-bold">${item.ter}/5</span></div>
-                    <div class="flex justify-between"><span>Geographical (GeR):</span> <span class="font-bold">${item.ger}/5</span></div>
-                    <div class="flex justify-between"><span>Temporal (TiR):</span> <span class="font-bold">${item.tir}/5</span></div>
+                    <div class="flex justify-between"><span>Technological (TeR):</span> <span class="font-bold">${item.ter || 1}/5</span></div>
+                    <div class="flex justify-between"><span>Geographical (GeR):</span> <span class="font-bold">${item.ger || 1}/5</span></div>
+                    <div class="flex justify-between"><span>Temporal (TiR):</span> <span class="font-bold">${item.tir || 1}/5</span></div>
                   </div>
                 </div>
-                <div class="flex-1 bg-white p-3 rounded-lg border border-outline-variant">
-                  <div class="font-bold text-on-surface mb-1">Automated Audit Reasoning</div>
-                  <p class="text-on-surface-variant text-[11px]">Matched via high-confidence vector embedding algorithm against verified LCI factors in target database.</p>
+                <div class="flex-1 bg-white p-3 rounded-lg border border-outline-variant w-full">
+                  <div class="font-bold text-on-surface mb-1">Auditor Verification & Provenance Notes</div>
+                  <input type="text" value="${escapeHtml(item.auditorNotes || '')}" placeholder="Add auditor verification notes / LCI dataset provenance link..." onchange="updateRowNotes(${item.id}, this.value)" onclick="event.stopPropagation()" class="w-full text-xs p-2 border border-outline-variant rounded-lg bg-surface-container-low outline-none focus:ring-1 focus:ring-primary"/>
                 </div>
               </div>
             </td>
@@ -1108,9 +1164,68 @@
       document.body.removeChild(link);
     }
 
+    function changeRowLciProcess(id, value) {
+      let item = sampleBOM.find(i => i.id === id);
+      if (!item) return;
+
+      if (value === "custom") return;
+
+      let mIdx = parseInt(value);
+      let mat = materialDB[mIdx];
+      if (mat) {
+        item.process = mat.process;
+        item.ef = mat.ef;
+        item.sim = mat.sim;
+        item.ter = mat.ter;
+        item.ger = mat.ger;
+        item.tir = mat.tir;
+        item.scope = mat.scope;
+        item.risk = "LOW";
+        item.status = "Auditor Overridden";
+        renderTable();
+      }
+    }
+
+    function updateRowNotes(id, text) {
+      let item = sampleBOM.find(i => i.id === id);
+      if (item) {
+        item.auditorNotes = text;
+        saveState();
+      }
+    }
+
+    function updateProjectHeader() {
+      let proj = document.getElementById("projectNameInput").value.trim() || "EV Battery Assembly Line (India)";
+      let comp = document.getElementById("companyNameInput").value.trim() || "Tata Motors ESG Division";
+      let std = document.getElementById("standardSelect").value;
+
+      let b4Title = document.getElementById("b4Title");
+      if (b4Title) b4Title.innerText = proj;
+      let b4Comp = document.getElementById("b4Company");
+      if (b4Comp) b4Comp.innerText = comp;
+      let b4Std = document.getElementById("b4Std");
+      if (b4Std) b4Std.innerText = std;
+
+      let certProj = document.getElementById("certProjectName");
+      if (certProj) certProj.innerText = `${proj} (${comp})`;
+
+      let pRowProj = document.getElementById("projTableTitle");
+      if (pRowProj) pRowProj.innerText = proj;
+      let pRowStd = document.getElementById("projTableStd");
+      if (pRowStd) pRowStd.innerText = std;
+
+      saveState();
+    }
+
     function saveState() {
       try {
         localStorage.setItem('netzerocalc_bom', JSON.stringify(sampleBOM));
+        let meta = {
+          proj: document.getElementById("projectNameInput")?.value || '',
+          comp: document.getElementById("companyNameInput")?.value || '',
+          std: document.getElementById("standardSelect")?.value || ''
+        };
+        localStorage.setItem('netzerocalc_meta', JSON.stringify(meta));
       } catch(e) {}
     }
 
@@ -1120,6 +1235,14 @@
         if (saved) {
           let parsed = JSON.parse(saved);
           if (Array.isArray(parsed)) sampleBOM = parsed;
+        }
+        let savedMeta = localStorage.getItem('netzerocalc_meta');
+        if (savedMeta) {
+          let meta = JSON.parse(savedMeta);
+          if (meta.proj && document.getElementById("projectNameInput")) document.getElementById("projectNameInput").value = meta.proj;
+          if (meta.comp && document.getElementById("companyNameInput")) document.getElementById("companyNameInput").value = meta.comp;
+          if (meta.std && document.getElementById("standardSelect")) document.getElementById("standardSelect").value = meta.std;
+          updateProjectHeader();
         }
       } catch(e) {}
     }
