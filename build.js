@@ -10,6 +10,12 @@ if (!fs.existsSync(distDir)) {
   fs.mkdirSync(distDir, { recursive: true });
 }
 
+// Clean dist/_redirects to prevent Cloudflare infinite redirect loop error
+const distRedirects = path.join(distDir, '_redirects');
+if (fs.existsSync(distRedirects)) {
+  fs.unlinkSync(distRedirects);
+}
+
 if (fs.existsSync(sourceHtml)) {
   fs.copyFileSync(sourceHtml, path.join(distDir, 'index.html'));
   fs.copyFileSync(sourceHtml, path.join(distDir, 'preview.html'));
