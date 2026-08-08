@@ -198,8 +198,8 @@
           <div class="bg-surface-container-lowest sci-border rounded-xl p-5 sci-shadow border-l-4 border-l-primary">
             <h3 class="font-bold text-[11px] text-on-surface-variant uppercase tracking-wider mb-2">Estimated E-Credit Value</h3>
             <div class="flex items-end gap-2">
-              <span id="kpi-credit-value" class="text-3xl font-extrabold text-primary font-mono-data">$0</span>
-              <span class="text-xs font-bold text-primary mb-1">@ $35/tCO2e</span>
+              <span id="kpi-credit-value" class="text-3xl font-extrabold text-primary font-mono-data">₹0</span>
+              <span class="text-xs font-bold text-primary mb-1">@ ₹2,900/tCO₂e</span>
             </div>
           </div>
 
@@ -399,8 +399,8 @@
                 <span id="simAvoided" class="font-bold text-sm text-primary font-mono-data">0.00 tCO₂e</span>
               </div>
               <div class="flex justify-between items-center text-xs pt-1">
-                <span class="text-on-surface-variant font-bold">Estimated E-Credit Valuation (@ $35/t)</span>
-                <span id="simValuation" class="font-extrabold text-base text-tertiary font-mono-data">$0.00</span>
+                <span class="text-on-surface-variant font-bold">Estimated E-Credit Valuation (@ ₹2,900/t)</span>
+                <span id="simValuation" class="font-extrabold text-base text-tertiary font-mono-data">₹0</span>
               </div>
             </div>
           </div>
@@ -558,8 +558,8 @@
             <div id="certAvoided" class="text-2xl font-black text-primary font-mono-data">0.00 tCO₂e</div>
           </div>
           <div>
-            <div class="text-[10px] font-bold text-on-surface-variant uppercase">E-Credit Dollar Valuation</div>
-            <div id="certValue" class="text-2xl font-black text-tertiary font-mono-data">$0.00</div>
+            <div class="text-[10px] font-bold text-on-surface-variant uppercase">E-Credit Valuation (INR)</div>
+            <div id="certValue" class="text-2xl font-black text-tertiary font-mono-data">₹0</div>
           </div>
         </div>
 
@@ -571,12 +571,82 @@
   </div>
 
   <script>
+    // Material keyword-to-LCI database for intelligent matching
+    const materialDB = [
+      { keywords: ["alumin", "aluminium", "aluminum", "bauxite"], process: "aluminium alloy production, AlMg3 | cutoff, S - IN", ef: 14.2, ter: 1, ger: 2, tir: 1, sim: 0.96 },
+      { keywords: ["steel", "mild steel", "stainless", "ms ", "iron", "cast iron"], process: "steel production, converter, unalloyed | cutoff, S - IN", ef: 1.85, ter: 1, ger: 1, tir: 1, sim: 0.94 },
+      { keywords: ["copper", "cu ", "bus bar"], process: "copper wire drawing, technology mix | cutoff, S - IN", ef: 6.5, ter: 1, ger: 1, tir: 1, sim: 0.93 },
+      { keywords: ["pvc", "polyvinyl", "vinyl"], process: "polyvinylchloride production, emulsion | cutoff, S - GLO", ef: 2.41, ter: 2, ger: 3, tir: 1, sim: 0.87 },
+      { keywords: ["cable", "wire", "conductor"], process: "cable production, three-conductor | cutoff, S - GLO", ef: 3.2, ter: 2, ger: 2, tir: 1, sim: 0.85 },
+      { keywords: ["plastic", "hdpe", "ldpe", "pp ", "polypropylene", "polyethylene", "nylon", "abs"], process: "polyethylene production, high density | cutoff, S - IN", ef: 2.52, ter: 1, ger: 2, tir: 1, sim: 0.91 },
+      { keywords: ["rubber", "gasket", "elastomer", "silicone", "neoprene"], process: "synthetic rubber production | cutoff, S - GLO", ef: 3.18, ter: 2, ger: 3, tir: 2, sim: 0.78 },
+      { keywords: ["glass", "fiberglass", "borosilicate"], process: "flat glass production, uncoated | cutoff, S - IN", ef: 1.24, ter: 1, ger: 1, tir: 1, sim: 0.92 },
+      { keywords: ["cement", "concrete", "mortar"], process: "cement production, Portland | cutoff, S - IN", ef: 0.93, ter: 1, ger: 1, tir: 1, sim: 0.97 },
+      { keywords: ["paint", "coating", "primer", "epoxy"], process: "alkyd paint production, solvent-based | cutoff, S - GLO", ef: 3.56, ter: 2, ger: 3, tir: 2, sim: 0.74 },
+      { keywords: ["wood", "timber", "plywood", "mdf"], process: "plywood production, for outdoor use | cutoff, S - IN", ef: 0.68, ter: 1, ger: 1, tir: 1, sim: 0.90 },
+      { keywords: ["paper", "cardboard", "packaging"], process: "corrugated board box production | cutoff, S - IN", ef: 1.12, ter: 1, ger: 1, tir: 1, sim: 0.89 },
+      { keywords: ["electric", "electricity", "grid", "power", "kwh"], process: "Electricity Grid Mix CEA India 2024", ef: 0.716, ter: 1, ger: 1, tir: 1, sim: 0.99 },
+      { keywords: ["diesel", "fuel", "petrol", "gasoline"], process: "diesel, burned in industrial boiler | cutoff, S - IN", ef: 3.17, ter: 1, ger: 1, tir: 1, sim: 0.95 },
+      { keywords: ["water", "h2o"], process: "tap water production, conventional treatment | cutoff, S - IN", ef: 0.000344, ter: 1, ger: 1, tir: 1, sim: 0.98 },
+      { keywords: ["transport", "logistics", "freight", "shipping"], process: "transport, freight, lorry 16-32t, EURO5 | cutoff, S - IN", ef: 0.107, ter: 2, ger: 2, tir: 1, sim: 0.82 },
+      { keywords: ["polyurethane", "pu ", "foam"], process: "polyurethane production, flexible foam | cutoff, S - GLO", ef: 4.8, ter: 3, ger: 3, tir: 2, sim: 0.65 },
+      { keywords: ["brass", "bronze", "zinc", "tin", "lead", "solder"], process: "brass production | cutoff, S - GLO", ef: 4.2, ter: 2, ger: 3, tir: 2, sim: 0.80 },
+      { keywords: ["lithium", "battery", "cell", "li-ion"], process: "battery cell production, Li-ion, NMC | cutoff, S - GLO", ef: 12.5, ter: 2, ger: 3, tir: 1, sim: 0.88 },
+      { keywords: ["solar", "pv ", "photovoltaic", "panel"], process: "photovoltaic panel production, multi-Si | cutoff, S - GLO", ef: 35.0, ter: 2, ger: 3, tir: 1, sim: 0.86 },
+      { keywords: ["extrusion", "profile", "extruded"], process: "aluminium extrusion profile production | cutoff, S - IN", ef: 15.8, ter: 1, ger: 1, tir: 1, sim: 0.93 }
+    ];
+
+    function matchMaterial(name, unit) {
+      let nameLower = (name || '').toLowerCase();
+      let bestMatch = null;
+      let bestScore = 0;
+
+      for (let entry of materialDB) {
+        for (let kw of entry.keywords) {
+          if (nameLower.includes(kw)) {
+            let score = kw.length; // longer keyword = better match
+            if (score > bestScore) {
+              bestScore = score;
+              bestMatch = entry;
+            }
+          }
+        }
+      }
+
+      if (bestMatch) {
+        let risk = bestMatch.sim >= 0.90 ? "LOW" : bestMatch.sim >= 0.75 ? "MEDIUM" : "HIGH";
+        return {
+          process: bestMatch.process,
+          ef: bestMatch.ef,
+          sim: bestMatch.sim,
+          ter: bestMatch.ter,
+          ger: bestMatch.ger,
+          tir: bestMatch.tir,
+          risk: risk,
+          status: risk === "HIGH" ? "Manual Review" : "Auto-Matched"
+        };
+      }
+
+      // Fallback for unrecognized materials
+      let fallbackEf = unit === 'kWh' ? 0.716 : unit === 'tkm' ? 0.107 : unit === 'm' ? 1.8 : 2.0;
+      return {
+        process: `${name} — No exact LCI match found (manual verification required)`,
+        ef: fallbackEf,
+        sim: 0.35,
+        ter: 4, ger: 4, tir: 3,
+        risk: "HIGH",
+        status: "Manual Review"
+      };
+    }
+
+    const CREDIT_RATE_INR = 2900; // ₹ per tCO₂e (Indian Carbon Market rate)
+
     const demoItems = [
-      { id: 1, name: "Aluminum Sheet, 5052-H32", qty: 1450, unit: "kg", process: "aluminium alloy production, AlMg3 | cutoff, S - RER", ef: 14.2, sim: 0.98, ter: 1, ger: 2, tir: 1, risk: "LOW", status: "Auto-Matched", approved: true },
+      { id: 1, name: "Aluminum Sheet, 5052-H32", qty: 1450, unit: "kg", process: "aluminium alloy production, AlMg3 | cutoff, S - IN", ef: 14.2, sim: 0.98, ter: 1, ger: 2, tir: 1, risk: "LOW", status: "Auto-Matched", approved: true },
       { id: 2, name: "Custom Polyurethane Foam Insert", qty: 320, unit: "pcs", process: "polyurethane production, flexible foam | cutoff, S - GLO", ef: 4.8, sim: 0.42, ter: 4, ger: 3, tir: 2, risk: "HIGH", status: "Manual Review", approved: false },
-      { id: 3, name: "Copper Wire, 12 AWG", qty: 50, unit: "kg", process: "copper wire drawing | cutoff, S - GLO", ef: 6.5, sim: 0.94, ter: 1, ger: 1, tir: 1, risk: "LOW", status: "Auto-Matched", approved: true },
-      { id: 4, name: "Grid Electricity (Maharashtra Substation)", qty: 12000, unit: "kWh", process: "Electricity Grid CEA India 2024", ef: 0.716, sim: 0.99, ter: 1, ger: 1, tir: 1, risk: "LOW", status: "Auto-Matched", approved: true },
-      { id: 5, name: "Structural Steel Enclosure Bracket", qty: 850, unit: "kg", process: "steel production, converter, unalloyed | cutoff, S - GLO", ef: 1.85, sim: 0.88, ter: 2, ger: 2, tir: 1, risk: "MEDIUM", status: "Auto-Matched", approved: false }
+      { id: 3, name: "Copper Wire, 12 AWG", qty: 50, unit: "kg", process: "copper wire drawing, technology mix | cutoff, S - IN", ef: 6.5, sim: 0.94, ter: 1, ger: 1, tir: 1, risk: "LOW", status: "Auto-Matched", approved: true },
+      { id: 4, name: "Grid Electricity (Maharashtra Substation)", qty: 12000, unit: "kWh", process: "Electricity Grid Mix CEA India 2024", ef: 0.716, sim: 0.99, ter: 1, ger: 1, tir: 1, risk: "LOW", status: "Auto-Matched", approved: true },
+      { id: 5, name: "Structural Steel Enclosure Bracket", qty: 850, unit: "kg", process: "steel production, converter, unalloyed | cutoff, S - IN", ef: 1.85, sim: 0.88, ter: 2, ger: 2, tir: 1, risk: "MEDIUM", status: "Auto-Matched", approved: false }
     ];
 
     let sampleBOM = [];
@@ -732,11 +802,11 @@
       let pending = sampleBOM.filter(i => !i.approved).length;
       let approvedCount = sampleBOM.filter(i => i.approved).length;
       let pct = sampleBOM.length > 0 ? Math.round((approvedCount / sampleBOM.length) * 100) : 0;
-      let creditVal = Math.round(totalCo2 * 35);
+      let creditVal = Math.round(totalCo2 * CREDIT_RATE_INR);
 
       document.getElementById("kpi-total-co2").innerText = totalCo2.toFixed(3);
       document.getElementById("kpi-pending-count").innerText = pending;
-      document.getElementById("kpi-credit-value").innerText = "$" + creditVal.toLocaleString();
+      document.getElementById("kpi-credit-value").innerText = "₹" + creditVal.toLocaleString('en-IN');
       document.getElementById("kpi-progress-pct").innerText = pct + "%";
       document.getElementById("kpi-progress-bar").style.width = pct + "%";
       document.getElementById("simBaseline").innerText = totalCo2.toFixed(3) + " tCO₂e";
@@ -753,12 +823,12 @@
       document.getElementById("simRenVal").innerText = ren + "%";
 
       let avoided = baseCo2 * ((rec * 0.4 + ren * 0.45) / 100);
-      let val = Math.round(avoided * 35);
+      let val = Math.round(avoided * CREDIT_RATE_INR);
 
       document.getElementById("simAvoided").innerText = avoided.toFixed(3) + " tCO₂e";
-      document.getElementById("simValuation").innerText = "$" + val.toLocaleString();
+      document.getElementById("simValuation").innerText = "₹" + val.toLocaleString('en-IN');
       document.getElementById("certAvoided").innerText = avoided.toFixed(3) + " tCO₂e";
-      document.getElementById("certValue").innerText = "$" + val.toLocaleString();
+      document.getElementById("certValue").innerText = "₹" + val.toLocaleString('en-IN');
     }
 
     function switchView(view) {
@@ -797,17 +867,18 @@
 
       if (!name || isNaN(qty) || qty <= 0) return;
 
+      let match = matchMaterial(name, unit);
       sampleBOM.unshift({
         id: Date.now(),
         name: name,
         qty: qty,
         unit: unit,
-        process: `${name} (Verified Factor)`,
-        ef: unit === 'kWh' ? 0.716 : 2.4,
-        sim: 0.95,
-        ter: 1, ger: 1, tir: 1,
-        risk: "LOW",
-        status: "Auto-Matched",
+        process: match.process,
+        ef: match.ef,
+        sim: match.sim,
+        ter: match.ter, ger: match.ger, tir: match.tir,
+        risk: match.risk,
+        status: match.status,
         approved: false
       });
 
@@ -855,17 +926,18 @@
         let unit = row.unit || row.Unit || 'kg';
 
         if (name) {
+          let match = matchMaterial(name, unit);
           sampleBOM.unshift({
             id: Date.now() + idx,
             name: name,
             qty: isNaN(qty) ? 100 : qty,
             unit: unit,
-            process: `${name} (Matched LCI Process)`,
-            ef: unit === 'kWh' ? 0.716 : 2.85,
-            sim: 0.92,
-            ter: 1, ger: 2, tir: 1,
-            risk: "LOW",
-            status: "Auto-Matched",
+            process: match.process,
+            ef: match.ef,
+            sim: match.sim,
+            ter: match.ter, ger: match.ger, tir: match.tir,
+            risk: match.risk,
+            status: match.status,
             approved: false
           });
         }
