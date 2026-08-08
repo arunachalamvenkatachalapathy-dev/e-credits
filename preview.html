@@ -163,9 +163,12 @@
         <div id="backend-status-pill" class="flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-primary/10 text-primary border border-primary/20">
           <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span> NetZero Engine Active
         </div>
-        <div class="hidden lg:block relative w-64">
+        <div class="hidden lg:block relative w-72">
           <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant text-sm">search</span>
-          <input id="searchInput" oninput="filterTable()" class="w-full bg-surface-container-low border border-outline-variant py-1.5 pl-9 pr-4 rounded-lg font-medium text-xs focus:ring-1 focus:ring-primary outline-none" placeholder="Search BOM materials..." type="text"/>
+          <input id="searchInput" oninput="handleSearchInput(event)" onfocus="handleSearchInput(event)" class="w-full bg-surface-container-low border border-outline-variant py-1.5 pl-9 pr-4 rounded-lg font-medium text-xs focus:ring-1 focus:ring-primary outline-none" placeholder="Search LCI database or BOM items..." type="text"/>
+          <!-- Live Search Autocomplete Dropdown Menu -->
+          <div id="searchDropdown" class="hidden absolute top-full left-0 right-0 mt-1.5 bg-white border border-outline-variant rounded-xl sci-shadow z-50 max-h-80 overflow-y-auto divide-y divide-outline-variant/30 text-xs">
+          </div>
         </div>
         <button onclick="openCertModal()" class="hidden md:flex bg-primary text-on-primary px-4 py-2 rounded-lg font-bold text-xs hover:bg-primary-container transition-colors shadow-sm items-center gap-1.5">
           <span class="material-symbols-outlined text-sm">verified</span>
@@ -871,6 +874,110 @@
     }
 
     function filterTable() { renderTable(); }
+
+    function handleSearchInput(evt) {
+      let query = (document.getElementById("searchInput").value || "").trim().toLowerCase();
+      let dropdown = document.getElementById("searchDropdown");
+
+      filterTable();
+
+      if (!query || query.length === 0) {
+        dropdown.classList.add("hidden");
+        dropdown.innerHTML = "";
+        return;
+      }
+
+      let matches = materialDB.filter(mat => {
+        let nameMatch = mat.process.toLowerCase().includes(query);
+        let kwMatch = mat.keywords.some(kw => kw.toLowerCase().includes(query));
+        return nameMatch || kwMatch;
+      });
+
+      if (matches.length === 0) {
+        dropdown.innerHTML = `
+          <div class="p-3 text-center text-on-surface-variant font-medium">
+            No LCI factors matching "${escapeHtml(query)}".
+            <button onclick="openImportModal(); closeSearchDropdown();" class="block w-full mt-2 py-1 bg-primary text-white rounded font-bold text-[11px]">
+              + Add Custom BOM Item
+            </button>
+          </div>
+        `;
+        dropdown.classList.remove("hidden");
+        return;
+      }
+
+      let html = '';
+      matches.slice(0, 8).forEach(mat => {
+        let originalIdx = materialDB.indexOf(mat);
+        let scopeClass = mat.scope === "Scope 1" ? "bg-purple-100 text-purple-900 border-purple-300" :
+                         mat.scope === "Scope 2" ? "bg-blue-100 text-blue-900 border-blue-300" :
+                         "bg-amber-100 text-amber-900 border-amber-300";
+
+        let displayName = mat.keywords[0].toUpperCase() + ' — ' + mat.process;
+
+        html += `
+          <div onclick="addSearchItemToBom(${originalIdx})" class="p-2.5 hover:bg-primary/5 cursor-pointer flex justify-between items-center transition-colors">
+            <div class="flex-1 pr-2 min-w-0">
+              <div class="font-bold text-on-surface flex items-center gap-1.5 truncate">
+                ${escapeHtml(displayName)}
+                <span class="px-1.5 py-0.2 rounded text-[9px] font-extrabold border ${scopeClass}">${mat.scope || 'Scope 3'}</span>
+              </div>
+              <div class="text-[10px] text-on-surface-variant">${mat.ef} kgCO₂e per unit • Similarity ${Math.round(mat.sim * 100)}%</div>
+            </div>
+            <button class="px-2 py-1 bg-primary text-white text-[10px] font-extrabold rounded hover:bg-primary-container shrink-0">
+              + Add to BOM
+            </button>
+          </div>
+        `;
+      });
+
+      dropdown.innerHTML = html;
+      dropdown.classList.remove("hidden");
+    }
+
+    function addSearchItemToBom(matIdx) {
+      let mat = materialDB[matIdx];
+      if (!mat) return;
+
+      let defaultUnit = mat.keywords.includes("electric") ? "kWh" :
+                         (mat.keywords.includes("diesel") || mat.keywords.includes("fuel")) ? "Liters" :
+                         mat.keywords.includes("transport") ? "tkm" : "kg";
+      let defaultQty = defaultUnit === "kWh" ? 1000 : defaultUnit === "Liters" ? 100 : 500;
+      let itemName = mat.keywords[0].charAt(0).toUpperCase() + mat.keywords[0].slice(1) + " Component";
+
+      sampleBOM.unshift({
+        id: Date.now(),
+        name: itemName,
+        qty: defaultQty,
+        unit: defaultUnit,
+        process: mat.process,
+        ef: mat.ef,
+        sim: mat.sim,
+        ter: mat.ter, ger: mat.ger, tir: mat.tir,
+        risk: mat.sim >= 0.90 ? "LOW" : mat.sim >= 0.75 ? "MEDIUM" : "HIGH",
+        scope: mat.scope || "Scope 3",
+        status: "Auto-Matched",
+        approved: false
+      });
+
+      closeSearchDropdown();
+      document.getElementById("searchInput").value = "";
+      switchView("workbench");
+      renderTable();
+    }
+
+    function closeSearchDropdown() {
+      let dropdown = document.getElementById("searchDropdown");
+      if (dropdown) dropdown.classList.add("hidden");
+    }
+
+    document.addEventListener("click", function(e) {
+      let searchBox = document.getElementById("searchInput");
+      let dropdown = document.getElementById("searchDropdown");
+      if (searchBox && dropdown && !searchBox.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.classList.add("hidden");
+      }
+    });
 
     function toggleDrawer(id) {
       let d = document.getElementById(`drawer-${id}`);
