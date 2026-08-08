@@ -1,3 +1,432 @@
+const EXCEL_LCI_ITEMS = [
+  {
+    "name": "Diesel Generator (DG Sets)",
+    "process": "Diesel Generator (DG Sets) (Verified Factor: 2.6558 kgCO\u2082e/Liters)",
+    "ef": 2.6558,
+    "unit": "Liters",
+    "scope": "Scope 1"
+  },
+  {
+    "name": "Furnace Oil (Boilers)",
+    "process": "Furnace Oil (Boilers) (Verified Factor: 3.1186 kgCO\u2082e/Liters)",
+    "ef": 3.1186,
+    "unit": "Liters",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Natural Gas",
+    "process": "Natural Gas (Verified Factor: 1.8913 kgCO\u2082e/scm)",
+    "ef": 1.8913,
+    "unit": "scm",
+    "scope": "Scope 1"
+  },
+  {
+    "name": "Indian Coal (Boilers)",
+    "process": "Indian Coal (Boilers) (Verified Factor: 1.9919 kgCO\u2082e/kg)",
+    "ef": 1.9919,
+    "unit": "kg",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Commercial LPG",
+    "process": "Commercial LPG (Verified Factor: 2.9979 kgCO\u2082e/kg)",
+    "ef": 2.9979,
+    "unit": "kg",
+    "scope": "Scope 1"
+  },
+  {
+    "name": "Petrol Company Cars",
+    "process": "Petrol Company Cars (Verified Factor: 2.2836 kgCO\u2082e/Liters)",
+    "ef": 2.2836,
+    "unit": "Liters",
+    "scope": "Scope 1"
+  },
+  {
+    "name": "Diesel Company Vehicles",
+    "process": "Diesel Company Vehicles (Verified Factor: 2.6558 kgCO\u2082e/Liters)",
+    "ef": 2.6558,
+    "unit": "Liters",
+    "scope": "Scope 1"
+  },
+  {
+    "name": "CNG Vehicles",
+    "process": "CNG Vehicles (Verified Factor: 2.686 kgCO\u2082e/kg)",
+    "ef": 2.686,
+    "unit": "kg",
+    "scope": "Scope 1"
+  },
+  {
+    "name": "Refrigerant Top-up - R-32",
+    "process": "Refrigerant Top-up - R-32 (Verified Factor: 675.0 kgCO\u2082e/kg)",
+    "ef": 675.0,
+    "unit": "kg",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Refrigerant Top-up - R-410A",
+    "process": "Refrigerant Top-up - R-410A (Verified Factor: 2088.0 kgCO\u2082e/kg)",
+    "ef": 2088.0,
+    "unit": "kg",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Refrigerant Top-up - R-22",
+    "process": "Refrigerant Top-up - R-22 (Verified Factor: 1810.0 kgCO\u2082e/kg)",
+    "ef": 1810.0,
+    "unit": "kg",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Acetylene Welding",
+    "process": "Acetylene Welding (Verified Factor: 3.4003 kgCO\u2082e/kg)",
+    "ef": 3.4003,
+    "unit": "kg",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "CO2 Fire Extinguisher Discharge",
+    "process": "CO2 Fire Extinguisher Discharge (Verified Factor: 1.0 kgCO\u2082e/kg)",
+    "ef": 1.0,
+    "unit": "kg",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Office Electricity - Grid Average",
+    "process": "Office Electricity - Grid Average (Verified Factor: 0.7314 kgCO\u2082e/kWh)",
+    "ef": 0.7314,
+    "unit": "kWh",
+    "scope": "Scope 2"
+  },
+  {
+    "name": "Factory Electricity - Grid Average",
+    "process": "Factory Electricity - Grid Average (Verified Factor: 0.7314 kgCO\u2082e/kWh)",
+    "ef": 0.7314,
+    "unit": "kWh",
+    "scope": "Scope 2"
+  },
+  {
+    "name": "Warehouse Electricity - Grid Average",
+    "process": "Warehouse Electricity - Grid Average (Verified Factor: 0.7314 kgCO\u2082e/kWh)",
+    "ef": 0.7314,
+    "unit": "kWh",
+    "scope": "Scope 2"
+  },
+  {
+    "name": "Purchased Steam",
+    "process": "Purchased Steam (Verified Factor: 0.1811 kgCO\u2082e/kg)",
+    "ef": 0.1811,
+    "unit": "kg",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Office Electricity - Supplier/Residual Mix",
+    "process": "Office Electricity - Supplier/Residual Mix (Verified Factor: 0.7314 kgCO\u2082e/kWh)",
+    "ef": 0.7314,
+    "unit": "kWh",
+    "scope": "Scope 2"
+  },
+  {
+    "name": "Factory Electricity - Supplier/Residual Mix",
+    "process": "Factory Electricity - Supplier/Residual Mix (Verified Factor: 0.7314 kgCO\u2082e/kWh)",
+    "ef": 0.7314,
+    "unit": "kWh",
+    "scope": "Scope 2"
+  },
+  {
+    "name": "IT / Professional Services (Spend)",
+    "process": "IT / Professional Services (Spend) (Verified Factor: 0.005 kgCO\u2082e/INR)",
+    "ef": 0.005,
+    "unit": "INR",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Construction / Repairs (Spend)",
+    "process": "Construction / Repairs (Spend) (Verified Factor: 0.012 kgCO\u2082e/INR)",
+    "ef": 0.012,
+    "unit": "INR",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Generic Purchased Services (Spend)",
+    "process": "Generic Purchased Services (Spend) (Verified Factor: 0.003 kgCO\u2082e/INR)",
+    "ef": 0.003,
+    "unit": "INR",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Virgin Paper Procurement",
+    "process": "Virgin Paper Procurement (Verified Factor: 0.92 kgCO\u2082e/kg)",
+    "ef": 0.92,
+    "unit": "kg",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Recycled Paper Procurement",
+    "process": "Recycled Paper Procurement (Verified Factor: 0.6 kgCO\u2082e/kg)",
+    "ef": 0.6,
+    "unit": "kg",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Plastic Packaging Procurement",
+    "process": "Plastic Packaging Procurement (Verified Factor: 2.5 kgCO\u2082e/kg)",
+    "ef": 2.5,
+    "unit": "kg",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Construction Steel Procurement",
+    "process": "Construction Steel Procurement (Verified Factor: 2.33 kgCO\u2082e/kg)",
+    "ef": 2.33,
+    "unit": "kg",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Cement Procurement",
+    "process": "Cement Procurement (Verified Factor: 0.9 kgCO\u2082e/kg)",
+    "ef": 0.9,
+    "unit": "kg",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Laptops Purchased",
+    "process": "Laptops Purchased (Verified Factor: 250.0 kgCO\u2082e/Units)",
+    "ef": 250.0,
+    "unit": "Units",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Desktops Purchased",
+    "process": "Desktops Purchased (Verified Factor: 350.0 kgCO\u2082e/Units)",
+    "ef": 350.0,
+    "unit": "Units",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Smartphones Purchased",
+    "process": "Smartphones Purchased (Verified Factor: 65.0 kgCO\u2082e/Units)",
+    "ef": 65.0,
+    "unit": "Units",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Office Furniture Purchased",
+    "process": "Office Furniture Purchased (Verified Factor: 3.5 kgCO\u2082e/kg)",
+    "ef": 3.5,
+    "unit": "kg",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Well-to-Tank: Diesel",
+    "process": "Well-to-Tank: Diesel (Verified Factor: 0.5835 kgCO\u2082e/Liters)",
+    "ef": 0.5835,
+    "unit": "Liters",
+    "scope": "Scope 1"
+  },
+  {
+    "name": "Well-to-Tank: Petrol",
+    "process": "Well-to-Tank: Petrol (Verified Factor: 0.4628 kgCO\u2082e/Liters)",
+    "ef": 0.4628,
+    "unit": "Liters",
+    "scope": "Scope 1"
+  },
+  {
+    "name": "Grid T&D Losses",
+    "process": "Grid T&D Losses (Verified Factor: 0.1459 kgCO\u2082e/kWh)",
+    "ef": 0.1459,
+    "unit": "kWh",
+    "scope": "Scope 2"
+  },
+  {
+    "name": "Inbound Trucking (Diesel, tonne-km)",
+    "process": "Inbound Trucking (Diesel, tonne-km) (Verified Factor: 0.09 kgCO\u2082e/tonne-km)",
+    "ef": 0.09,
+    "unit": "tonne-km",
+    "scope": "Scope 1"
+  },
+  {
+    "name": "Inbound LCV Delivery",
+    "process": "Inbound LCV Delivery (Verified Factor: 0.45 kgCO\u2082e/km)",
+    "ef": 0.45,
+    "unit": "km",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Inbound HGV Delivery",
+    "process": "Inbound HGV Delivery (Verified Factor: 0.85 kgCO\u2082e/km)",
+    "ef": 0.85,
+    "unit": "km",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Inbound Rail Freight",
+    "process": "Inbound Rail Freight (Verified Factor: 0.015 kgCO\u2082e/tonne-km)",
+    "ef": 0.015,
+    "unit": "tonne-km",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Inbound Air Freight",
+    "process": "Inbound Air Freight (Verified Factor: 1.58 kgCO\u2082e/tonne-km)",
+    "ef": 1.58,
+    "unit": "tonne-km",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Waste to Landfill",
+    "process": "Waste to Landfill (Verified Factor: 0.85 kgCO\u2082e/kg)",
+    "ef": 0.85,
+    "unit": "kg",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Waste Recycled",
+    "process": "Waste Recycled (Verified Factor: 0.021 kgCO\u2082e/kg)",
+    "ef": 0.021,
+    "unit": "kg",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Waste Incinerated",
+    "process": "Waste Incinerated (Verified Factor: 0.4 kgCO\u2082e/kg)",
+    "ef": 0.4,
+    "unit": "kg",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Wastewater Treated",
+    "process": "Wastewater Treated (Verified Factor: 0.708 kgCO\u2082e/m3)",
+    "ef": 0.708,
+    "unit": "m3",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Domestic Flights",
+    "process": "Domestic Flights (Verified Factor: 0.12 kgCO\u2082e/p-km)",
+    "ef": 0.12,
+    "unit": "p-km",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "International Flights",
+    "process": "International Flights (Verified Factor: 0.117 kgCO\u2082e/p-km)",
+    "ef": 0.117,
+    "unit": "p-km",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Rail Travel",
+    "process": "Rail Travel (Verified Factor: 0.01 kgCO\u2082e/p-km)",
+    "ef": 0.01,
+    "unit": "p-km",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Taxi Travel",
+    "process": "Taxi Travel (Verified Factor: 0.14 kgCO\u2082e/km)",
+    "ef": 0.14,
+    "unit": "km",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Hotel Nights - 5 Star",
+    "process": "Hotel Nights - 5 Star (Verified Factor: 75.5 kgCO\u2082e/Nights)",
+    "ef": 75.5,
+    "unit": "Nights",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Hotel Nights - Budget",
+    "process": "Hotel Nights - Budget (Verified Factor: 25.0 kgCO\u2082e/Nights)",
+    "ef": 25.0,
+    "unit": "Nights",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Two-Wheeler Commute",
+    "process": "Two-Wheeler Commute (Verified Factor: 0.04 kgCO\u2082e/km)",
+    "ef": 0.04,
+    "unit": "km",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Car Commute - Small Segment",
+    "process": "Car Commute - Small Segment (Verified Factor: 0.11 kgCO\u2082e/km)",
+    "ef": 0.11,
+    "unit": "km",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Car Commute - Average",
+    "process": "Car Commute - Average (Verified Factor: 0.14 kgCO\u2082e/km)",
+    "ef": 0.14,
+    "unit": "km",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Car Commute - Large Segment",
+    "process": "Car Commute - Large Segment (Verified Factor: 0.17 kgCO\u2082e/km)",
+    "ef": 0.17,
+    "unit": "km",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Bus Commute",
+    "process": "Bus Commute (Verified Factor: 0.03 kgCO\u2082e/p-km)",
+    "ef": 0.03,
+    "unit": "p-km",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Metro Rail Commute",
+    "process": "Metro Rail Commute (Verified Factor: 0.015 kgCO\u2082e/p-km)",
+    "ef": 0.015,
+    "unit": "p-km",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Leased Office/Warehouse Electricity",
+    "process": "Leased Office/Warehouse Electricity (Verified Factor: 0.7314 kgCO\u2082e/kWh)",
+    "ef": 0.7314,
+    "unit": "kWh",
+    "scope": "Scope 2"
+  },
+  {
+    "name": "Leased Facility Water Use",
+    "process": "Leased Facility Water Use (Verified Factor: 0.31 kgCO\u2082e/m3)",
+    "ef": 0.31,
+    "unit": "m3",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Outbound Trucking to Customers",
+    "process": "Outbound Trucking to Customers (Verified Factor: 0.09 kgCO\u2082e/tonne-km)",
+    "ef": 0.09,
+    "unit": "tonne-km",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Outbound Air Freight to Customers",
+    "process": "Outbound Air Freight to Customers (Verified Factor: 1.58 kgCO\u2082e/tonne-km)",
+    "ef": 1.58,
+    "unit": "tonne-km",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Outbound Rail Distribution",
+    "process": "Outbound Rail Distribution (Verified Factor: 0.015 kgCO\u2082e/tonne-km)",
+    "ef": 0.015,
+    "unit": "tonne-km",
+    "scope": "Scope 3"
+  },
+  {
+    "name": "Financed Emissions (Financial Sector - direct pass-through)",
+    "process": "Financed Emissions (Financial Sector - direct pass-through) (Verified Factor: 1.0 kgCO\u2082e/tCO2e Reported)",
+    "ef": 1.0,
+    "unit": "tCO2e Reported",
+    "scope": "Scope 3"
+  }
+];
 import React, { useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
@@ -702,9 +1131,29 @@ function App() {
             <div className="panel-title">
               <Plus size={20} style={{ color: "var(--accent-emerald)" }} /> Add Custom BOM Component Item
             </div>
+            <div style={{ marginBottom: "16px" }}>
+              <label style={{ display: "block", fontSize: "11px", fontWeight: 700, color: "var(--accent-emerald)", textTransform: "uppercase", marginBottom: "6px" }}>Select Excel Material / Activity (60+ Factors)</label>
+              <select
+                style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid var(--accent-emerald)", background: "#06281e", color: "#fff", fontWeight: 700, fontSize: "13px" }}
+                onChange={(e) => {
+                  const idx = e.target.value;
+                  if (idx !== "") {
+                    const item = EXCEL_LCI_ITEMS[Number(idx)];
+                    if (item) setManual({ description: item.name, quantity: 100, unit: item.unit });
+                  }
+                }}
+              >
+                <option value="">-- Pick from 60+ Verified Excel LCI Factors --</option>
+                {EXCEL_LCI_ITEMS.map((item, i) => (
+                  <option key={i} value={i}>
+                    {item.name} ({item.ef} kgCO₂e/{item.unit}) [{item.scope}]
+                  </option>
+                ))}
+              </select>
+            </div>
             <div className="grid3">
               <div className="form-group">
-                <label>Description</label>
+                <label>Or Type Custom Material Name</label>
                 <input value={manual.description} onChange={(e) => setManual({ ...manual, description: e.target.value })} placeholder="e.g. Copper coil wire drawing" />
               </div>
               <div className="form-group">
@@ -715,7 +1164,10 @@ function App() {
                 <label>Unit</label>
                 <select value={manual.unit} onChange={(e) => setManual({ ...manual, unit: e.target.value })}>
                   <option>kg</option>
+                  <option>Liters</option>
                   <option>kWh</option>
+                  <option>km</option>
+                  <option>pcs</option>
                   <option>tkm</option>
                 </select>
               </div>
