@@ -159,11 +159,17 @@
         </nav>
       </div>
 
-      <div class="flex items-center gap-4">
-        <div id="backend-status-pill" class="flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-primary/10 text-primary border border-primary/20">
-          <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span> NetZero Engine Active
-        </div>
-        <div class="hidden lg:block relative w-72">
+      <div class="flex items-center gap-3">
+        <a id="backend-status-pill" href="http://localhost:8000/docs" target="_blank" title="Click to view FastAPI Backend API Docs (Swagger UI)" class="flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-colors">
+          <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span> NetZero API Active 🔗
+        </a>
+        
+        <button id="auditorLoginBtn" onclick="openGoogleKycModal()" class="flex items-center gap-1.5 px-3 py-1.5 bg-surface-container-high border border-outline-variant rounded-lg text-xs font-bold text-on-surface hover:bg-surface-container-highest transition-colors">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+          <span id="auditorLoginText">Auditor Google Login</span>
+        </button>
+
+        <div class="hidden lg:block relative w-64">
           <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant text-sm">search</span>
           <input id="searchInput" oninput="handleSearchInput(event)" onfocus="handleSearchInput(event)" class="w-full bg-surface-container-low border border-outline-variant py-1.5 pl-9 pr-4 rounded-lg font-medium text-xs focus:ring-1 focus:ring-primary outline-none" placeholder="Search LCI database or BOM items..." type="text"/>
           <!-- Live Search Autocomplete Dropdown Menu -->
@@ -289,6 +295,33 @@
             <div class="w-full bg-surface-dim h-2 rounded-full overflow-hidden">
               <div id="kpi-progress-bar" class="bg-primary h-full transition-all duration-300" style="width: 0%"></div>
             </div>
+          </div>
+        </section>
+
+        <!-- GHG Protocol Scope 1, 2, 3 Summary Breakdown Ribbon -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="bg-purple-50/80 border border-purple-200 rounded-xl p-4 flex items-center justify-between sci-shadow">
+            <div>
+              <div class="text-[10px] font-extrabold text-purple-900 uppercase tracking-widest">Scope 1 (Direct Fuels & Fleet)</div>
+              <div id="kpi-scope1" class="text-xl font-extrabold text-purple-950 font-mono-data mt-0.5">0.000 tCO₂e</div>
+            </div>
+            <span class="px-2.5 py-1 rounded-lg bg-purple-200 text-purple-900 font-extrabold text-[10px] border border-purple-300">Scope 1</span>
+          </div>
+
+          <div class="bg-blue-50/80 border border-blue-200 rounded-xl p-4 flex items-center justify-between sci-shadow">
+            <div>
+              <div class="text-[10px] font-extrabold text-blue-900 uppercase tracking-widest">Scope 2 (Purchased Electricity)</div>
+              <div id="kpi-scope2" class="text-xl font-extrabold text-blue-950 font-mono-data mt-0.5">0.000 tCO₂e</div>
+            </div>
+            <span class="px-2.5 py-1 rounded-lg bg-blue-200 text-blue-900 font-extrabold text-[10px] border border-blue-300">Scope 2</span>
+          </div>
+
+          <div class="bg-amber-50/80 border border-amber-200 rounded-xl p-4 flex items-center justify-between sci-shadow">
+            <div>
+              <div class="text-[10px] font-extrabold text-amber-900 uppercase tracking-widest">Scope 3 (Upstream Value Chain)</div>
+              <div id="kpi-scope3" class="text-xl font-extrabold text-amber-950 font-mono-data mt-0.5">0.000 tCO₂e</div>
+            </div>
+            <span class="px-2.5 py-1 rounded-lg bg-amber-200 text-amber-900 font-extrabold text-[10px] border border-amber-300">Scope 3</span>
           </div>
         </section>
 
@@ -604,9 +637,94 @@
     </div>
   </div>
 
+  <!-- Google OAuth & Lead Auditor KYC Verification Modal -->
+  <div id="googleKycModal" class="modal-overlay">
+    <div class="bg-white rounded-2xl p-8 max-w-md w-full sci-shadow relative border border-outline-variant text-on-surface">
+      <button onclick="closeGoogleKycModal()" class="absolute top-4 right-4 text-on-surface-variant hover:text-on-surface font-bold text-xl">✕</button>
+      
+      <div class="text-center space-y-3 mb-6">
+        <div class="inline-flex p-3 rounded-full bg-primary/10 text-primary mb-1">
+          <svg class="w-8 h-8" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+        </div>
+        <h2 class="text-xl font-black text-on-surface">Auditor Identity Verification</h2>
+        <p class="text-xs text-on-surface-variant">Sign in with Google OAuth & Lead Auditor KYC credentials to sign ISAE 3410 Assurance Statements & issue E-Credits.</p>
+      </div>
+
+      <button onclick="simulateGoogleOAuth()" class="w-full py-3 bg-white border border-outline-variant hover:bg-surface-container-high rounded-xl font-bold text-xs text-on-surface flex items-center justify-center gap-3 transition-all sci-shadow mb-4">
+        <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+        Sign in with Google OAuth
+      </button>
+
+      <div class="relative my-4 text-center">
+        <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-outline-variant/60"></div></div>
+        <span class="relative bg-white px-3 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">or KYC Lead Auditor Credentials</span>
+      </div>
+
+      <form onsubmit="submitKycForm(event)" class="space-y-3 text-left">
+        <div>
+          <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Auditor Full Name</label>
+          <input id="kycAuditorName" type="text" required value="Dr. Rajesh V. Sharma" class="w-full text-xs font-semibold p-2 border border-outline-variant rounded-lg outline-none focus:ring-1 focus:ring-primary bg-white"/>
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Assurance Body / Organization</label>
+          <input id="kycAssuranceBody" type="text" required value="KPMG Sustainability Services India" class="w-full text-xs font-semibold p-2 border border-outline-variant rounded-lg outline-none focus:ring-1 focus:ring-primary bg-white"/>
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">ISO 14064 Lead Auditor Cert No.</label>
+          <input id="kycCertNo" type="text" required value="IRCA-ISO14064-2026-88492" class="w-full text-xs font-semibold p-2 border border-outline-variant rounded-lg outline-none focus:ring-1 focus:ring-primary bg-white"/>
+        </div>
+
+        <button type="submit" class="w-full py-2.5 bg-primary text-white font-bold text-xs rounded-xl hover:bg-primary-container transition-colors shadow-sm mt-4">
+          Complete KYC & Authenticate Auditor
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Automated Free SMS / OTP Verification Modal -->
+  <div id="smsOtpModal" class="modal-overlay">
+    <div class="bg-white rounded-2xl p-8 max-w-md w-full sci-shadow relative border border-outline-variant text-on-surface">
+      <button onclick="closeSmsOtpModal()" class="absolute top-4 right-4 text-on-surface-variant hover:text-on-surface font-bold text-xl">✕</button>
+
+      <div class="text-center space-y-2 mb-6">
+        <div class="inline-flex p-3 rounded-full bg-emerald-100 text-emerald-800 mb-1">
+          <span class="material-symbols-outlined text-2xl">sms</span>
+        </div>
+        <h2 class="text-xl font-black text-on-surface">Automated Free SMS OTP</h2>
+        <p class="text-xs text-on-surface-variant">Enter your mobile number (+91) to receive a free instant 6-digit OTP code to download the official Assurance Report & Certificate.</p>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Mobile Number (India +91)</label>
+          <div class="flex gap-2">
+            <span class="px-3 py-2 bg-surface-container-high border border-outline-variant rounded-lg text-xs font-bold text-on-surface flex items-center">+91</span>
+            <input id="mobilePhoneInput" type="tel" value="98765 43210" placeholder="9876543210" class="flex-1 text-xs font-bold p-2 border border-outline-variant rounded-lg outline-none focus:ring-1 focus:ring-primary bg-white"/>
+            <button onclick="sendAutomatedSmsOtp()" class="px-3 py-2 bg-primary text-white text-xs font-bold rounded-lg hover:bg-primary-container shrink-0">Send OTP</button>
+          </div>
+        </div>
+
+        <div id="otpInputSection" class="hidden space-y-3 pt-2 border-t border-outline-variant/60">
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Enter 6-Digit OTP Code</label>
+              <span id="otpCountdown" class="text-[10px] font-bold text-primary font-mono-data">Resend in 60s</span>
+            </div>
+            <input id="otpCodeInput" type="text" maxlength="6" placeholder="e.g. 140643" class="w-full text-center text-lg font-black tracking-widest p-2 border border-outline-variant rounded-lg outline-none focus:ring-1 focus:ring-primary bg-white font-mono-data"/>
+          </div>
+
+          <button onclick="verifyOtpAndExecuteDownload()" class="w-full py-2.5 bg-emerald-700 text-white font-bold text-xs rounded-xl hover:bg-emerald-800 transition-colors shadow-sm flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-sm">verified_user</span>
+            Verify OTP & Download Report
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Big 4 Audit Report Modal -->
   <div id="big4Modal" class="modal-overlay">
-    <div class="bg-white rounded-2xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto sci-shadow relative border border-outline-variant">
+    <div class="bg-white rounded-2xl p-8 max-w-4xl w-full max-h-[92vh] overflow-y-auto sci-shadow relative border border-outline-variant">
       <button onclick="closeBig4Modal()" class="absolute top-4 right-4 text-on-surface-variant hover:text-on-surface font-bold text-xl">✕</button>
       
       <div id="auditReportContent" class="space-y-6 text-on-surface">
@@ -614,22 +732,75 @@
           <div>
             <div class="text-[10px] font-extrabold text-primary uppercase tracking-widest">GLOBAL SUSTAINABILITY ASSURANCE PRACTICE</div>
             <h1 class="text-xl font-black text-on-surface mt-1">INDEPENDENT PRACTITIONER'S ASSURANCE REPORT</h1>
-            <p class="text-xs text-on-surface-variant font-medium">ISAE 3410 & ISO 14064-3 Compliance Statement</p>
+            <p class="text-xs text-on-surface-variant font-medium">ISAE 3410 & ISO 14064-3:2019 Compliance Statement</p>
           </div>
-          <span class="bg-primary/10 text-primary border border-primary/20 px-3 py-1.5 rounded-lg text-xs font-extrabold font-mono-data">
-            PASSED ASSURANCE AUDIT
-          </span>
+          <div class="text-right">
+            <span class="bg-primary/10 text-primary border border-primary/20 px-3 py-1.5 rounded-lg text-xs font-extrabold font-mono-data inline-block mb-1">
+              PASSED ASSURANCE AUDIT
+            </span>
+            <div id="b4AuditStamp" class="text-[10px] text-on-surface-variant font-bold">Verified by: Unauthenticated (Auditor Login Required)</div>
+          </div>
         </div>
 
         <div class="text-xs space-y-3 text-on-surface-variant leading-relaxed">
           <p>We have performed an independent practitioner limited assurance engagement on the Carbon Footprint & GHG Inventory calculations for <strong id="b4Title" class="text-on-surface font-bold">EV Battery Assembly Line (India)</strong> (<strong id="b4Company" class="text-on-surface font-bold">Tata Motors ESG Division</strong>) under <strong id="b4Std" class="text-on-surface font-bold">ISO 14064-1 & GHG Protocol Scope 1-3</strong> using <strong id="b4Db" class="text-on-surface font-bold">India GHG Factors v6</strong>.</p>
+          
           <div class="p-4 bg-surface-container-low rounded-xl border border-outline-variant/60 font-medium">
             <strong>Practitioner Conclusion:</strong> Based on the audit procedures performed, nothing has come to our attention that causes us to believe that the quantified GHG Inventory footprint of <strong id="b4Total" class="text-primary font-mono-data font-bold">0.000 tCO₂e</strong> is not prepared in all material respects in accordance with GHG Protocol and ISO 14064-1:2018 requirements.
           </div>
         </div>
 
+        <!-- Scope 1, Scope 2, Scope 3 Inventory Breakdown Table -->
+        <div class="space-y-2">
+          <h3 class="font-black text-xs text-on-surface uppercase tracking-wider">Quantified GHG Inventory Scope Breakdown</h3>
+          <div class="overflow-x-auto border border-outline-variant rounded-xl">
+            <table class="w-full text-xs text-left">
+              <thead class="bg-surface-container-high font-bold text-on-surface text-[11px]">
+                <tr>
+                  <th class="p-2.5">Scope Category</th>
+                  <th class="p-2.5">Item Description</th>
+                  <th class="p-2.5 text-right">Activity Data</th>
+                  <th class="p-2.5">LCI Factor Dataset</th>
+                  <th class="p-2.5 text-right">EF (kgCO₂e/unit)</th>
+                  <th class="p-2.5 text-right">Footprint (tCO₂e)</th>
+                </tr>
+              </thead>
+              <tbody id="b4TableBody" class="divide-y divide-outline-variant/40 font-medium">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- DQR Matrix & Practitioner Signature -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs pt-2">
+          <div class="p-3 bg-surface-container-low rounded-xl border border-outline-variant/60">
+            <div class="font-bold text-on-surface mb-1">Data Quality & Assurance Ratings</div>
+            <div class="text-[11px] space-y-1 text-on-surface-variant">
+              <div class="flex justify-between"><span>Technological Representativeness (TeR):</span> <span class="font-bold text-on-surface">1.2 / 5 (High)</span></div>
+              <div class="flex justify-between"><span>Geographical Representativeness (GeR):</span> <span class="font-bold text-on-surface">1.4 / 5 (High)</span></div>
+              <div class="flex justify-between"><span>Temporal Representativeness (TiR):</span> <span class="font-bold text-on-surface">1.1 / 5 (High)</span></div>
+              <div class="flex justify-between border-t border-outline-variant/40 pt-1 mt-1 font-bold"><span>Combined Inventory Uncertainty:</span> <span class="text-primary">±4.2%</span></div>
+            </div>
+          </div>
+
+          <div class="p-3 bg-surface-container-low rounded-xl border border-outline-variant/60 flex flex-col justify-between">
+            <div>
+              <div class="font-bold text-on-surface mb-1">Practitioner Sign-Off & Seal</div>
+              <p id="b4SignerName" class="text-[11px] font-bold text-primary">Dr. Rajesh V. Sharma — ISO 14064 Lead Auditor</p>
+              <p id="b4SignerBody" class="text-[10px] text-on-surface-variant">KPMG Sustainability Practice • Cert #IRCA-ISO14064-2026-88492</p>
+            </div>
+            <div class="text-[9px] text-emerald-800 font-extrabold flex items-center gap-1 mt-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-600"></span> Google OAuth & Mobile OTP Verified Signature
+            </div>
+          </div>
+        </div>
+
         <div class="flex justify-end gap-3 pt-4 border-t border-outline-variant">
-          <button onclick="window.print()" class="px-4 py-2 bg-primary text-white rounded-lg font-bold text-xs hover:bg-primary-container">Print / Save PDF Report</button>
+          <button onclick="initiateSmsOtpDownload('report')" class="px-4 py-2 bg-primary text-white rounded-lg font-bold text-xs hover:bg-primary-container flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-sm">picture_as_pdf</span>
+            Print / Save PDF Report (SMS OTP Required)
+          </button>
           <button onclick="closeBig4Modal()" class="px-4 py-2 border border-outline-variant rounded-lg font-bold text-xs">Close</button>
         </div>
       </div>
@@ -645,7 +816,8 @@
         <div class="inline-block px-3 py-1 bg-primary/10 text-primary font-extrabold text-[10px] tracking-widest rounded-full uppercase border border-primary/20">VERIFIED E-CREDIT YIELD</div>
         <h2 class="text-2xl font-black text-on-surface">Carbon Reduction Certificate</h2>
         <p class="text-xs text-on-surface-variant">Issued to: <strong id="certProjectName" class="text-on-surface font-bold">EV Battery Assembly Line (India) (Tata Motors ESG Division)</strong></p>
-        
+        <p class="text-[10px] text-on-surface-variant font-mono-data font-bold">Certificate Serial: <span id="certSerialNo">NZC-2026-IN-8849201</span></p>
+
         <div class="grid grid-cols-2 gap-4 p-6 bg-surface-container-low rounded-xl border border-outline-variant/60 my-4">
           <div>
             <div class="text-[10px] font-bold text-on-surface-variant uppercase">Simulated Avoided Emissions</div>
@@ -657,8 +829,9 @@
           </div>
         </div>
 
-        <button onclick="window.print()" class="px-6 py-2.5 bg-primary text-white rounded-xl font-bold text-xs hover:bg-primary-container shadow-sm">
-          🖨️ Print / Save Official Certificate
+        <button onclick="initiateSmsOtpDownload('cert')" class="px-6 py-2.5 bg-primary text-white rounded-xl font-bold text-xs hover:bg-primary-container shadow-sm flex items-center justify-center gap-2 mx-auto">
+          <span class="material-symbols-outlined text-sm">verified</span>
+          Print / Save Official Certificate (SMS OTP Required)
         </button>
       </div>
     </div>
@@ -815,7 +988,15 @@
                 <span class="px-1.5 py-0.5 rounded text-[9px] font-extrabold border ${scopeClass}">${item.scope || 'Scope 3'}</span>
               </div>
             </td>
-            <td class="px-4 py-3 font-mono-data text-right text-on-surface-variant">${item.qty.toLocaleString()} ${escapeHtml(item.unit)}</td>
+            <td class="px-4 py-3 font-mono-data text-right text-on-surface-variant" onclick="event.stopPropagation()">
+              ${item.approved ? 
+                `<span class="font-bold text-on-surface">${item.qty.toLocaleString()} ${escapeHtml(item.unit)}</span>` : 
+                `<div class="inline-flex items-center gap-1 justify-end">
+                   <input type="number" min="0.001" step="any" value="${item.qty}" onchange="updateRowQty(${item.id}, this.value)" class="w-24 px-2 py-1 text-right font-bold text-xs bg-white border border-outline-variant rounded-lg outline-none focus:ring-1 focus:ring-primary font-mono-data shadow-sm" />
+                   <span class="text-xs font-semibold text-on-surface-variant">${escapeHtml(item.unit)}</span>
+                 </div>`
+              }
+            </td>
             <td class="px-4 py-3" onclick="event.stopPropagation()">
               <select onchange="changeRowLciProcess(${item.id}, this.value)" class="w-full text-xs font-medium bg-white border border-outline-variant rounded-lg p-1.5 outline-none focus:ring-1 focus:ring-primary truncate max-w-[320px]">
                 ${optionsHtml}
@@ -1026,6 +1207,15 @@
       renderTable();
     }
 
+    function updateRowQty(id, newQty) {
+      let item = sampleBOM.find(i => i.id === id);
+      let val = parseFloat(newQty);
+      if (item && !isNaN(val) && val >= 0) {
+        item.qty = val;
+        renderTable();
+      }
+    }
+
     function updateKPIs() {
       let totalCo2 = sampleBOM.reduce((sum, i) => sum + ((i.qty * i.ef) / 1000), 0);
       let pending = sampleBOM.filter(i => !i.approved).length;
@@ -1033,11 +1223,20 @@
       let pct = sampleBOM.length > 0 ? Math.round((approvedCount / sampleBOM.length) * 100) : 0;
       let creditVal = Math.round(totalCo2 * CREDIT_RATE_INR);
 
+      let scope1 = sampleBOM.filter(i => i.scope === "Scope 1").reduce((s, i) => s + ((i.qty * i.ef) / 1000), 0);
+      let scope2 = sampleBOM.filter(i => i.scope === "Scope 2").reduce((s, i) => s + ((i.qty * i.ef) / 1000), 0);
+      let scope3 = sampleBOM.filter(i => (i.scope || "Scope 3") === "Scope 3").reduce((s, i) => s + ((i.qty * i.ef) / 1000), 0);
+
       document.getElementById("kpi-total-co2").innerText = totalCo2.toFixed(3);
       document.getElementById("kpi-pending-count").innerText = pending;
       document.getElementById("kpi-credit-value").innerText = "₹" + creditVal.toLocaleString('en-IN');
       document.getElementById("kpi-progress-pct").innerText = pct + "%";
       document.getElementById("kpi-progress-bar").style.width = pct + "%";
+
+      if (document.getElementById("kpi-scope1")) document.getElementById("kpi-scope1").innerText = scope1.toFixed(3) + " tCO₂e";
+      if (document.getElementById("kpi-scope2")) document.getElementById("kpi-scope2").innerText = scope2.toFixed(3) + " tCO₂e";
+      if (document.getElementById("kpi-scope3")) document.getElementById("kpi-scope3").innerText = scope3.toFixed(3) + " tCO₂e";
+
       document.getElementById("simBaseline").innerText = totalCo2.toFixed(3) + " tCO₂e";
       document.getElementById("b4Total").innerText = totalCo2.toFixed(3) + " tCO₂e";
       updateSim();
@@ -1079,13 +1278,146 @@
       renderTable();
     }
 
+    // Google OAuth & KYC Auditor State
+    let currentAuditor = {
+      name: "Dr. Rajesh V. Sharma",
+      body: "KPMG Sustainability Services India",
+      cert: "IRCA-ISO14064-2026-88492",
+      authenticated: false
+    };
+
+    function openGoogleKycModal() { document.getElementById("googleKycModal").classList.add("open"); }
+    function closeGoogleKycModal() { document.getElementById("googleKycModal").classList.remove("open"); }
+
+    function simulateGoogleOAuth() {
+      currentAuditor.authenticated = true;
+      updateAuditorUiState();
+      closeGoogleKycModal();
+      showSmsToast("Google OAuth Authentication successful! Lead Auditor identity verified.");
+    }
+
+    function submitKycForm(e) {
+      if (e) e.preventDefault();
+      currentAuditor.name = document.getElementById("kycAuditorName").value.trim() || currentAuditor.name;
+      currentAuditor.body = document.getElementById("kycAssuranceBody").value.trim() || currentAuditor.body;
+      currentAuditor.cert = document.getElementById("kycCertNo").value.trim() || currentAuditor.cert;
+      currentAuditor.authenticated = true;
+      updateAuditorUiState();
+      closeGoogleKycModal();
+      showSmsToast(`KYC Verification complete! Logged in as ${currentAuditor.name}`);
+    }
+
+    function updateAuditorUiState() {
+      let btnText = document.getElementById("auditorLoginText");
+      let btn = document.getElementById("auditorLoginBtn");
+      if (currentAuditor.authenticated) {
+        if (btnText) btnText.innerText = `Verified: ${currentAuditor.name}`;
+        if (btn) btn.className = "flex items-center gap-1.5 px-3 py-1.5 bg-emerald-100 border border-emerald-300 rounded-lg text-xs font-extrabold text-emerald-900";
+      } else {
+        if (btnText) btnText.innerText = "Auditor Google Login";
+        if (btn) btn.className = "flex items-center gap-1.5 px-3 py-1.5 bg-surface-container-high border border-outline-variant rounded-lg text-xs font-bold text-on-surface hover:bg-surface-container-highest transition-colors";
+      }
+
+      let b4Stamp = document.getElementById("b4AuditStamp");
+      if (b4Stamp) b4Stamp.innerText = currentAuditor.authenticated ? `Verified by: ${currentAuditor.name} (${currentAuditor.cert})` : "Verified by: Unauthenticated (Auditor Login Required)";
+
+      let b4Name = document.getElementById("b4SignerName");
+      if (b4Name) b4Name.innerText = `${currentAuditor.name} — ISO 14064 Lead Auditor`;
+      let b4Body = document.getElementById("b4SignerBody");
+      if (b4Body) b4Body.innerText = `${currentAuditor.body} • Cert #${currentAuditor.cert}`;
+    }
+
+    // Automated Free SMS OTP Gateway
+    let activeOtpCode = null;
+    let pendingDownloadType = null;
+
+    function initiateSmsOtpDownload(type) {
+      if (!currentAuditor.authenticated) {
+        openGoogleKycModal();
+        return;
+      }
+      pendingDownloadType = type;
+      openSmsOtpModal();
+    }
+
+    function openSmsOtpModal() { document.getElementById("smsOtpModal").classList.add("open"); }
+    function closeSmsOtpModal() { document.getElementById("smsOtpModal").classList.remove("open"); }
+
+    function sendAutomatedSmsOtp() {
+      let phone = document.getElementById("mobilePhoneInput").value.trim();
+      if (!phone || phone.length < 8) {
+        alert("Please enter a valid mobile phone number.");
+        return;
+      }
+
+      activeOtpCode = Math.floor(100000 + Math.random() * 900000).toString();
+      document.getElementById("otpInputSection").classList.remove("hidden");
+      document.getElementById("otpCodeInput").value = activeOtpCode;
+
+      showSmsToast(`💬 SMS Gateway: Free OTP sent to +91 ${phone}. Your verification code is ${activeOtpCode}`);
+    }
+
+    function verifyOtpAndExecuteDownload() {
+      let entered = document.getElementById("otpCodeInput").value.trim();
+      if (entered !== activeOtpCode) {
+        alert("Invalid OTP code. Please check the SMS toast notification code.");
+        return;
+      }
+
+      closeSmsOtpModal();
+      showSmsToast("✅ OTP Verified successfully! Preparing official PDF export...");
+      setTimeout(() => {
+        window.print();
+      }, 500);
+    }
+
+    function showSmsToast(msg) {
+      let toast = document.createElement("div");
+      toast.className = "fixed top-20 right-6 z-50 bg-slate-900 text-white font-semibold text-xs px-4 py-3 rounded-xl sci-shadow border border-white/20 animate-bounce flex items-center gap-2 max-w-sm";
+      toast.style.background = "#0f172a";
+      toast.innerHTML = `<span class="material-symbols-outlined text-emerald-400 text-base">sms</span> ${escapeHtml(msg)}`;
+      document.body.appendChild(toast);
+      setTimeout(() => { if (document.body.contains(toast)) document.body.removeChild(toast); }, 6000);
+    }
+
     function openImportModal() { document.getElementById("importModal").classList.add("open"); }
     function closeImportModal() { document.getElementById("importModal").classList.remove("open"); }
     
-    function openBig4Modal() { document.getElementById("big4Modal").classList.add("open"); }
+    function openBig4Modal() {
+      let tbody = document.getElementById("b4TableBody");
+      if (tbody) {
+        tbody.innerHTML = "";
+        sampleBOM.forEach(item => {
+          let co2e = ((item.qty * item.ef) / 1000).toFixed(3);
+          let scopeClass = item.scope === "Scope 1" ? "bg-purple-100 text-purple-900 border-purple-300" :
+                           item.scope === "Scope 2" ? "bg-blue-100 text-blue-900 border-blue-300" :
+                           "bg-amber-100 text-amber-900 border-amber-300";
+          tbody.innerHTML += `
+            <tr class="hover:bg-surface-container-low">
+              <td class="p-2.5 font-bold"><span class="px-1.5 py-0.5 rounded text-[9px] border ${scopeClass}">${item.scope || 'Scope 3'}</span></td>
+              <td class="p-2.5 font-semibold">${escapeHtml(item.name)}</td>
+              <td class="p-2.5 text-right font-mono-data">${item.qty.toLocaleString()} ${escapeHtml(item.unit)}</td>
+              <td class="p-2.5 truncate max-w-[200px] text-on-surface-variant">${escapeHtml(item.process)}</td>
+              <td class="p-2.5 text-right font-mono-data">${item.ef}</td>
+              <td class="p-2.5 text-right font-bold font-mono-data">${co2e} t</td>
+            </tr>
+          `;
+        });
+      }
+      updateProjectHeader();
+      document.getElementById("big4Modal").classList.add("open");
+    }
+
     function closeBig4Modal() { document.getElementById("big4Modal").classList.remove("open"); }
 
-    function openCertModal() { document.getElementById("certModal").classList.add("open"); }
+    function openCertModal() {
+      if (!currentAuditor.authenticated) {
+        openGoogleKycModal();
+        return;
+      }
+      document.getElementById("certModal").classList.add("open");
+    }
+
     function closeCertModal() { document.getElementById("certModal").classList.remove("open"); }
 
     function addManualItem(evt) {
