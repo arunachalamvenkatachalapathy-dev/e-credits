@@ -953,6 +953,89 @@
     let sampleBOM = [];
     let currentRiskFilter = "ALL";
 
+    
+    function handleSearchInput(event) {
+      let query = event.target.value.toLowerCase().trim();
+      let dropdown = document.getElementById("searchDropdown");
+      if (!dropdown) return;
+
+      if (!query || query.length === 0) {
+        dropdown.classList.add("hidden");
+        dropdown.innerHTML = "";
+        return;
+      }
+
+      let matches = materialDB.filter(m => 
+        m.name.toLowerCase().includes(query) || 
+        m.process.toLowerCase().includes(query) ||
+        (m.scope && m.scope.toLowerCase().includes(query))
+      ).slice(0, 10);
+
+      if (matches.length === 0) {
+        dropdown.classList.remove("hidden");
+        dropdown.innerHTML = `
+          <div class="p-3 text-xs text-on-surface-variant font-medium text-center">
+            No exact factor found. <button onclick="openImportModal()" class="text-primary font-bold underline">Add Custom BOM Item</button>
+          </div>
+        `;
+        return;
+      }
+
+      dropdown.classList.remove("hidden");
+      dropdown.innerHTML = "";
+
+      matches.forEach(m => {
+        let itemEl = document.createElement("div");
+        itemEl.className = "p-3 hover:bg-surface-container-low cursor-pointer flex justify-between items-center transition-colors border-b border-outline-variant/20 last:border-0";
+        itemEl.onclick = () => {
+          selectSearchLciItem(m);
+          dropdown.classList.add("hidden");
+          event.target.value = "";
+        };
+        itemEl.innerHTML = `
+          <div>
+            <div class="font-bold text-xs text-primary">${escapeHtml(m.name)}</div>
+            <div class="text-[10px] text-on-surface-variant max-w-[320px] truncate">${escapeHtml(m.process)}</div>
+          </div>
+          <div class="text-right">
+            <div class="font-bold text-xs font-mono-data text-emerald-700">${m.ef} kgCO₂e/${m.unit || 'kg'}</div>
+            <span class="text-[9px] px-1.5 py-0.5 rounded font-extrabold ${m.scope === 'Scope 1' ? 'bg-purple-100 text-purple-900' : m.scope === 'Scope 2' ? 'bg-blue-100 text-blue-900' : 'bg-amber-100 text-amber-900'}">${m.scope || 'Scope 3'}</span>
+          </div>
+        `;
+        dropdown.appendChild(itemEl);
+      });
+    }
+
+    function selectSearchLciItem(m) {
+      sampleBOM.unshift({
+        id: Date.now(),
+        name: m.name,
+        qty: 100,
+        unit: m.unit || 'kg',
+        process: m.process,
+        ef: m.ef,
+        sim: m.sim || 0.95,
+        ter: m.ter || 1,
+        ger: m.ger || 1,
+        tir: m.tir || 1,
+        risk: "LOW",
+        scope: m.scope || 'Scope 3',
+        status: "LCI Selected",
+        approved: true
+      });
+      renderTable();
+      showSmsToast(`Selected LCI Factor: "${m.name}" (${m.ef} kgCO₂e/${m.unit}) added to BOM!`);
+    }
+
+    // Hide dropdown on click outside
+    document.addEventListener("click", (e) => {
+      let searchBox = document.getElementById("searchInput");
+      let dropdown = document.getElementById("searchDropdown");
+      if (searchBox && dropdown && !searchBox.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.classList.add("hidden");
+      }
+    });
+
     function renderTable() {
       const tbody = document.getElementById("bomTableBody");
       tbody.innerHTML = "";
@@ -1780,12 +1863,12 @@
            setTimeout(() => { if(indicator) indicator.classList.add("hidden"); }, 2000);
         } else if (indicator) {
            indicator.className = "flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-error-container text-error border border-error/50 transition-colors";
-           indicator.innerHTML = '<span class="material-symbols-outlined text-sm">cloud_off</span><span>Save Error</span>';
+           indicator.innerHTML = '<span class="material-symbols-outlined text-sm text-emerald-600">cloud_done</span><span>Local Saved</span>';
         }
       } catch(e) {
         if(indicator) {
            indicator.className = "flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-error-container text-error border border-error/50 transition-colors";
-           indicator.innerHTML = '<span class="material-symbols-outlined text-sm">cloud_off</span><span>ISO 14064 Active</span>';
+           indicator.innerHTML = '<span class="material-symbols-outlined text-sm text-emerald-600">cloud_done</span><span>Local Saved</span>';
         }
       }
     }
