@@ -608,10 +608,10 @@
       </div>
 
       <!-- Manual Form -->
-      <form onsubmit="addManualItem(event)" class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+      <form onsubmit="addManualItem(event)" autocomplete="off" class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
         <div class="md:col-span-3 relative">
           <label class="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Item Description</label>
-          <input id="manualName" type="text" required autocomplete="off" oninput="renderManualAc(event)" onfocus="renderManualAc(event)" placeholder="e.g. Recycled Copper Tubing 10mm or Steel Sheet" class="w-full text-xs font-semibold p-2 border border-outline-variant rounded-lg outline-none focus:ring-1 focus:ring-primary bg-white"/>
+          <input id="manualName" type="text" name="custom_bom_item_no_autofill_100000" required autocomplete="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-form-type="other" oninput="renderManualAc(event)" onfocus="renderManualAc(event)" placeholder="e.g. Recycled Copper Tubing 10mm or Steel Sheet" class="w-full text-xs font-semibold p-2 border border-outline-variant rounded-lg outline-none focus:ring-1 focus:ring-primary bg-white"/>
           <div id="manualAcDropdown" class="hidden absolute top-full left-0 right-0 mt-1 bg-white border border-outline-variant rounded-xl sci-shadow z-50 max-h-56 overflow-y-auto divide-y divide-outline-variant/30 text-xs"></div>
         </div>
         <div>
