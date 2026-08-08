@@ -179,7 +179,7 @@
 
         <div class="hidden lg:block relative w-64">
           <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant text-sm">search</span>
-          <input id="searchInput" oninput="handleSearchInput(event)" onfocus="handleSearchInput(event)" class="w-full bg-surface-container-low border border-outline-variant py-1.5 pl-9 pr-4 rounded-lg font-medium text-xs focus:ring-1 focus:ring-primary outline-none" placeholder="Search LCI database or BOM items..." type="text"/>
+          <input id="searchInput" autocomplete="off" oninput="handleSearchInput(event)" onfocus="handleSearchInput(event)" class="w-full bg-surface-container-low border border-outline-variant py-1.5 pl-9 pr-4 rounded-lg font-medium text-xs focus:ring-1 focus:ring-primary outline-none" placeholder="Search LCI database or BOM items..." type="text"/>
           <!-- Live Search Autocomplete Dropdown Menu -->
           <div id="searchDropdown" class="hidden absolute top-full left-0 right-0 mt-1.5 bg-white border border-outline-variant rounded-xl sci-shadow z-50 max-h-80 overflow-y-auto divide-y divide-outline-variant/30 text-xs">
           </div>
@@ -609,9 +609,10 @@
 
       <!-- Manual Form -->
       <form onsubmit="addManualItem(event)" class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
-        <div class="md:col-span-3">
+        <div class="md:col-span-3 relative">
           <label class="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Item Description</label>
-          <input id="manualName" type="text" required placeholder="e.g. Recycled Copper Tubing 10mm" class="w-full text-xs font-semibold p-2 border border-outline-variant rounded-lg outline-none focus:ring-1 focus:ring-primary bg-white"/>
+          <input id="manualName" type="text" required autocomplete="off" oninput="renderManualAc(event)" onfocus="renderManualAc(event)" placeholder="e.g. Recycled Copper Tubing 10mm or Steel Sheet" class="w-full text-xs font-semibold p-2 border border-outline-variant rounded-lg outline-none focus:ring-1 focus:ring-primary bg-white"/>
+          <div id="manualAcDropdown" class="hidden absolute top-full left-0 right-0 mt-1 bg-white border border-outline-variant rounded-xl sci-shadow z-50 max-h-56 overflow-y-auto divide-y divide-outline-variant/30 text-xs"></div>
         </div>
         <div>
           <label class="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Quantity</label>
@@ -954,6 +955,66 @@
     let currentRiskFilter = "ALL";
 
     
+    
+    function renderManualAc(event) {
+      let query = event.target.value.toLowerCase().trim();
+      let dropdown = document.getElementById("manualAcDropdown");
+      if (!dropdown) return;
+
+      if (!query || query.length === 0) {
+        dropdown.classList.add("hidden");
+        dropdown.innerHTML = "";
+        return;
+      }
+
+      let matches = materialDB.filter(m => 
+        m.name.toLowerCase().includes(query) || 
+        m.process.toLowerCase().includes(query)
+      ).slice(0, 8);
+
+      if (matches.length === 0) {
+        dropdown.classList.add("hidden");
+        return;
+      }
+
+      dropdown.classList.remove("hidden");
+      dropdown.innerHTML = "";
+
+      matches.forEach(m => {
+        let div = document.createElement("div");
+        div.className = "p-2.5 hover:bg-surface-container-low cursor-pointer flex justify-between items-center transition-colors";
+        div.onclick = () => {
+          selectManualAcItem(m);
+        };
+        div.innerHTML = `
+          <div>
+            <div class="font-bold text-xs text-primary">${escapeHtml(m.name)}</div>
+            <div class="text-[10px] text-on-surface-variant truncate max-w-[240px]">${escapeHtml(m.process)}</div>
+          </div>
+          <div class="text-right">
+            <div class="font-bold text-xs font-mono-data text-emerald-700">${m.ef} kgCO₂e/${m.unit}</div>
+            <span class="text-[9px] px-1 py-0.5 rounded font-extrabold ${m.scope === 'Scope 1' ? 'bg-purple-100 text-purple-900' : m.scope === 'Scope 2' ? 'bg-blue-100 text-blue-900' : 'bg-amber-100 text-amber-900'}">${m.scope || 'Scope 3'}</span>
+          </div>
+        `;
+        dropdown.appendChild(div);
+      });
+    }
+
+    function selectManualAcItem(m) {
+      document.getElementById("manualName").value = m.name;
+      document.getElementById("manualUnit").value = m.unit || "kg";
+      let dropdown = document.getElementById("manualAcDropdown");
+      if (dropdown) dropdown.classList.add("hidden");
+    }
+
+    document.addEventListener("click", (e) => {
+      let manualInput = document.getElementById("manualName");
+      let dropdown = document.getElementById("manualAcDropdown");
+      if (manualInput && dropdown && !manualInput.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.classList.add("hidden");
+      }
+    });
+
     function handleSearchInput(event) {
       let query = event.target.value.toLowerCase().trim();
       let dropdown = document.getElementById("searchDropdown");
