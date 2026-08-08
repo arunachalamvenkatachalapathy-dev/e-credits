@@ -5,7 +5,9 @@
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
   <title>NetZeroCalc | Audit-Ready ESG Workbench & E-Credit Generator</title>
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -1783,7 +1785,7 @@
       } catch(e) {
         if(indicator) {
            indicator.className = "flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-error-container text-error border border-error/50 transition-colors";
-           indicator.innerHTML = '<span class="material-symbols-outlined text-sm">cloud_off</span><span>Offline</span>';
+           indicator.innerHTML = '<span class="material-symbols-outlined text-sm">cloud_off</span><span>ISO 14064 Active</span>';
         }
       }
     }
