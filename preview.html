@@ -160,6 +160,9 @@
       </div>
 
       <div class="flex items-center gap-4">
+        <div id="backend-status-pill" class="flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-primary/10 text-primary border border-primary/20">
+          <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span> NetZero Engine Active
+        </div>
         <div class="hidden lg:block relative w-64">
           <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant text-sm">search</span>
           <input id="searchInput" oninput="filterTable()" class="w-full bg-surface-container-low border border-outline-variant py-1.5 pl-9 pr-4 rounded-lg font-medium text-xs focus:ring-1 focus:ring-primary outline-none" placeholder="Search BOM materials..." type="text"/>
@@ -174,6 +177,47 @@
     <!-- Scrollable Content Canvas -->
     <div class="flex-1 overflow-y-auto p-6 lg:p-8 max-w-[1400px] w-full mx-auto flex flex-col gap-6">
       
+      <!-- Interactive Workflow Progress Banner -->
+      <div class="bg-surface-container-lowest sci-border rounded-xl p-4 sci-shadow flex flex-wrap md:flex-nowrap justify-between items-center gap-4">
+        <div class="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity" onclick="switchView('workbench'); openImportModal();">
+          <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-xs">1</div>
+          <div>
+            <div class="font-bold text-xs text-on-surface">1. Activity Data & BOM</div>
+            <div class="text-[10px] text-on-surface-variant">Import CSV/XLSX / Master Calculator</div>
+          </div>
+        </div>
+
+        <div class="text-outline-variant hidden md:block">→</div>
+
+        <div class="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity" onclick="switchView('workbench')">
+          <div class="w-8 h-8 rounded-full bg-secondary text-white flex items-center justify-center font-bold text-xs">2</div>
+          <div>
+            <div class="font-bold text-xs text-on-surface">2. LCI Matching & DQR Review</div>
+            <div class="text-[10px] text-on-surface-variant">Review factors & approve risk</div>
+          </div>
+        </div>
+
+        <div class="text-outline-variant hidden md:block">→</div>
+
+        <div class="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity" onclick="switchView('simulator')">
+          <div class="w-8 h-8 rounded-full bg-tertiary text-white flex items-center justify-center font-bold text-xs">3</div>
+          <div>
+            <div class="font-bold text-xs text-on-surface">3. What-If Decarbonization</div>
+            <div class="text-[10px] text-on-surface-variant">Simulate green power & recycling</div>
+          </div>
+        </div>
+
+        <div class="text-outline-variant hidden md:block">→</div>
+
+        <div class="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity" onclick="openBig4Modal()">
+          <div class="w-8 h-8 rounded-full bg-emerald-700 text-white flex items-center justify-center font-bold text-xs">4</div>
+          <div>
+            <div class="font-bold text-xs text-on-surface">4. ISO Assurance & Credits</div>
+            <div class="text-[10px] text-on-surface-variant">Export audit & certificate</div>
+          </div>
+        </div>
+      </div>
+
       <!-- VIEW 1: WORKBENCH & MAPPING ENGINE -->
       <div id="view-workbench" class="flex flex-col gap-6">
         
@@ -762,6 +806,7 @@
       }
 
       updateKPIs();
+      saveState();
     }
 
     function filterTable() { renderTable(); }
@@ -1054,6 +1099,37 @@
       document.body.removeChild(link);
     }
 
+    function saveState() {
+      try {
+        localStorage.setItem('netzerocalc_bom', JSON.stringify(sampleBOM));
+      } catch(e) {}
+    }
+
+    function loadState() {
+      try {
+        let saved = localStorage.getItem('netzerocalc_bom');
+        if (saved) {
+          let parsed = JSON.parse(saved);
+          if (Array.isArray(parsed)) sampleBOM = parsed;
+        }
+      } catch(e) {}
+    }
+
+    async function checkBackendHealth() {
+      try {
+        let res = await fetch('http://localhost:8000/health', { signal: AbortSignal.timeout(1500) });
+        if (res.ok) {
+          let el = document.getElementById("backend-status-pill");
+          if (el) {
+            el.className = "flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300";
+            el.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span> FastAPI Backend Connected';
+          }
+        }
+      } catch(e) {}
+    }
+
+    loadState();
+    checkBackendHealth();
     renderTable();
   </script>
 </body>
