@@ -3794,8 +3794,8 @@
         return;
       }
 
-      itemsToImport.forEach((item, idx) => {
-        let match = matchMaterial(item.rawName, item.unit);
+      for (let [idx, item] of itemsToImport.entries()) {
+        let match = await matchMaterial(item.rawName, item.unit);
         let finalEf = item.ef !== null ? item.ef : match.ef;
 
         sampleBOM.unshift({
@@ -3814,7 +3814,7 @@
           status: "Auto-Matched",
           approved: true
         });
-      });
+      }
 
       closeImportModal();
       renderTable();
