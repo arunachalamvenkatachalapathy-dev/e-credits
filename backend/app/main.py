@@ -133,7 +133,13 @@ async def upload_bom(file: UploadFile = File(...)):
 
 @app.post("/bom/match")
 def match_bom_line(payload: BomLineMatch, db: Session = Depends(get_db)):
-    if not db.get(Project, payload.project_id):
+    if payload.project_id == 'temp-id':
+        if not db.get(Project, 'temp-id'):
+            # Auto-create a temp project for anonymous sessions
+            temp_proj = Project(id='temp-id', project_name='Sandbox')
+            db.add(temp_proj)
+            db.commit()
+    elif not db.get(Project, payload.project_id):
         raise HTTPException(404, "Project not found")
     try:
         converted = convert_unit(payload.quantity, payload.unit, payload.required_unit)
