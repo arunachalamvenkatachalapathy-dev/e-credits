@@ -1476,6 +1476,7 @@
       if (!name || isNaN(qty) || qty <= 0) return;
 
       let match = await matchMaterial(name, unit);
+      if (!match) { alert("Error: Backend API is waking up or currently unavailable. Please try again in 30 seconds."); return; }
       sampleBOM.unshift({
         id: Date.now(),
         name: name,
