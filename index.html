@@ -3456,14 +3456,25 @@
     let firebaseApp = null;
     let db = null;
     if (firebaseConfig.apiKey !== 'YOUR_FIREBASE_API_KEY' && firebaseConfig.apiKey !== '{{FIREBASE_API_KEY}}') {
-      firebaseApp = firebase.initializeApp(firebaseConfig);
-      db = firebase.firestore();
+      try {
+        if (window.firebase) {
+          firebaseApp = firebase.initializeApp(firebaseConfig);
+          db = firebase.firestore();
+        }
+      } catch(e) { console.error('Firebase init failed:', e); }
     }
 
     // Supabase Initialization
     const supabaseUrl = 'https://nepmqpdxolisxkbbhmxn.supabase.co';
     const supabaseKey = 'sb_publishable_3_jOVeUeMgKc0iIHTBXikQ_BjzeV4lE';
-    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+    let supabase = null;
+    try {
+      if (window.supabase) {
+        supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+      }
+    } catch(e) {
+      console.error('Supabase init failed:', e);
+    }
 
     // Auditor State
     let currentAuditor = {
