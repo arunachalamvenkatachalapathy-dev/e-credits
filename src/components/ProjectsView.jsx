@@ -32,7 +32,7 @@ export default function ProjectsView({
     <div className="space-y-6">
       
       {/* Workspace Header */}
-      <div className="bg-slate-900 text-white rounded-2xl p-6 shadow-sm border border-slate-800 flex justify-between items-center flex-wrap gap-4">
+      <div className="bg-slate-900 text-white rounded-xl p-6 shadow-sm flex justify-between items-center flex-wrap gap-4">
         <div>
           <h2 className="text-xl font-black text-white">Project Workspaces & Audit Registry</h2>
           <p className="text-xs text-slate-400 mt-1">
@@ -136,7 +136,7 @@ export default function ProjectsView({
       {/* Create Project Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl border border-slate-200 space-y-4">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full border border-slate-200 space-y-4">
             <h3 className="text-base font-extrabold text-slate-900">Create New Audit Project</h3>
             
             <form onSubmit={handleCreateSubmit} className="space-y-3 text-xs">

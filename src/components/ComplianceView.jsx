@@ -10,7 +10,7 @@ export default function ComplianceView({
   showToast 
 }) {
   const isReady = currentBOM.length > 0 && currentBOM.every(i => i.approved);
-  const totalFootprint = currentBOM.reduce((acc, i) => acc + (i.qty * i.ef / 1000), 0);
+  const totalFootprint = currentBOM.reduce((acc, i) => acc + (i.result_tco2e !== undefined && i.result_tco2e !== null ? i.result_tco2e : (i.qty * i.ef / 1000)), 0);
   const declarationSerial = `DECL-GHG-${new Date().getFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`;
 
   const handlePrint = () => {
@@ -21,7 +21,7 @@ export default function ComplianceView({
     <div className="space-y-6">
       
       {/* Action Header */}
-      <div className="bg-slate-900 text-white rounded-2xl p-6 shadow-sm border border-slate-800 flex justify-between items-center flex-wrap gap-4 print:hidden">
+      <div className="bg-slate-900 text-white rounded-xl p-6 shadow-sm flex justify-between items-center flex-wrap gap-4 print:hidden">
         <div>
           <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs uppercase tracking-wider mb-1">
             <FileText className="w-4 h-4" />
@@ -43,7 +43,7 @@ export default function ComplianceView({
       </div>
 
       {/* Audit Integrity Compliance Banner */}
-      <div className="p-4 bg-amber-50 rounded-2xl border border-amber-200 text-amber-900 text-xs flex items-start gap-3 print:hidden">
+      <div className="p-4 bg-amber-50 rounded-xl text-amber-900 text-xs flex items-start gap-3 print:hidden">
         <AlertTriangle className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
         <div className="space-y-1">
           <div className="font-extrabold text-slate-900">Audit & Disclosure Integrity Disclosure Notice:</div>
@@ -54,7 +54,7 @@ export default function ComplianceView({
       </div>
 
       {/* Main Print-Ready Report Document */}
-      <div className="bg-white rounded-2xl p-8 border border-slate-200 shadow-lg space-y-6 print:border-none print:shadow-none print:p-0">
+      <div className="bg-white rounded-xl p-8 border border-slate-200 space-y-6 print:border-none print:-none print:p-0">
         
         {/* Document Title Header */}
         <div className="flex justify-between items-start border-b border-slate-200 pb-4">
@@ -92,10 +92,18 @@ export default function ComplianceView({
 
           <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs font-medium space-y-1 text-slate-800">
             <div>
-              <strong>QUANTIFIED INVENTORY BOUNDARY:</strong> Calculated Total Footprint (Location-Based): <strong>{totalFootprint.toFixed(3)} tCO₂e</strong> across Scope 1, Scope 2 (Location & Market), and Scope 3 (GHG Protocol Categories 1-15).
+              <strong>QUANTIFIED INVENTORY BOUNDARY:</strong> Calculated Total Footprint (Location-Based): <strong>{totalFootprint.toFixed(3)} tCO₂e</strong> across Scope 1, Scope 2, and Scope 3.
             </div>
-            <div className="text-[11px] text-slate-500">
-              GWP Basis: IPCC AR6 (100-year GWP horizon). Primary operational boundary defined by reporting entity.
+            {activeProject?.coverBoundary && (
+              <div className="mt-2 pt-2 border-t border-slate-200 space-y-1">
+                <div><strong>Consolidation Approach:</strong> {activeProject.coverBoundary.consolidationApproach || 'Not Specified'}</div>
+                <div><strong>Reporting Period:</strong> {activeProject.coverBoundary.reportingPeriod || 'Not Specified'}</div>
+                <div><strong>Base Year:</strong> {activeProject.coverBoundary.baseYear || 'Not Specified'}</div>
+                <div><strong>Materiality Threshold:</strong> {activeProject.coverBoundary.materialityThreshold || 'Not Specified'}</div>
+              </div>
+            )}
+            <div className="text-[11px] text-slate-500 mt-2">
+              GWP Basis: {activeProject?.coverBoundary?.gwpVintage || 'IPCC AR6 (100-year GWP horizon)'}. Primary operational boundary defined by reporting entity.
             </div>
           </div>
         </div>
@@ -118,7 +126,7 @@ export default function ComplianceView({
               </thead>
               <tbody className="divide-y divide-slate-200 font-medium">
                 {currentBOM.map(item => {
-                  const co2e = ((item.qty * item.ef) / 1000).toFixed(3);
+                  const co2e = (item.result_tco2e !== undefined && item.result_tco2e !== null) ? item.result_tco2e.toFixed(3) : ((item.qty * item.ef) / 1000).toFixed(3);
                   return (
                     <tr key={item.id}>
                       <td className="p-2.5 font-bold"><span className="px-1.5 py-0.5 rounded text-[9px] border bg-slate-100 text-slate-800 border-slate-300">{item.scope || 'Scope 3'}</span></td>

@@ -150,7 +150,7 @@ export default function ImportModal({ isOpen, onClose, onImportItems, showToast 
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl p-6 max-w-xl w-full shadow-2xl border border-slate-200 relative space-y-4">
+      <div className="bg-white rounded-2xl p-6 max-w-xl w-full border border-slate-200 relative space-y-4">
         
         {/* Header */}
         <div className="flex justify-between items-center border-b border-slate-100 pb-3">
@@ -189,7 +189,7 @@ export default function ImportModal({ isOpen, onClose, onImportItems, showToast 
               <input type="file" accept=".csv,.xlsx,.xls" onChange={handleFileUpload} className="hidden" />
               <Upload className="w-8 h-8 text-emerald-600 mb-2" />
               <span className="font-extrabold text-xs text-slate-900">Click to browse or drop Excel / CSV file</span>
-              <span className="text-[11px] text-slate-500 mt-1">Supports BOM files & GHG Master Calculator templates</span>
+              <span className="text-[11px] text-slate-500 mt-1">Supports BOM files & GHG Calculator templates</span>
             </label>
           </div>
         )}

@@ -114,13 +114,13 @@ export default function SimulatorView({ currentBOM, showToast, onApplyScenario }
     <div className="space-y-6">
       
       {/* Header Banner */}
-      <div className="bg-slate-900 text-white rounded-2xl p-6 shadow-sm border border-slate-800 flex flex-wrap justify-between items-center gap-4">
+      <div className="bg-slate-900 text-white rounded-xl p-6 shadow-sm flex flex-wrap justify-between items-center gap-4">
         <div>
           <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs uppercase tracking-wider mb-1">
             <Sliders className="w-4 h-4" />
             <span>ISO 14064-2 Decarbonization Scenario Engine</span>
           </div>
-          <h2 className="text-xl font-black text-white">Interactive What-If Decarbonization Simulator</h2>
+          <h2 className="text-xl font-black text-white">What-If Decarbonization Simulator</h2>
           <p className="text-xs text-slate-400 mt-1 max-w-2xl">
             Simulate Scope 1-3 decarbonization levers. Replaces primary virgin factors with database secondary scrap factors (e.g. 14.20 → 1.80 kgCO₂e/kg) and models location vs. market-based PPA reductions.
           </p>
@@ -144,11 +144,11 @@ export default function SimulatorView({ currentBOM, showToast, onApplyScenario }
         </div>
       </div>
 
-      {/* 4 Interactive Decarbonization Sliders */}
+      {/* 4 Decarbonization Sliders */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         
         {/* Lever 1: Recycled Scrap Factor Swapping */}
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 space-y-3">
+        <div className="bg-white rounded-xl p-5 border border-slate-200 space-y-3">
           <div className="flex justify-between items-center">
             <span className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Recycled Scrap Material</span>
             <span className="text-sm font-black text-emerald-600 font-mono">{recycledPct}%</span>
@@ -164,7 +164,7 @@ export default function SimulatorView({ currentBOM, showToast, onApplyScenario }
         </div>
 
         {/* Lever 2: Renewable Energy PPA */}
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 space-y-3">
+        <div className="bg-white rounded-xl p-5 border border-slate-200 space-y-3">
           <div className="flex justify-between items-center">
             <span className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Renewable Energy PPA</span>
             <span className="text-sm font-black text-emerald-600 font-mono">{renewablePct}%</span>
@@ -178,7 +178,7 @@ export default function SimulatorView({ currentBOM, showToast, onApplyScenario }
         </div>
 
         {/* Lever 3: Energy Efficiency */}
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 space-y-3">
+        <div className="bg-white rounded-xl p-5 border border-slate-200 space-y-3">
           <div className="flex justify-between items-center">
             <span className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Energy Efficiency</span>
             <span className="text-sm font-black text-emerald-600 font-mono">{efficiencyPct}%</span>
@@ -192,7 +192,7 @@ export default function SimulatorView({ currentBOM, showToast, onApplyScenario }
         </div>
 
         {/* Lever 4: Fuel Switching */}
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 space-y-3">
+        <div className="bg-white rounded-xl p-5 border border-slate-200 space-y-3">
           <div className="flex justify-between items-center">
             <span className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Fuel Switching</span>
             <span className="text-sm font-black text-emerald-600 font-mono">{fuelSwitchPct}%</span>
@@ -211,14 +211,14 @@ export default function SimulatorView({ currentBOM, showToast, onApplyScenario }
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
         {/* Baseline Card */}
-        <div className="bg-slate-100 rounded-2xl p-5 border border-slate-300">
+        <div className="bg-slate-100 rounded-xl p-5 border border-slate-300">
           <div className="text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Baseline Footprint</div>
           <div className="text-2xl font-extrabold text-slate-800 font-mono">{baselineTotal.toFixed(3)} <span className="text-xs font-bold">tCO₂e</span></div>
           <div className="text-[11px] text-slate-500 mt-2">Unmitigated Current State</div>
         </div>
 
         {/* Avoided Emissions Card */}
-        <div className="bg-emerald-950 text-white rounded-2xl p-5 border border-emerald-800 shadow-md">
+        <div className="bg-emerald-950 text-white rounded-xl p-5 shadow-md">
           <div className="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-1 flex items-center gap-1">
             <TrendingDown className="w-4 h-4" /> Avoided Carbon Emissions
           </div>
@@ -227,7 +227,7 @@ export default function SimulatorView({ currentBOM, showToast, onApplyScenario }
         </div>
 
         {/* Internal Decarbonization Valuation Card */}
-        <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs space-y-1">
+        <div className="bg-white rounded-xl p-5 border border-slate-200 space-y-1">
           <div className="text-xs font-bold text-slate-600 uppercase tracking-wider mb-1 flex items-center gap-1">
             <DollarSign className="w-4 h-4 text-emerald-600" /> Internal Decarbonization Value
           </div>
@@ -238,7 +238,7 @@ export default function SimulatorView({ currentBOM, showToast, onApplyScenario }
         </div>
 
         {/* CBAM Tariff Savings Card */}
-        <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs space-y-1">
+        <div className="bg-white rounded-xl p-5 border border-slate-200 space-y-1">
           <div className="text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">EU CBAM Tariff Savings</div>
           <div className="text-2xl font-black text-blue-900 font-mono">€{cbamSavingsEur.toLocaleString('en-US', { maximumFractionDigits: 0 })}</div>
           <div className="text-[10px] text-slate-500">
@@ -249,7 +249,7 @@ export default function SimulatorView({ currentBOM, showToast, onApplyScenario }
       </div>
 
       {/* Auditor Disclaimer Box */}
-      <div className="p-4 bg-amber-50 rounded-2xl border border-amber-200 text-amber-900 text-xs flex items-start gap-3">
+      <div className="p-4 bg-amber-50 rounded-xl text-amber-900 text-xs flex items-start gap-3">
         <AlertCircle className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
         <div className="space-y-1">
           <div className="font-extrabold text-slate-900">Methodology & Regulatory Disclaimer on Financial Values:</div>
@@ -260,7 +260,7 @@ export default function SimulatorView({ currentBOM, showToast, onApplyScenario }
       </div>
 
       {/* Itemized Substitution Matrix Table */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
         <div className="p-4 bg-slate-50 border-b border-slate-200">
           <h3 className="font-extrabold text-sm text-slate-900">Line-Item Specific Factor Swapping & Decarbonization Matrix</h3>
         </div>

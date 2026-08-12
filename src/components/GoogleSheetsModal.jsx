@@ -61,7 +61,7 @@ export default function GoogleSheetsModal({ isOpen, onClose, currentBOM, activeP
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl p-6 max-w-lg w-full shadow-2xl border border-slate-200 space-y-4">
+      <div className="bg-white rounded-2xl p-6 max-w-lg w-full border border-slate-200 space-y-4">
         
         <div className="flex justify-between items-center border-b border-slate-100 pb-3">
           <div className="flex items-center gap-2">

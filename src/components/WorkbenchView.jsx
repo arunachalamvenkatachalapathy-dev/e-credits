@@ -16,14 +16,21 @@ export default function WorkbenchView({
   const [quickPreset, setQuickPreset] = useState('');
   const [quickQty, setQuickQty] = useState(100);
 
+  const calcTCO2e = (item) => (item.result_tco2e !== undefined && item.result_tco2e !== null) ? item.result_tco2e : (item.qty * item.ef / 1000);
+
   // Scope 1, 2 Location-Based, Scope 2 Market-Based, and Scope 3 Totals
-  const scope1Total = currentBOM.filter(i => i.scope === 'Scope 1').reduce((acc, i) => acc + (i.qty * i.ef / 1000), 0);
+  const scope1Total = currentBOM.filter(i => i.scope === 'Scope 1').reduce((acc, i) => acc + calcTCO2e(i), 0);
   
   // Scope 2 Dual Reporting (Location-Based vs Market-Based per GHG Protocol Guidance)
-  const scope2LocationTotal = currentBOM.filter(i => i.scope === 'Scope 2' && !i.name.toLowerCase().includes('ppa')).reduce((acc, i) => acc + (i.qty * i.ef / 1000), 0);
-  const scope2MarketTotal = currentBOM.filter(i => i.scope === 'Scope 2').reduce((acc, i) => acc + (i.qty * (i.name.toLowerCase().includes('ppa') ? 0 : i.ef) / 1000), 0);
+  const scope2LocationTotal = currentBOM.filter(i => 
+    i.scope === 'Scope 2' && (i.scope2Method ? i.scope2Method === 'location' : !i.name.toLowerCase().includes('ppa'))
+  ).reduce((acc, i) => acc + calcTCO2e(i), 0);
+  
+  const scope2MarketTotal = currentBOM.filter(i => 
+    i.scope === 'Scope 2' && (i.scope2Method ? i.scope2Method === 'market' : i.name.toLowerCase().includes('ppa'))
+  ).reduce((acc, i) => acc + calcTCO2e(i), 0);
 
-  const scope3Total = currentBOM.filter(i => (i.scope || 'Scope 3') === 'Scope 3').reduce((acc, i) => acc + (i.qty * i.ef / 1000), 0);
+  const scope3Total = currentBOM.filter(i => (i.scope || 'Scope 3') === 'Scope 3').reduce((acc, i) => acc + calcTCO2e(i), 0);
   
   // Location-Based Grand Total (Default GHG Protocol Boundary)
   const grandTotal = scope1Total + scope2LocationTotal + scope3Total;
@@ -117,7 +124,7 @@ export default function WorkbenchView({
     }
     let csv = "Item Description,Quantity,Unit,Matched LCI Process,Emission Factor (kgCO2e/unit),Footprint (tCO2e),Scope Category,GHG Protocol Scope 3 Category,GWP Basis,Audit Risk,Status\n";
     currentBOM.forEach(item => {
-      let tco2e = ((item.qty * item.ef) / 1000).toFixed(4);
+      let tco2e = (item.result_tco2e !== undefined && item.result_tco2e !== null) ? item.result_tco2e.toFixed(4) : ((item.qty * item.ef) / 1000).toFixed(4);
       csv += `"${item.name.replace(/"/g, '""')}",${item.qty},"${item.unit}","${item.process.replace(/"/g, '""')}",${item.ef},${tco2e},"${item.scope}","${item.scope3Category || 'Cat 1: Purchased Goods'}","${item.gwpBasis || 'IPCC AR6'}","${item.risk}","${item.status}"\n`;
     });
     const blob = new Blob([csv], { type: 'text/csv' });
@@ -135,13 +142,13 @@ export default function WorkbenchView({
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
         {/* Total Carbon Footprint Card */}
-        <div className="bg-slate-900 text-white rounded-2xl p-5 shadow-lg border border-slate-800 relative overflow-hidden">
+        <div className="bg-slate-900 text-white rounded-xl p-5 shadow-lg relative overflow-hidden">
           <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Total Carbon Footprint (Location-Based)</div>
-          <div className="text-3xl font-black text-emerald-400 font-mono">
-            {grandTotal.toFixed(3)} <span className="text-sm font-bold text-slate-300">tCO₂e</span>
+          <div className="text-4xl font-black text-emerald-500 font-mono drop-shadow-md my-2">
+            {grandTotal.toFixed(3)} <span className="text-lg font-bold text-emerald-300">tCO₂e</span>
           </div>
           <div className="mt-2 text-[10px] text-slate-400 font-mono">
-            GWP Standard: <strong className="text-emerald-300">IPCC AR6 (100-yr Horizon)</strong>
+            GWP Standard: <strong className="text-indigo-400">IPCC AR6 (100-yr Horizon)</strong>
           </div>
           <div className="mt-3 text-[11px] text-slate-400 font-medium flex items-center justify-between pt-2 border-t border-slate-800">
             <span>Items Mapped: <strong className="text-white">{currentBOM.length}</strong></span>
@@ -150,7 +157,7 @@ export default function WorkbenchView({
         </div>
 
         {/* Scope 1 Card */}
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
+        <div className="bg-white rounded-xl p-5 border border-slate-200">
           <div className="flex justify-between items-start">
             <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Scope 1: Direct Fuels</span>
             <span className="px-2 py-0.5 rounded text-[10px] font-extrabold bg-purple-100 text-purple-800 border border-purple-200">Scope 1</span>
@@ -164,7 +171,7 @@ export default function WorkbenchView({
         </div>
 
         {/* Scope 2 Dual Reporting Card */}
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
+        <div className="bg-white rounded-xl p-5 border border-slate-200">
           <div className="flex justify-between items-start">
             <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Scope 2 Dual Reporting</span>
             <span className="px-2 py-0.5 rounded text-[10px] font-extrabold bg-blue-100 text-blue-800 border border-blue-200">Scope 2</span>
@@ -181,7 +188,7 @@ export default function WorkbenchView({
         </div>
 
         {/* Scope 3 Card */}
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
+        <div className="bg-white rounded-xl p-5 border border-slate-200">
           <div className="flex justify-between items-start">
             <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Scope 3: Value Chain</span>
             <span className="px-2 py-0.5 rounded text-[10px] font-extrabold bg-amber-100 text-amber-800 border border-amber-200">Scope 3</span>
@@ -197,7 +204,7 @@ export default function WorkbenchView({
       </div>
 
       {/* Preset Quick Add Toolbar */}
-      <div className="bg-slate-900 text-white rounded-2xl p-4 shadow-sm border border-slate-800 flex flex-wrap items-center justify-between gap-3">
+      <div className="bg-slate-900 text-white rounded-xl p-4 shadow-sm flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-emerald-400" />
           <span className="text-xs font-bold uppercase tracking-wider text-slate-300">Quick Add India GHG Factor (Preset Dropdown):</span>
@@ -237,7 +244,7 @@ export default function WorkbenchView({
       </div>
 
       {/* Main Inventory Workbench Table Container */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
         
         {/* Table Toolbar Header */}
         <div className="p-4 border-b border-slate-200 flex flex-wrap justify-between items-center gap-3 bg-slate-50">
@@ -358,7 +365,7 @@ export default function WorkbenchView({
                 </tr>
               ) : (
                 filteredItems.map((item) => {
-                  const tco2e = ((item.qty * item.ef) / 1000).toFixed(3);
+                  const tco2e = (item.result_tco2e !== undefined && item.result_tco2e !== null) ? item.result_tco2e.toFixed(3) : ((item.qty * item.ef) / 1000).toFixed(3);
                   const isApproved = item.approved;
                   const scopeBadge = item.scope === 'Scope 1' ? 'bg-purple-100 text-purple-800 border-purple-200' :
                                     item.scope === 'Scope 2' ? 'bg-blue-100 text-blue-800 border-blue-200' :
@@ -381,7 +388,7 @@ export default function WorkbenchView({
                       <td className="p-3 font-bold text-slate-900">
                         <div>{item.name}</div>
                         {item.sourceUrl && (
-                          <a href={item.sourceUrl} target="_blank" rel="noreferrer" className="text-[10px] text-emerald-700 underline font-normal flex items-center gap-0.5 mt-0.5">
+                          <a href={item.sourceUrl} target="_blank" rel="noreferrer" className="text-[10px] text-indigo-600 underline font-normal flex items-center gap-0.5 mt-0.5">
                             <span>Source citation</span>
                             <ExternalLink className="w-2.5 h-2.5" />
                           </a>
@@ -398,6 +405,7 @@ export default function WorkbenchView({
                       <td className="p-3 font-semibold text-slate-600">{item.unit}</td>
                       <td className="p-3 text-slate-600 max-w-[200px] truncate" title={item.process}>
                         {item.process}
+                        {item.dataQuality && <div className="text-[10px] text-indigo-600 mt-1">DQR: {item.dataQuality}</div>}
                       </td>
                       <td className="p-3 text-right font-mono font-bold text-slate-900">{item.ef}</td>
                       <td className="p-3 text-right font-mono font-black text-emerald-700">{tco2e} t</td>

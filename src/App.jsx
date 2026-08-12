@@ -8,6 +8,7 @@ import ProjectsView from './components/ProjectsView.jsx';
 import ComplianceView from './components/ComplianceView.jsx';
 import ImportModal from './components/ImportModal.jsx';
 import GoogleSheetsModal from './components/GoogleSheetsModal.jsx';
+import GhgCalculatorView from './components/GhgCalculatorView.jsx';
 import { INDIA_GHG_FACTORS } from './data/indiaGhgFactors.js';
 
 // Default Initial Items
@@ -77,6 +78,33 @@ export default function App() {
       }
       return proj;
     }));
+  };
+
+  const updateActiveProject = (updates) => {
+    setProjects(prevProjects => prevProjects.map(proj => {
+      if (proj.id === activeProjectId) {
+        return { ...proj, ...updates };
+      }
+      return proj;
+    }));
+  };
+
+  const handleSaveCalculator = (importedBOM, coverBoundary) => {
+    const currentItems = activeProject ? activeProject.bom : [];
+    const mergedBOM = [...currentItems];
+    
+    importedBOM.forEach(item => {
+      const idx = mergedBOM.findIndex(b => b.id === item.id);
+      if (idx >= 0) {
+        mergedBOM[idx] = { ...mergedBOM[idx], ...item };
+      } else {
+        mergedBOM.push(item);
+      }
+    });
+
+    updateActiveProject({ bom: mergedBOM, coverBoundary });
+    setActiveTab('workbench');
+    showToast(`Saved ${importedBOM.length} line items from GHG Master Calculator.`);
   };
 
   // LocalStorage Persist
@@ -220,6 +248,13 @@ export default function App() {
             accountingStandard={accountingStandard}
             appliedScenario={appliedScenario}
             showToast={showToast}
+          />
+        )}
+
+        {activeTab === 'ghg-calculator' && (
+          <GhgCalculatorView 
+            onSave={handleSaveCalculator}
+            onCancel={() => setActiveTab('workbench')}
           />
         )}
       </main>

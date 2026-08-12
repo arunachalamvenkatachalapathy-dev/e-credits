@@ -59,13 +59,13 @@ export default function LciSearchTab({ onAddFactorToBOM, showToast }) {
     <div className="space-y-6">
       
       {/* Search Header Banner */}
-      <div className="bg-slate-900 text-white rounded-2xl p-6 shadow-sm border border-slate-800 space-y-4">
+      <div className="bg-slate-900 text-white rounded-xl p-6 shadow-sm space-y-4">
         <div>
           <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs uppercase tracking-wider mb-1">
             <Globe className="w-4 h-4" />
-            <span>Global LCI Factor Search Engine</span>
+            <span>LCI Factor Search Engine</span>
           </div>
-          <h2 className="text-xl font-black text-white">Search Global Emission Factors & LCI Databases</h2>
+          <h2 className="text-xl font-black text-white">Search Emission Factors & LCI Databases</h2>
           <p className="text-xs text-slate-400 mt-1 max-w-3xl">
             Live factor lookup across DEFRA 2024, India CEA v19, US EPA eGRID 2024, Ecoinvent 3.9, IPCC Tier 1, and World Aluminium datasets.
           </p>
@@ -136,7 +136,7 @@ export default function LciSearchTab({ onAddFactorToBOM, showToast }) {
                             'bg-amber-100 text-amber-800 border-amber-200';
 
           return (
-            <div key={factor.id} className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:border-slate-300 transition-all flex flex-col justify-between space-y-4">
+            <div key={factor.id} className="bg-white rounded-xl p-5 border border-slate-200 hover:border-slate-300 transition-all flex flex-col justify-between space-y-4">
               
               <div className="space-y-2">
                 <div className="flex justify-between items-start gap-2">
