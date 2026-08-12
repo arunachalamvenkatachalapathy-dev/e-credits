@@ -97,8 +97,13 @@
   font-size: 10px; font-weight: 700; text-transform: uppercase; color: #64748B;
   background: #F1F5F9; padding: 2px 7px; border-radius: 99px; margin-left: 10px;
 }
-.ac-empty { padding: 14px; font-size: 12.5px; color: #64748B; text-align: center; }
-
+@media print {
+  body * { visibility: hidden !important; }
+  .modal-backdrop.open, .modal-backdrop.open * { visibility: visible !important; }
+  .modal-backdrop.open { position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; height: auto !important; background: white !important; overflow: visible !important; }
+  .modal-card { max-width: 100% !important; width: 100% !important; box-shadow: none !important; border: none !important; margin: 0 !important; padding: 0 !important; }
+  button, .no-print { display: none !important; }
+}
 </style>
 </head>
 
@@ -460,48 +465,38 @@
       <!-- VIEW 2: PROJECTS & AUDITS HISTORY -->
       <div id="view-projects" class="hidden flex-col gap-6">
         <div class="bg-surface-container-lowest sci-border rounded-xl p-6 sci-shadow">
-          <h2 class="font-bold text-lg text-on-surface mb-2 flex items-center gap-2">
-            <span class="material-symbols-outlined text-primary">folder_shared</span>
-            Projects & Audit Workspaces
-          </h2>
-          <p class="text-xs text-on-surface-variant mb-6">Manage active ESG audits, product life-cycle models, and ISO compliance logs.</p>
-          
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+            <div>
+              <h2 class="font-bold text-lg text-on-surface flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">folder_shared</span>
+                Projects & Audit Workspaces
+              </h2>
+              <p class="text-xs text-on-surface-variant">Manage active ESG audits, product life-cycle models, and ISO compliance logs.</p>
+            </div>
+            <button onclick="createNewProject()" class="px-4 py-2 bg-primary text-white rounded-xl font-bold text-xs hover:bg-primary-container transition-colors shadow-sm flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-sm">add_circle</span> Create New Audit Project
+            </button>
+          </div>
+
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse text-xs">
               <thead class="bg-[#F8FAFC] border-b border-outline-variant">
                 <tr>
                   <th class="px-4 py-3 font-bold uppercase tracking-wider text-on-surface-variant">Project Identifier</th>
+                  <th class="px-4 py-3 font-bold uppercase tracking-wider text-on-surface-variant">Reporting Entity / Company</th>
                   <th class="px-4 py-3 font-bold uppercase tracking-wider text-on-surface-variant">Standard / Framework</th>
                   <th class="px-4 py-3 font-bold uppercase tracking-wider text-on-surface-variant">Items Mapped</th>
                   <th class="px-4 py-3 font-bold uppercase tracking-wider text-on-surface-variant">Status</th>
-                  <th class="px-4 py-3 font-bold uppercase tracking-wider text-on-surface-variant text-right">Last Modified</th>
+                  <th class="px-4 py-3 font-bold uppercase tracking-wider text-on-surface-variant text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-outline-variant/40 font-medium">
-                <tr class="hover:bg-surface-container-low">
-                  <td id="projTableTitle" class="px-4 py-3 font-bold text-primary"></td>
-                  <td id="projTableStd" class="px-4 py-3">ISO 14064-1 & GHG Protocol Scope 1-3</td>
-                  <td class="px-4 py-3 font-mono-data">Active Project Queue</td>
-                  <td class="px-4 py-3"><span class="px-2.5 py-0.5 rounded-full bg-primary/10 text-primary font-bold text-[10px] border border-primary/20">ACTIVE WORKSPACE</span></td>
-                  <td class="px-4 py-3 text-right font-mono-data">2026-08-08</td>
-                </tr>
-                <tr class="hover:bg-surface-container-low">
-                  <td class="px-4 py-3 font-bold text-on-surface">Solar Array Decarbonization Project (SAMPLE DATA)</td>
-                  <td class="px-4 py-3">ISO 14064-2:2019 Project Accounting</td>
-                  <td class="px-4 py-3 font-mono-data">14 / 14 Items (100%)</td>
-                  <td class="px-4 py-3"><span class="px-2.5 py-0.5 rounded-full bg-secondary/10 text-secondary font-bold text-[10px] border border-secondary/20">VERIFIED</span></td>
-                  <td class="px-4 py-3 text-right font-mono-data">2026-08-01</td>
-                </tr>
-                <tr class="hover:bg-surface-container-low">
-                  <td class="px-4 py-3 font-bold text-on-surface">Aluminium Casting Line Phase 2 (SAMPLE DATA)</td>
-                  <td class="px-4 py-3">EU CBAM & DPP Disclosure</td>
-                  <td class="px-4 py-3 font-mono-data">8 / 12 Items (67%)</td>
-                  <td class="px-4 py-3"><span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 font-bold text-[10px] border border-amber-300">IN REVIEW</span></td>
-                  <td class="px-4 py-3 text-right font-mono-data">2026-07-28</td>
-                </tr>
+              <tbody id="projectsTableBody" class="divide-y divide-outline-variant/40 font-medium">
+                <!-- Dynamically Rendered via renderProjectsTable() -->
               </tbody>
             </table>
           </div>
+        </div>
+      </div>
 
             <!-- VIEW 3: WHAT-IF SIMULATOR -->
       <div id="view-simulator" class="hidden flex-col gap-6">
@@ -3477,6 +3472,7 @@ const EMISSION_DB = [{"key": "Diesel_Fuel", "name": "Diesel fuel combustion", "u
       }
 
       updateKPIs();
+      saveStateLocal();
     }
 
     function filterTable() { renderTable(); }
@@ -4570,21 +4566,192 @@ function exportDPP() {
       }
     }
 
+    function saveStateLocal() {
+      try {
+        localStorage.setItem('netzerocalc_bom', JSON.stringify(currentBOM));
+        let meta = {
+          proj: document.getElementById("projectNameInput") ? document.getElementById("projectNameInput").value : '',
+          comp: document.getElementById("companyNameInput") ? document.getElementById("companyNameInput").value : '',
+          std: document.getElementById("standardSelect") ? document.getElementById("standardSelect").value : '',
+          projectId: currentProjectId
+        };
+        localStorage.setItem('netzerocalc_meta', JSON.stringify(meta));
+        
+        let projects = getStoredProjects();
+        let idx = projects.findIndex(p => p.id === currentProjectId);
+        let currentProjData = {
+          id: currentProjectId || 'proj-default',
+          project_name: meta.proj || 'Scope 1-3 Carbon Inventory Project',
+          company_name: meta.comp || 'ACME Industrial Group',
+          standard: meta.std || 'ISO 14064-1 & Scope 1-3',
+          bom: currentBOM,
+          last_modified: new Date().toISOString().split('T')[0]
+        };
+
+        if (idx >= 0) {
+          projects[idx] = currentProjData;
+        } else {
+          projects.unshift(currentProjData);
+        }
+        localStorage.setItem('netzerocalc_projects', JSON.stringify(projects));
+        renderProjectsTable();
+      } catch(e) {}
+    }
+
+    function getStoredProjects() {
+      try {
+        let saved = localStorage.getItem('netzerocalc_projects');
+        if (saved) {
+          let parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch(e) {}
+      
+      let defaultProjects = [
+        {
+          id: 'proj-default',
+          project_name: document.getElementById("projectNameInput") ? document.getElementById("projectNameInput").value : 'Scope 1-3 Carbon Inventory Project',
+          company_name: 'ACME Industrial Group',
+          standard: 'ISO 14064-1 & Scope 1-3',
+          bom: currentBOM,
+          last_modified: new Date().toISOString().split('T')[0]
+        },
+        {
+          id: 'proj-sample-solar',
+          project_name: 'Solar Array Decarbonization Project (SAMPLE DATA)',
+          company_name: 'SolarCorp India Ltd',
+          standard: 'ISO 14064-2:2019 Project Accounting',
+          bom: [
+            { id: 101, name: "Solar PV Panels, Monocrystalline", qty: 450, unit: "pcs", process: "solar cell production, monocrystalline | cutoff, S - GLO", ef: 120.5, scope: "Scope 3", risk: "LOW", status: "Auto-Matched", approved: true },
+            { id: 102, name: "Inverter Unit 50kW", qty: 4, unit: "pcs", process: "inverter production, 50kW | cutoff, S - GLO", ef: 340.0, scope: "Scope 3", risk: "LOW", status: "Auto-Matched", approved: true }
+          ],
+          last_modified: '2026-08-01'
+        },
+        {
+          id: 'proj-sample-aluminum',
+          project_name: 'Aluminium Casting Line Phase 2 (SAMPLE DATA)',
+          company_name: 'Bharat Metal Works',
+          standard: 'EU CBAM & DPP Disclosure',
+          bom: [
+            { id: 201, name: "Primary Aluminum Ingot", qty: 2500, unit: "kg", process: "aluminium production, primary | cutoff, S - IN", ef: 14.2, scope: "Scope 3", risk: "LOW", status: "Auto-Matched", approved: true },
+            { id: 202, name: "Grid Power (Maharashtra)", qty: 8500, unit: "kWh", process: "Electricity Grid Mix CEA India 2024", ef: 0.716, scope: "Scope 2", risk: "LOW", status: "Auto-Matched", approved: true }
+          ],
+          last_modified: '2026-07-28'
+        }
+      ];
+      return defaultProjects;
+    }
+
+    function renderProjectsTable() {
+      let tbody = document.getElementById("projectsTableBody");
+      if (!tbody) return;
+
+      let projects = getStoredProjects();
+      let html = "";
+
+      projects.forEach((proj) => {
+        let isActive = (proj.id === currentProjectId);
+        let itemsCount = proj.bom ? proj.bom.length : 0;
+        let approvedCount = proj.bom ? proj.bom.filter(i => i.approved).length : 0;
+        let pct = itemsCount > 0 ? Math.round((approvedCount / itemsCount) * 100) : 0;
+
+        html += `
+          <tr class="hover:bg-surface-container-low transition-colors ${isActive ? 'bg-primary/5 font-semibold' : ''}">
+            <td class="px-4 py-3 font-bold ${isActive ? 'text-primary' : 'text-on-surface'}">
+              ${escapeHtml(proj.project_name || 'Untitled Project')}
+            </td>
+            <td class="px-4 py-3 text-on-surface-variant font-medium">${escapeHtml(proj.company_name || '—')}</td>
+            <td class="px-4 py-3 text-on-surface-variant">${escapeHtml(proj.standard || 'ISO 14064-1 & Scope 1-3')}</td>
+            <td class="px-4 py-3 font-mono-data">${approvedCount} / ${itemsCount} Items (${pct}%)</td>
+            <td class="px-4 py-3">
+              ${isActive ? 
+                '<span class="px-2.5 py-0.5 rounded-full bg-primary/10 text-primary font-bold text-[10px] border border-primary/20">ACTIVE WORKSPACE</span>' : 
+                '<span class="px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-bold text-[10px] border border-outline-variant">AVAILABLE</span>'}
+            </td>
+            <td class="px-4 py-3 text-right">
+              <div class="flex items-center justify-end gap-2">
+                ${!isActive ? `<button onclick="switchActiveProject('${proj.id}')" class="px-2.5 py-1 bg-primary/10 hover:bg-primary/20 text-primary rounded font-bold text-[11px] transition-colors">Switch Workspace</button>` : '<span class="text-[11px] text-primary font-bold">Active</span>'}
+                ${projects.length > 1 ? `<button onclick="deleteProject('${proj.id}')" class="px-2 py-1 text-error hover:bg-error-container/30 rounded font-bold text-[11px] transition-colors" title="Delete Project">✕</button>` : ''}
+              </div>
+            </td>
+          </tr>
+        `;
+      });
+
+      tbody.innerHTML = html;
+    }
+
+    function switchActiveProject(projId) {
+      let projects = getStoredProjects();
+      let proj = projects.find(p => p.id === projId);
+      if (!proj) return;
+
+      currentProjectId = proj.id;
+      currentBOM = proj.bom || [];
+
+      if (document.getElementById("projectNameInput")) document.getElementById("projectNameInput").value = proj.project_name || '';
+      if (document.getElementById("companyNameInput")) document.getElementById("companyNameInput").value = proj.company_name || '';
+      if (document.getElementById("standardSelect")) document.getElementById("standardSelect").value = proj.standard || '';
+
+      updateProjectHeader();
+      renderTable();
+      saveStateLocal();
+      showSmsToast(`Switched workspace to '${proj.project_name}'`);
+      switchView('workbench');
+    }
+
+    function createNewProject() {
+      let name = prompt("Enter New Project Title:", "New ESG Carbon Accounting Project");
+      if (!name || !name.trim()) return;
+
+      let company = prompt("Enter Company / Reporting Entity Name:", "ACME Enterprises");
+      let newProj = {
+        id: 'proj-' + Date.now(),
+        project_name: name.trim(),
+        company_name: company ? company.trim() : 'ACME Enterprises',
+        standard: 'ISO 14064-1 & Scope 1-3',
+        bom: [],
+        last_modified: new Date().toISOString().split('T')[0]
+      };
+
+      let projects = getStoredProjects();
+      projects.unshift(newProj);
+      localStorage.setItem('netzerocalc_projects', JSON.stringify(projects));
+
+      switchActiveProject(newProj.id);
+    }
+
+    function deleteProject(projId) {
+      if (!confirm("Are you sure you want to delete this project workspace?")) return;
+      let projects = getStoredProjects();
+      projects = projects.filter(p => p.id !== projId);
+      localStorage.setItem('netzerocalc_projects', JSON.stringify(projects));
+
+      if (currentProjectId === projId && projects.length > 0) {
+        switchActiveProject(projects[0].id);
+      } else {
+        renderProjectsTable();
+      }
+    }
+
     function loadStateLocal() {
       try {
+        let savedMeta = localStorage.getItem('netzerocalc_meta');
+        if (savedMeta) {
+          let meta = JSON.parse(savedMeta);
+          if (meta.projectId) currentProjectId = meta.projectId;
+          if (meta.proj && document.getElementById("projectNameInput")) document.getElementById("projectNameInput").value = meta.proj;
+          if (meta.comp && document.getElementById("companyNameInput")) document.getElementById("companyNameInput").value = meta.comp;
+          if (meta.std && document.getElementById("standardSelect")) document.getElementById("standardSelect").value = meta.std;
+        }
+
         let saved = localStorage.getItem('netzerocalc_bom');
         if (saved) {
           let parsed = JSON.parse(saved);
           if (Array.isArray(parsed)) currentBOM = parsed;
         }
-        let savedMeta = localStorage.getItem('netzerocalc_meta');
-        if (savedMeta) {
-          let meta = JSON.parse(savedMeta);
-          if (meta.proj && document.getElementById("projectNameInput")) document.getElementById("projectNameInput").value = meta.proj;
-          if (meta.comp && document.getElementById("companyNameInput")) document.getElementById("companyNameInput").value = meta.comp;
-          if (meta.std && document.getElementById("standardSelect")) document.getElementById("standardSelect").value = meta.std;
-          updateProjectHeader();
-        }
+        updateProjectHeader();
+        renderProjectsTable();
       } catch(e) {}
     }
 
