@@ -240,36 +240,44 @@ export default function GhgCalculatorView({ onSave, onCancel }) {
                 console.warn('Native formula calculation failed', e);
               }
 
-              // 2. Bulletproof manual override for result_tco2e (Column F)
-              const calcSheet = data.find(s => s.name === 'GHG_Master_Calculator');
-              if (calcSheet && calcSheet.data) {
-                for (let r = 0; r < calcSheet.data.length; r++) {
-                  const row = calcSheet.data[r];
-                  if (!row || !row[0]) continue;
-                  
-                  const colA = String(row[0].m || row[0].v || '').trim();
-                  if (colA.toUpperCase().includes('GRAND TOTAL')) continue;
+              // 2. Bulletproof manual override for result_tco2e (Column F) with debounce to avoid freezing
+              setTimeout(() => {
+                  if (!workbookRef.current) return;
+                  const calcSheet = data.find(s => s.name === 'GHG_Master_Calculator');
+                  if (calcSheet && calcSheet.data) {
+                    for (let r = 0; r < calcSheet.data.length; r++) {
+                      const row = calcSheet.data[r];
+                      if (!row || !row[0]) continue;
+                      
+                      const colA = String(row[0].m || row[0].v || '').trim();
+                      if (colA.toUpperCase().includes('GRAND TOTAL')) continue;
 
-                  const qtyRaw = row[1] ? (row[1].v !== undefined ? row[1].v : row[1].m) : null;
-                  const efRaw = row[3] ? (row[3].v !== undefined ? row[3].v : row[3].m) : null;
-                  const resultRaw = row[5] ? (row[5].v !== undefined ? row[5].v : row[5].m) : null;
+                      const qtyRaw = row[1] ? (row[1].v !== undefined ? row[1].v : row[1].m) : null;
+                      const efRaw = row[3] ? (row[3].v !== undefined ? row[3].v : row[3].m) : null;
+                      const resultRaw = row[5] ? (row[5].v !== undefined ? row[5].v : row[5].m) : null;
 
-                  const qty = Number(qtyRaw);
-                  const ef = Number(efRaw);
-                  const currentResult = Number(resultRaw) || 0;
+                      const qty = Number(qtyRaw);
+                      const ef = Number(efRaw);
+                      const currentResult = Number(resultRaw) || 0;
 
-                  // If this row has a formula in F (col 5)
-                  if (!isNaN(qty) && !isNaN(ef) && row[5] && row[5].f) {
-                     const expectedResult = (qty * ef) / 1000;
-                     // Only update if it differs to prevent infinite onChange loops
-                     if (Math.abs(currentResult - expectedResult) > 0.0001) {
-                         // Force set value directly to ensure UI updates
-                         workbookRef.current.setCellFormat(r, 5, 'v', expectedResult);
-                         workbookRef.current.setCellFormat(r, 5, 'm', String(expectedResult));
-                     }
+                      // If this row has a formula in F (col 5)
+                      if (!isNaN(qty) && !isNaN(ef) && row[5] && row[5].f) {
+                         const expectedResult = (qty * ef) / 1000;
+                         // Only update if it differs to prevent infinite loops
+                         if (Math.abs(currentResult - expectedResult) > 0.0001) {
+                             workbookRef.current.setCellFormat(r, 5, 'v', expectedResult);
+                             workbookRef.current.setCellFormat(r, 5, 'm', expectedResult.toFixed(4));
+                             
+                             // Also update the formula display cell (G) if we are manually forcing it
+                             if (row[6] && row[6].f) {
+                                workbookRef.current.setCellFormat(r, 6, 'v', `(${qty} x ${ef}) / 1000`);
+                                workbookRef.current.setCellFormat(r, 6, 'm', `(${qty} x ${ef}) / 1000`);
+                             }
+                         }
+                      }
+                    }
                   }
-                }
-              }
+              }, 100);
             }}
           />
         ) : (
