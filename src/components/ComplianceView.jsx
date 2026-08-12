@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldCheck, Printer, CheckCircle2, AlertTriangle, FileText } from 'lucide-react';
+import { ShieldCheck, Printer, CheckCircle2, AlertTriangle, FileText, Lock, Check } from 'lucide-react';
 
 export default function ComplianceView({ 
   currentBOM, 
@@ -9,9 +9,9 @@ export default function ComplianceView({
   appliedScenario,
   showToast 
 }) {
-  const isReady = currentAuditor.authenticated && currentBOM.length > 0 && currentBOM.every(i => i.approved);
+  const isReady = currentBOM.length > 0 && currentBOM.every(i => i.approved);
   const totalFootprint = currentBOM.reduce((acc, i) => acc + (i.qty * i.ef / 1000), 0);
-  const certSerial = `CERT-ISO14064-${new Date().getFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`;
+  const declarationSerial = `DECL-GHG-${new Date().getFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`;
 
   const handlePrint = () => {
     window.print();
@@ -24,12 +24,12 @@ export default function ComplianceView({
       <div className="bg-slate-900 text-white rounded-2xl p-6 shadow-sm border border-slate-800 flex justify-between items-center flex-wrap gap-4 print:hidden">
         <div>
           <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs uppercase tracking-wider mb-1">
-            <ShieldCheck className="w-4 h-4" />
-            <span>Assurance-Ready Structure (ISAE 3410 & ISO 14064-3)</span>
+            <FileText className="w-4 h-4" />
+            <span>Audit Readiness & Inventory Disclosure Structure</span>
           </div>
-          <h2 className="text-xl font-black text-white">Independent Practitioner's GHG Assurance Report</h2>
-          <p className="text-xs text-slate-400 mt-1">
-            Verifiable greenhouse gas inventory declaration formatted for third-party carbon audit and ESG assurance.
+          <h2 className="text-xl font-black text-white">Pre-Audit Internal GHG Inventory Declaration</h2>
+          <p className="text-xs text-slate-400 mt-1 max-w-2xl">
+            Internal carbon inventory declaration formatted for third-party audit review and BRSR / CBAM disclosure.
           </p>
         </div>
 
@@ -38,8 +38,19 @@ export default function ComplianceView({
           className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-colors flex items-center gap-1.5 shadow-sm"
         >
           <Printer className="w-4 h-4" />
-          <span>Print / Save Official PDF Certificate</span>
+          <span>Print / Save PDF Declaration</span>
         </button>
+      </div>
+
+      {/* Audit Integrity Compliance Banner */}
+      <div className="p-4 bg-amber-50 rounded-2xl border border-amber-200 text-amber-900 text-xs flex items-start gap-3 print:hidden">
+        <AlertTriangle className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
+        <div className="space-y-1">
+          <div className="font-extrabold text-slate-900">Audit & Disclosure Integrity Disclosure Notice:</div>
+          <p className="text-[11px] leading-relaxed text-amber-900">
+            This document is a self-calculated internal inventory disclosure prepared for pre-audit review. It <strong>does NOT</strong> constitute an official independent third-party ISAE 3410 assurance report or ISO 14064-3 certificate. Third-party assurance requires independent practitioner engagement, verification of primary source evidence, and practitioner sign-off.
+          </p>
+        </div>
       </div>
 
       {/* Main Print-Ready Report Document */}
@@ -48,9 +59,9 @@ export default function ComplianceView({
         {/* Document Title Header */}
         <div className="flex justify-between items-start border-b border-slate-200 pb-4">
           <div>
-            <div className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">GLOBAL SUSTAINABILITY ASSURANCE PRACTICE</div>
-            <h1 className="text-2xl font-black text-slate-900 mt-1">INDEPENDENT PRACTITIONER'S ASSURANCE REPORT</h1>
-            <p className="text-xs text-slate-500 font-semibold mt-0.5">Assurance Structure Supports ISAE 3410 & ISO 14064-3 Standard Guidelines</p>
+            <div className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">SELF-REPORTED GREENHOUSE GAS DISCLOSURE</div>
+            <h1 className="text-2xl font-black text-slate-900 mt-1">PRE-AUDIT INTERNAL GHG INVENTORY DECLARATION</h1>
+            <p className="text-xs text-slate-500 font-semibold mt-0.5">Calculated in accordance with {accountingStandard} & IPCC AR6 GWP Standards</p>
           </div>
 
           <div className="text-right">
@@ -59,38 +70,33 @@ export default function ComplianceView({
                 ? 'bg-emerald-100 text-emerald-800 border-emerald-300' 
                 : 'bg-amber-100 text-amber-900 border-amber-300'
             }`}>
-              {isReady ? 'AUDIT READY / ASSURED' : 'PENDING AUDITOR SIGN-OFF'}
+              {isReady ? 'INTERNAL DRAFT — REVIEW READY' : 'UNAPPROVED ITEMS PENDING'}
             </span>
             <div className="text-[10px] font-bold text-slate-500">
               {currentAuditor.authenticated 
-                ? `Verified by: ${currentAuditor.name} (${currentAuditor.cert})` 
-                : 'Verified by: Unauthenticated (Auditor Login Required)'
+                ? `Practitioner Review: ${currentAuditor.name}` 
+                : 'Self-Reported Unverified Internal Calculation'
               }
             </div>
           </div>
         </div>
 
-        {/* Section 1: Conclusion Statement */}
+        {/* Section 1: Self-Declaration Statement */}
         <div className="text-xs space-y-3 text-slate-600 leading-relaxed">
           <p>
-            We have performed an independent practitioner limited assurance engagement on the Carbon Footprint & GHG Inventory calculations for{' '}
+            This internal disclosure statement presents the quantified Greenhouse Gas Inventory for{' '}
             <strong className="text-slate-900 font-bold">{activeProject?.projectName || 'Scope 1-3 Carbon Inventory'}</strong> (
-            <strong className="text-slate-900 font-bold">{activeProject?.companyName || 'Corporate Entity'}</strong>) under{' '}
+            <strong className="text-slate-900 font-bold">{activeProject?.companyName || 'Corporate Entity'}</strong>) evaluated under{' '}
             <strong className="text-slate-900 font-bold">{accountingStandard}</strong> using <strong className="text-slate-900 font-bold">India GHG Factors v6</strong> database.
           </p>
 
-          <div className={`p-4 rounded-xl border text-xs font-medium ${
-            isReady ? 'bg-emerald-50 border-emerald-200 text-emerald-900' : 'bg-amber-50 border-amber-200 text-amber-900'
-          }`}>
-            {isReady ? (
-              <div>
-                <strong>LIMITED ASSURANCE CONCLUSION:</strong> Based on the procedures performed and evidence obtained, nothing has come to our attention that causes us to believe that the GHG inventory quantification of <strong>{totalFootprint.toFixed(3)} tCO₂e</strong> is not prepared, in all material respects, in accordance with ISO 14064-1 standard guidelines.
-              </div>
-            ) : (
-              <div>
-                <strong>PENDING SIGN-OFF:</strong> Complete auditor login and approve all inventory line items to issue official ISO 14064 assurance statement.
-              </div>
-            )}
+          <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs font-medium space-y-1 text-slate-800">
+            <div>
+              <strong>QUANTIFIED INVENTORY BOUNDARY:</strong> Calculated Total Footprint (Location-Based): <strong>{totalFootprint.toFixed(3)} tCO₂e</strong> across Scope 1, Scope 2 (Location & Market), and Scope 3 (GHG Protocol Categories 1-15).
+            </div>
+            <div className="text-[11px] text-slate-500">
+              GWP Basis: IPCC AR6 (100-year GWP horizon). Primary operational boundary defined by reporting entity.
+            </div>
           </div>
         </div>
 
@@ -101,7 +107,8 @@ export default function ComplianceView({
             <table className="w-full text-xs text-left">
               <thead className="bg-slate-100 font-bold text-slate-700 uppercase text-[10px]">
                 <tr>
-                  <th className="p-2.5">Scope Category</th>
+                  <th className="p-2.5">Scope</th>
+                  <th className="p-2.5">GHG Protocol Category</th>
                   <th className="p-2.5">Item Description</th>
                   <th className="p-2.5 text-right">Activity Data</th>
                   <th className="p-2.5">LCI Factor Source</th>
@@ -115,9 +122,10 @@ export default function ComplianceView({
                   return (
                     <tr key={item.id}>
                       <td className="p-2.5 font-bold"><span className="px-1.5 py-0.5 rounded text-[9px] border bg-slate-100 text-slate-800 border-slate-300">{item.scope || 'Scope 3'}</span></td>
+                      <td className="p-2.5 text-slate-700 font-semibold">{item.scope3Category || 'Cat 1: Goods & Services'}</td>
                       <td className="p-2.5 font-semibold text-slate-900">{item.name}</td>
                       <td className="p-2.5 text-right font-mono">{item.qty.toLocaleString()} {item.unit}</td>
-                      <td className="p-2.5 text-slate-600 max-w-[200px] truncate">{item.process}</td>
+                      <td className="p-2.5 text-slate-600 max-w-[180px] truncate">{item.process}</td>
                       <td className="p-2.5 text-right font-mono">{item.ef}</td>
                       <td className="p-2.5 text-right font-mono font-bold text-emerald-800">{co2e} t</td>
                     </tr>
@@ -128,14 +136,14 @@ export default function ComplianceView({
           </div>
         </div>
 
-        {/* Section 3: Scenario & Certificate Metadata */}
+        {/* Section 3: Scenario & Metadata */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs pt-2">
           
           <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
             <h4 className="font-bold text-slate-900 uppercase text-[11px]">ISO 14064-2 Decarbonization Scenario</h4>
             {appliedScenario ? (
               <div className="space-y-1 font-mono text-[11px] text-slate-700">
-                <div>Baseline Footprint: <strong>{appliedScenario.baselineFootprint}</strong></div>
+                <div>Baseline Footprint: <strong>{appliedScenario.baselineTotal?.toFixed(3)} tCO₂e</strong></div>
                 <div>Avoided Emissions: <strong className="text-emerald-700">+{appliedScenario.avoidedTotal?.toFixed(3)} tCO₂e</strong></div>
                 <div>Net Footprint: <strong>{appliedScenario.netFootprint?.toFixed(3)} tCO₂e</strong></div>
               </div>
@@ -145,10 +153,10 @@ export default function ComplianceView({
           </div>
 
           <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2 text-right">
-            <h4 className="font-bold text-slate-900 uppercase text-[11px]">Verifier Serial & Digital Stamp</h4>
-            <div className="font-mono font-bold text-emerald-800 text-sm">{isReady ? certSerial : '— PENDING —'}</div>
-            <div className="text-[11px] text-slate-500">
-              {currentAuditor.authenticated ? currentAuditor.name : 'Unauthenticated Auditor Profile'}
+            <h4 className="font-bold text-slate-900 uppercase text-[11px]">Declaration Serial & Verification Posture</h4>
+            <div className="font-mono font-bold text-slate-800 text-xs">{declarationSerial}</div>
+            <div className="text-[10px] text-slate-500">
+              {currentAuditor.authenticated ? `Verified: ${currentAuditor.name}` : 'Self-Reported Internal Calculation (Unverified)'}
             </div>
           </div>
 

@@ -43,14 +43,14 @@ export default function App() {
   const [geography, setGeography] = useState('IN');
   const [appliedScenario, setAppliedScenario] = useState(null);
 
-  // Auditor Auth
+  // Auditor Auth (Default unauthenticated per GHG audit protocol)
   const [currentAuditor, setCurrentAuditor] = useState(() => {
     const saved = localStorage.getItem('netzerocalc_auditor');
     return saved ? JSON.parse(saved) : {
-      authenticated: true,
-      name: 'Auditor Practitioner',
-      email: 'auditor@netzerocalc.io',
-      cert: 'ISAE 3410 / ISO 14064 Certified'
+      authenticated: false,
+      name: 'Unauthenticated User',
+      email: 'internal.draft@netzerocalc.io',
+      cert: 'Self-Reported Internal Calculation'
     };
   });
 

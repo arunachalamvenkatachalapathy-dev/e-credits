@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Sliders, TrendingDown, DollarSign, Download, CheckCircle, ShieldAlert } from 'lucide-react';
+import { Sliders, TrendingDown, DollarSign, Download, CheckCircle, Info, AlertCircle } from 'lucide-react';
+import { INDIA_GHG_FACTORS } from '../data/indiaGhgFactors.js';
 
 export default function SimulatorView({ currentBOM, showToast, onApplyScenario }) {
   const [recycledPct, setRecycledPct] = useState(25);
@@ -7,18 +8,30 @@ export default function SimulatorView({ currentBOM, showToast, onApplyScenario }
   const [efficiencyPct, setEfficiencyPct] = useState(15);
   const [fuelSwitchPct, setFuelSwitchPct] = useState(30);
 
+  // Custom Price Inputs (§ Indicative Market Benchmarks)
+  const [carbonPriceInr, setCarbonPriceInr] = useState(1500); // ₹1,500/tCO2e
+  const [cbamTariffEur, setCbamTariffEur] = useState(85); // €85/tCO2e
+
   // Baseline Calculation
   const baselineTotal = currentBOM.reduce((acc, i) => acc + (i.qty * i.ef / 1000), 0);
 
-  // Sim Matrix Calculation
+  // Secondary Recycled Factor Lookup
+  const secondaryAluminumEf = INDIA_GHG_FACTORS.find(f => f.key === 'Aluminum_Secondary_Recycled')?.ef || 1.80;
+
+  // Sim Matrix Calculation (Using exact database factor swapping)
   const simMatrix = currentBOM.map(item => {
     let factor = item.ef;
     const nameLower = item.name.toLowerCase();
 
-    // 1. Recycled material lever
-    if (recycledPct > 0 && (nameLower.includes('aluminum') || nameLower.includes('steel') || nameLower.includes('copper') || nameLower.includes('plastic'))) {
-      factor = factor * (1 - (recycledPct / 100) * 0.75);
+    // 1. Recycled material lever (Swap primary virgin metal factor with secondary database scrap factor)
+    if (recycledPct > 0 && nameLower.includes('aluminum')) {
+      // Blend primary virgin factor (14.20) with secondary scrap factor (1.80) based on recycledPct
+      const recycledFraction = recycledPct / 100;
+      factor = (item.ef * (1 - recycledFraction)) + (secondaryAluminumEf * recycledFraction);
+    } else if (recycledPct > 0 && (nameLower.includes('steel') || nameLower.includes('copper') || nameLower.includes('plastic'))) {
+      factor = factor * (1 - (recycledPct / 100) * 0.70);
     }
+
     // 2. Renewable PPA lever
     if (renewablePct > 0 && item.scope === 'Scope 2') {
       factor = factor * (1 - (renewablePct / 100));
@@ -49,12 +62,9 @@ export default function SimulatorView({ currentBOM, showToast, onApplyScenario }
   const avoidedTotal = Math.max(0, baselineTotal - netFootprint);
 
   // Financial Metrics
-  const carbonCreditPriceInr = 1500; // ₹1,500 per tCO2e
-  const cbamTariffEur = 85; // €85 per tCO2e
   const inrEurRate = 90;
-
-  const carbonCreditValueInr = avoidedTotal * carbonCreditPriceInr;
-  const cbamSavingsEur = avoidedTotal * cbamTariffEur;
+  const internalDecarbonizationValueInr = avoidedTotal * (parseFloat(carbonPriceInr) || 1500);
+  const cbamSavingsEur = avoidedTotal * (parseFloat(cbamTariffEur) || 85);
   const cbamSavingsInr = cbamSavingsEur * inrEurRate;
 
   const handleExportRoadmap = () => {
@@ -69,10 +79,11 @@ export default function SimulatorView({ currentBOM, showToast, onApplyScenario }
         energyEfficiencyPct: efficiencyPct,
         fuelSwitchingPct: fuelSwitchPct
       },
-      financialValuation: {
-        carbonCreditYieldInr: carbonCreditValueInr.toFixed(2),
+      indicativeValuation: {
+        carbonMarketPriceInrPerTon: carbonPriceInr,
+        internalDecarbonizationValueInr: internalDecarbonizationValueInr.toFixed(2),
         cbamTariffSavingsEur: cbamSavingsEur.toFixed(2),
-        cbamTariffSavingsInr: cbamSavingsInr.toFixed(2)
+        disclaimer: "Internal decarbonization valuation for strategic planning only. Official carbon credit issuance requires third-party verification under carbon registry standards (Verra VCS / Gold Standard)."
       },
       itemizedMatrix: simMatrix.map(i => ({
         itemName: i.name,
@@ -107,25 +118,25 @@ export default function SimulatorView({ currentBOM, showToast, onApplyScenario }
         <div>
           <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs uppercase tracking-wider mb-1">
             <Sliders className="w-4 h-4" />
-            <span>ISO 14064-2 Scenario Simulator</span>
+            <span>ISO 14064-2 Decarbonization Scenario Engine</span>
           </div>
-          <h2 className="text-xl font-black text-white">Interactive Decarbonization What-If Simulator</h2>
+          <h2 className="text-xl font-black text-white">Interactive What-If Decarbonization Simulator</h2>
           <p className="text-xs text-slate-400 mt-1 max-w-2xl">
-            Simulate Scope 1-3 decarbonization levers in real time. Calculate avoided carbon emissions ($tCO_2e$), estimated carbon credit yield ($₹$), and EU CBAM tariff savings.
+            Simulate Scope 1-3 decarbonization levers. Replaces primary virgin factors with database secondary scrap factors (e.g. 14.20 → 1.80 kgCO₂e/kg) and models location vs. market-based PPA reductions.
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           <button 
             onClick={handleApplyScenario}
-            className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition-colors flex items-center gap-1.5 shadow-sm"
+            className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-colors flex items-center gap-1.5 shadow-sm"
           >
             <CheckCircle className="w-4 h-4" />
-            Apply as ISO 14064-2 Project Scenario
+            Apply as ISO 14064-2 Scenario
           </button>
           <button 
             onClick={handleExportRoadmap}
-            className="border border-slate-700 text-slate-300 hover:bg-slate-800 text-xs font-bold px-4 py-2 rounded-xl transition-colors flex items-center gap-1.5"
+            className="border border-slate-700 text-slate-300 hover:bg-slate-800 text-xs font-bold px-4 py-2.5 rounded-xl transition-colors flex items-center gap-1.5"
           >
             <Download className="w-4 h-4" />
             Export Roadmap JSON
@@ -136,10 +147,10 @@ export default function SimulatorView({ currentBOM, showToast, onApplyScenario }
       {/* 4 Interactive Decarbonization Sliders */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         
-        {/* Lever 1: Recycled Scrap */}
+        {/* Lever 1: Recycled Scrap Factor Swapping */}
         <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 space-y-3">
           <div className="flex justify-between items-center">
-            <span className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Recycled Material Scrap</span>
+            <span className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Recycled Scrap Material</span>
             <span className="text-sm font-black text-emerald-600 font-mono">{recycledPct}%</span>
           </div>
           <input 
@@ -147,7 +158,9 @@ export default function SimulatorView({ currentBOM, showToast, onApplyScenario }
             onChange={(e) => setRecycledPct(parseInt(e.target.value))}
             className="w-full accent-emerald-600 cursor-pointer"
           />
-          <p className="text-[11px] text-slate-500">Substitute primary metals/plastics with secondary recycled scrap (Scope 3 reduction).</p>
+          <p className="text-[11px] text-slate-500">
+            Swaps primary virgin factors with secondary database scrap factors (Aluminum: 14.20 → 1.80 kgCO₂e/kg).
+          </p>
         </div>
 
         {/* Lever 2: Renewable Energy PPA */}
@@ -161,7 +174,7 @@ export default function SimulatorView({ currentBOM, showToast, onApplyScenario }
             onChange={(e) => setRenewablePct(parseInt(e.target.value))}
             className="w-full accent-emerald-600 cursor-pointer"
           />
-          <p className="text-[11px] text-slate-500">Procure solar/wind PPA zero-carbon power (Scope 2 reduction).</p>
+          <p className="text-[11px] text-slate-500">Procure solar/wind PPA zero-carbon power (Scope 2 Market-based reduction).</p>
         </div>
 
         {/* Lever 3: Energy Efficiency */}
@@ -175,7 +188,7 @@ export default function SimulatorView({ currentBOM, showToast, onApplyScenario }
             onChange={(e) => setEfficiencyPct(parseInt(e.target.value))}
             className="w-full accent-emerald-600 cursor-pointer"
           />
-          <p className="text-[11px] text-slate-500">VFDs, heat recovery, and LED retrofits (Scope 1 & 2 reduction).</p>
+          <p className="text-[11px] text-slate-500">VFDs, heat recovery, and LED retrofits (Scope 1 & 2 energy reduction).</p>
         </div>
 
         {/* Lever 4: Fuel Switching */}
@@ -189,7 +202,7 @@ export default function SimulatorView({ currentBOM, showToast, onApplyScenario }
             onChange={(e) => setFuelSwitchPct(parseInt(e.target.value))}
             className="w-full accent-emerald-600 cursor-pointer"
           />
-          <p className="text-[11px] text-slate-500">Switch boilers/generators to CNG or biomass pellets (Scope 1 reduction).</p>
+          <p className="text-[11px] text-slate-500">Switch boilers/generators from diesel/coal to CNG or biomass pellets.</p>
         </div>
 
       </div>
@@ -207,34 +220,49 @@ export default function SimulatorView({ currentBOM, showToast, onApplyScenario }
         {/* Avoided Emissions Card */}
         <div className="bg-emerald-950 text-white rounded-2xl p-5 border border-emerald-800 shadow-md">
           <div className="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-1 flex items-center gap-1">
-            <TrendingDown className="w-4 h-4" /> Avoided Emissions
+            <TrendingDown className="w-4 h-4" /> Avoided Carbon Emissions
           </div>
           <div className="text-3xl font-black text-emerald-300 font-mono">{avoidedTotal.toFixed(3)} <span className="text-xs font-bold text-white">tCO₂e</span></div>
-          <div className="text-[11px] text-emerald-400/80 mt-2">Calculated Carbon Savings</div>
+          <div className="text-[11px] text-emerald-400/80 mt-2">Calculated Carbon Reductions</div>
         </div>
 
-        {/* Carbon Credit Value Card */}
-        <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs">
+        {/* Internal Decarbonization Valuation Card */}
+        <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs space-y-1">
           <div className="text-xs font-bold text-slate-600 uppercase tracking-wider mb-1 flex items-center gap-1">
-            <DollarSign className="w-4 h-4 text-emerald-600" /> Carbon Credit Yield (₹)
+            <DollarSign className="w-4 h-4 text-emerald-600" /> Internal Decarbonization Value
           </div>
-          <div className="text-2xl font-black text-slate-900 font-mono">₹{carbonCreditValueInr.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</div>
-          <div className="text-[11px] text-slate-500 mt-2">Valued @ ₹1,500 / tCO₂e</div>
+          <div className="text-2xl font-black text-slate-900 font-mono">₹{internalDecarbonizationValueInr.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</div>
+          <div className="text-[10px] text-slate-500">
+            Valued @ ₹{carbonPriceInr}/tCO₂e (Indicative Internal Carbon Price)
+          </div>
         </div>
 
         {/* CBAM Tariff Savings Card */}
-        <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs">
+        <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs space-y-1">
           <div className="text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">EU CBAM Tariff Savings</div>
           <div className="text-2xl font-black text-blue-900 font-mono">€{cbamSavingsEur.toLocaleString('en-US', { maximumFractionDigits: 0 })}</div>
-          <div className="text-[11px] text-slate-500 mt-2">≈ ₹{cbamSavingsInr.toLocaleString('en-IN', { maximumFractionDigits: 0 })} (@ €85/t)</div>
+          <div className="text-[10px] text-slate-500">
+            ≈ ₹{cbamSavingsInr.toLocaleString('en-IN', { maximumFractionDigits: 0 })} (@ €{cbamTariffEur}/tCO₂e EU ETS)
+          </div>
         </div>
 
+      </div>
+
+      {/* Auditor Disclaimer Box */}
+      <div className="p-4 bg-amber-50 rounded-2xl border border-amber-200 text-amber-900 text-xs flex items-start gap-3">
+        <AlertCircle className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
+        <div className="space-y-1">
+          <div className="font-extrabold text-slate-900">Methodology & Regulatory Disclaimer on Financial Values:</div>
+          <p className="text-[11px] leading-relaxed text-amber-900">
+            Internal decarbonization valuation ($₹$) represents calculated internal carbon cost savings for strategic planning. It <strong>does NOT</strong> constitute registry-issued carbon credits (Verra VCS / Gold Standard). Official carbon credit issuance requires project validation, monitoring, and independent third-party verification under carbon credit registry rules.
+          </p>
+        </div>
       </div>
 
       {/* Itemized Substitution Matrix Table */}
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
         <div className="p-4 bg-slate-50 border-b border-slate-200">
-          <h3 className="font-extrabold text-sm text-slate-900">Line-Item Specific Substitution & Decarbonization Matrix</h3>
+          <h3 className="font-extrabold text-sm text-slate-900">Line-Item Specific Factor Swapping & Decarbonization Matrix</h3>
         </div>
 
         <div className="overflow-x-auto">

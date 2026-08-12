@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
   Plus, Upload, Trash2, CheckCircle2, AlertTriangle, Download, 
-  RefreshCw, FileSpreadsheet, Sparkles, Filter, Check 
+  RefreshCw, FileSpreadsheet, Sparkles, Filter, Check, Info, ExternalLink 
 } from 'lucide-react';
 import { INDIA_GHG_FACTORS } from '../data/indiaGhgFactors.js';
 
@@ -10,18 +10,23 @@ export default function WorkbenchView({
   setCurrentBOM, 
   onOpenImportModal, 
   onOpenGoogleSheetsModal, 
-  onOpenBig4Modal,
   showToast 
 }) {
   const [riskFilter, setRiskFilter] = useState('ALL');
   const [quickPreset, setQuickPreset] = useState('');
   const [quickQty, setQuickQty] = useState(100);
 
-  // Calculations
+  // Scope 1, 2 Location-Based, Scope 2 Market-Based, and Scope 3 Totals
   const scope1Total = currentBOM.filter(i => i.scope === 'Scope 1').reduce((acc, i) => acc + (i.qty * i.ef / 1000), 0);
-  const scope2Total = currentBOM.filter(i => i.scope === 'Scope 2').reduce((acc, i) => acc + (i.qty * i.ef / 1000), 0);
+  
+  // Scope 2 Dual Reporting (Location-Based vs Market-Based per GHG Protocol Guidance)
+  const scope2LocationTotal = currentBOM.filter(i => i.scope === 'Scope 2' && !i.name.toLowerCase().includes('ppa')).reduce((acc, i) => acc + (i.qty * i.ef / 1000), 0);
+  const scope2MarketTotal = currentBOM.filter(i => i.scope === 'Scope 2').reduce((acc, i) => acc + (i.qty * (i.name.toLowerCase().includes('ppa') ? 0 : i.ef) / 1000), 0);
+
   const scope3Total = currentBOM.filter(i => (i.scope || 'Scope 3') === 'Scope 3').reduce((acc, i) => acc + (i.qty * i.ef / 1000), 0);
-  const grandTotal = scope1Total + scope2Total + scope3Total;
+  
+  // Location-Based Grand Total (Default GHG Protocol Boundary)
+  const grandTotal = scope1Total + scope2LocationTotal + scope3Total;
 
   // Filtered Items
   const filteredItems = currentBOM.filter(i => {
@@ -46,6 +51,9 @@ export default function WorkbenchView({
       ter: 1, ger: 1, tir: 1,
       risk: 'LOW',
       scope: factorObj.scope,
+      scope3Category: factorObj.scope3Category || 'Cat 1: Purchased Goods & Services',
+      gwpBasis: factorObj.gwpBasis || 'IPCC AR6',
+      sourceUrl: factorObj.sourceUrl,
       status: 'Preset Verified',
       approved: true,
       notes: factorObj.notes
@@ -91,11 +99,11 @@ export default function WorkbenchView({
   // Load Sample Demo Data
   const handleLoadSampleDemo = () => {
     const demoItems = [
-      { id: Date.now() + 1, name: "Aluminum Sheet, 5052-H32", qty: 1450, unit: "kg", process: "Aluminum Sheet Primary Ingot", ef: 14.2, scope: "Scope 3", ter: 1, ger: 1, tir: 1, risk: "LOW", status: "Auto-Matched", approved: true },
-      { id: Date.now() + 2, name: "Custom Polyurethane Foam Insert", qty: 320, unit: "pcs", process: "Polyurethane Flexible Foam Fabrication", ef: 4.8, scope: "Scope 3", ter: 1, ger: 1, tir: 1, risk: "LOW", status: "Auto-Matched", approved: true },
-      { id: Date.now() + 3, name: "Copper Wire 12 AWG", qty: 50, unit: "kg", process: "Copper Wire Drawing", ef: 6.5, scope: "Scope 3", ter: 1, ger: 1, tir: 1, risk: "LOW", status: "Auto-Matched", approved: true },
-      { id: Date.now() + 4, name: "Grid Electricity (CEA India 2024)", qty: 12000, unit: "kWh", process: "Grid Electricity CEA India Grid Mix", ef: 0.716, scope: "Scope 2", ter: 1, ger: 1, tir: 1, risk: "LOW", status: "CEA Verified", approved: true },
-      { id: Date.now() + 5, name: "Diesel Fuel (DG Set Power Generation)", qty: 500, unit: "Liters", process: "Diesel Fuel Thermal Combustion", ef: 2.6558, scope: "Scope 1", ter: 1, ger: 1, tir: 1, risk: "LOW", status: "India GHG Factor", approved: true }
+      { id: Date.now() + 1, name: "Aluminum Sheet, Primary Ingot 5052-H32", qty: 1450, unit: "kg", process: "Aluminum Sheet Primary Ingot", ef: 14.2, scope: "Scope 3", scope3Category: "Cat 1: Purchased Goods & Services", gwpBasis: "IPCC AR6", ter: 1, ger: 1, tir: 1, risk: "LOW", status: "Auto-Matched", approved: true },
+      { id: Date.now() + 2, name: "Custom Polyurethane Foam Insert", qty: 320, unit: "pcs", process: "Polyurethane Flexible Foam Fabrication", ef: 4.8, scope: "Scope 3", scope3Category: "Cat 1: Purchased Goods & Services", gwpBasis: "IPCC AR6", ter: 1, ger: 1, tir: 1, risk: "LOW", status: "Auto-Matched", approved: true },
+      { id: Date.now() + 3, name: "Copper Wire Drawing 12 AWG", qty: 50, unit: "kg", process: "Copper Wire Drawing 12 AWG", ef: 6.5, scope: "Scope 3", scope3Category: "Cat 1: Purchased Goods & Services", gwpBasis: "IPCC AR6", ter: 1, ger: 1, tir: 1, risk: "LOW", status: "Auto-Matched", approved: true },
+      { id: Date.now() + 4, name: "Grid Electricity (CEA India Grid Mix 2024)", qty: 12000, unit: "kWh", process: "Grid Electricity (CEA India Grid Mix 2024)", ef: 0.716, scope: "Scope 2", scope3Category: "N/A (Scope 2 Location-Based)", gwpBasis: "IPCC AR6", ter: 1, ger: 1, tir: 1, risk: "LOW", status: "CEA Verified", approved: true },
+      { id: Date.now() + 5, name: "Diesel Fuel (DG Sets & Power Generators)", qty: 500, unit: "Liters", process: "Diesel Fuel Thermal Combustion", ef: 2.6558, scope: "Scope 1", scope3Category: "N/A (Scope 1 Direct)", gwpBasis: "IPCC AR6", ter: 1, ger: 1, tir: 1, risk: "LOW", status: "India GHG Factor", approved: true }
     ];
     setCurrentBOM(demoItems);
     showToast("Loaded sample demo inventory data.");
@@ -107,10 +115,10 @@ export default function WorkbenchView({
       showToast("No data to export.");
       return;
     }
-    let csv = "Item Description,Quantity,Unit,Matched LCI Process,Emission Factor (kgCO2e/unit),Footprint (tCO2e),Scope Category,Audit Risk,Status\n";
+    let csv = "Item Description,Quantity,Unit,Matched LCI Process,Emission Factor (kgCO2e/unit),Footprint (tCO2e),Scope Category,GHG Protocol Scope 3 Category,GWP Basis,Audit Risk,Status\n";
     currentBOM.forEach(item => {
       let tco2e = ((item.qty * item.ef) / 1000).toFixed(4);
-      csv += `"${item.name.replace(/"/g, '""')}",${item.qty},"${item.unit}","${item.process.replace(/"/g, '""')}",${item.ef},${tco2e},"${item.scope}","${item.risk}","${item.status}"\n`;
+      csv += `"${item.name.replace(/"/g, '""')}",${item.qty},"${item.unit}","${item.process.replace(/"/g, '""')}",${item.ef},${tco2e},"${item.scope}","${item.scope3Category || 'Cat 1: Purchased Goods'}","${item.gwpBasis || 'IPCC AR6'}","${item.risk}","${item.status}"\n`;
     });
     const blob = new Blob([csv], { type: 'text/csv' });
     const link = document.createElement('a');
@@ -128,9 +136,12 @@ export default function WorkbenchView({
         
         {/* Total Carbon Footprint Card */}
         <div className="bg-slate-900 text-white rounded-2xl p-5 shadow-lg border border-slate-800 relative overflow-hidden">
-          <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Total Carbon Footprint</div>
+          <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Total Carbon Footprint (Location-Based)</div>
           <div className="text-3xl font-black text-emerald-400 font-mono">
             {grandTotal.toFixed(3)} <span className="text-sm font-bold text-slate-300">tCO₂e</span>
+          </div>
+          <div className="mt-2 text-[10px] text-slate-400 font-mono">
+            GWP Standard: <strong className="text-emerald-300">IPCC AR6 (100-yr Horizon)</strong>
           </div>
           <div className="mt-3 text-[11px] text-slate-400 font-medium flex items-center justify-between pt-2 border-t border-slate-800">
             <span>Items Mapped: <strong className="text-white">{currentBOM.length}</strong></span>
@@ -148,35 +159,38 @@ export default function WorkbenchView({
             {scope1Total.toFixed(3)} <span className="text-xs font-bold text-slate-500">tCO₂e</span>
           </div>
           <div className="text-[11px] text-slate-500 mt-2 font-medium">
-            DG Sets, Boilers, Fleet CNG & Petrol
+            Stationary & Mobile Direct Fuel Combustion
           </div>
         </div>
 
-        {/* Scope 2 Card */}
+        {/* Scope 2 Dual Reporting Card */}
         <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
           <div className="flex justify-between items-start">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Scope 2: Electricity</span>
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Scope 2 Dual Reporting</span>
             <span className="px-2 py-0.5 rounded text-[10px] font-extrabold bg-blue-100 text-blue-800 border border-blue-200">Scope 2</span>
           </div>
-          <div className="text-2xl font-extrabold text-slate-900 font-mono mt-2">
-            {scope2Total.toFixed(3)} <span className="text-xs font-bold text-slate-500">tCO₂e</span>
+          <div className="text-xl font-extrabold text-slate-900 font-mono mt-1">
+            {scope2LocationTotal.toFixed(3)} <span className="text-xs font-bold text-slate-500">tCO₂e (Location)</span>
           </div>
-          <div className="text-[11px] text-slate-500 mt-2 font-medium">
-            CEA Grid Mix (0.716 kgCO₂e/kWh)
+          <div className="text-xs font-bold text-emerald-700 font-mono mt-1 pt-1 border-t border-slate-100">
+            {scope2MarketTotal.toFixed(3)} tCO₂e (Market-Based PPA)
+          </div>
+          <div className="text-[10px] text-slate-400 mt-1">
+            GHG Protocol Scope 2 Dual-Reporting Compliant
           </div>
         </div>
 
         {/* Scope 3 Card */}
         <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
           <div className="flex justify-between items-start">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Scope 3: Supply Chain</span>
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Scope 3: Value Chain</span>
             <span className="px-2 py-0.5 rounded text-[10px] font-extrabold bg-amber-100 text-amber-800 border border-amber-200">Scope 3</span>
           </div>
           <div className="text-2xl font-extrabold text-slate-900 font-mono mt-2">
             {scope3Total.toFixed(3)} <span className="text-xs font-bold text-slate-500">tCO₂e</span>
           </div>
           <div className="text-[11px] text-slate-500 mt-2 font-medium">
-            Raw Materials, Freight, Logistics
+            Categorized across GHG Protocol Scope 3 (Cats 1-15)
           </div>
         </div>
 
@@ -230,7 +244,7 @@ export default function WorkbenchView({
           <div>
             <h2 className="font-extrabold text-sm text-slate-900">BOM & Activity Data Inventory Table</h2>
             <p className="text-xs text-slate-500 mt-0.5">
-              Edit quantities, verify factors, and approve rows for ISAE 3410 assurance.
+              Edit quantities, verify factor categories, and approve rows for internal audit preparation.
             </p>
           </div>
 
@@ -321,8 +335,8 @@ export default function WorkbenchView({
                 <th className="p-3">LCI Matched Process</th>
                 <th className="p-3 text-right">EF (kgCO₂e/unit)</th>
                 <th className="p-3 text-right">Footprint (tCO₂e)</th>
-                <th className="p-3">Scope</th>
-                <th className="p-3">DQR Quality</th>
+                <th className="p-3">Scope Boundary</th>
+                <th className="p-3">GHG Protocol Scope 3 Category</th>
                 <th className="p-3 text-center">Action</th>
               </tr>
             </thead>
@@ -364,7 +378,15 @@ export default function WorkbenchView({
                           <Check className="w-4 h-4" />
                         </button>
                       </td>
-                      <td className="p-3 font-bold text-slate-900">{item.name}</td>
+                      <td className="p-3 font-bold text-slate-900">
+                        <div>{item.name}</div>
+                        {item.sourceUrl && (
+                          <a href={item.sourceUrl} target="_blank" rel="noreferrer" className="text-[10px] text-emerald-700 underline font-normal flex items-center gap-0.5 mt-0.5">
+                            <span>Source citation</span>
+                            <ExternalLink className="w-2.5 h-2.5" />
+                          </a>
+                        )}
+                      </td>
                       <td className="p-3 text-right">
                         <input 
                           type="number" 
@@ -374,7 +396,7 @@ export default function WorkbenchView({
                         />
                       </td>
                       <td className="p-3 font-semibold text-slate-600">{item.unit}</td>
-                      <td className="p-3 text-slate-600 max-w-[220px] truncate" title={item.process}>
+                      <td className="p-3 text-slate-600 max-w-[200px] truncate" title={item.process}>
                         {item.process}
                       </td>
                       <td className="p-3 text-right font-mono font-bold text-slate-900">{item.ef}</td>
@@ -385,9 +407,9 @@ export default function WorkbenchView({
                         </span>
                       </td>
                       <td className="p-3">
-                        <div className="text-[10px] font-mono font-bold text-slate-600">
-                          TeR:{item.ter || 1}/5 • GeR:{item.ger || 1}/5
-                        </div>
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-800 border border-slate-300">
+                          {item.scope3Category || (item.scope === 'Scope 3' ? 'Cat 1: Purchased Goods' : 'N/A')}
+                        </span>
                       </td>
                       <td className="p-3 text-center">
                         <button 
