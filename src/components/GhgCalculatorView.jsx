@@ -155,7 +155,8 @@ export default function GhgCalculatorView({ onSave, onCancel }) {
 
             if (upperA.includes('GRAND TOTAL')) continue;
 
-            if (colB === null || colB === '' || isNaN(Number(colB))) continue;
+            const qty = Number(colB);
+            if (colB === null || colB === '' || isNaN(qty) || qty <= 0) continue;
 
             const dataQuality = String(colE);
             let risk = 'LOW';
@@ -218,7 +219,15 @@ export default function GhgCalculatorView({ onSave, onCancel }) {
             <div className="text-slate-500 font-medium animate-pulse">Loading Excel Workbook...</div>
           </div>
         ) : sheetData ? (
-          <Workbook ref={workbookRef} data={sheetData} />
+          <Workbook 
+            ref={workbookRef} 
+            data={sheetData} 
+            onChange={() => {
+              if (workbookRef.current) {
+                workbookRef.current.calculateFormula();
+              }
+            }}
+          />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center bg-slate-50 text-red-500">
             Failed to load workbook data.
