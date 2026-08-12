@@ -121,7 +121,7 @@
       </button>
       <button onclick="openBig4Modal()" class="nav-link flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high font-medium text-sm rounded-xl transition-all text-left w-full">
         <span class="material-symbols-outlined text-xl">history_edu</span>
-        Big 4 Audit Report
+        Assurance-Ready Report
       </button>
       <button onclick="openCertModal()" class="nav-link flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high font-medium text-sm rounded-xl transition-all text-left w-full">
         <span class="material-symbols-outlined text-xl">workspace_premium</span>
@@ -586,6 +586,18 @@
       </h2>
       <p class="text-xs text-on-surface-variant mb-6">Upload CSV or XLSX Excel spreadsheets or manually add components.</p>
 
+      
+      <div id="scenarioBar" class="mb-4 p-3 bg-surface border border-outline-variant rounded-lg flex justify-between items-center">
+        <div class="flex items-center gap-2">
+          <span class="font-bold text-xs text-on-surface">🌱 ISO 14064-2 Scenario:</span>
+          <div class="flex bg-white rounded-md p-1 border border-outline-variant">
+            <button id="btnScenarioBaseline" type="button" onclick="setScenario('baseline')" class="btn-sm bg-primary text-on-primary font-bold px-3 py-1 rounded">🏢 Baseline</button>
+            <button id="btnScenarioProject" type="button" onclick="setScenario('project')" class="btn-sm bg-surface-container-low text-on-surface-variant font-semibold px-3 py-1 rounded">⚡ Project</button>
+          </div>
+        </div>
+        <div class="text-[10px] text-on-surface-variant" id="scenarioStatusNote">Matching items for <strong>Baseline Scenario</strong></div>
+      </div>
+
       <!-- Dropzone -->
       <div onclick="document.getElementById('csvFileInput').click()" class="border-2 border-dashed border-outline-variant hover:border-primary rounded-xl p-6 text-center cursor-pointer bg-surface-container-low transition-colors mb-4">
         <input type="file" id="csvFileInput" accept=".csv,.xlsx,.xls" onchange="handleFileUpload(event)" class="hidden"/>
@@ -611,9 +623,12 @@
 
       <!-- Manual Form -->
       <form onsubmit="addManualItem(event)" class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
-        <div class="md:col-span-3">
+        <div class="md:col-span-3 relative">
           <label class="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Item Description</label>
-          <input id="manualName" type="text" required placeholder="e.g. Recycled Copper Tubing 10mm" class="w-full text-xs font-semibold p-2 border border-outline-variant rounded-lg outline-none focus:ring-1 focus:ring-primary bg-white"/>
+          <div class="relative">
+            <input id="manualName" type="text" required placeholder="e.g. Recycled Copper Tubing 10mm" autocomplete="off" class="w-full text-xs font-semibold p-2 border border-outline-variant rounded-lg outline-none focus:ring-1 focus:ring-primary bg-white"/>
+            <div id="acDropdown" class="hidden absolute top-full left-0 right-0 mt-1 bg-white border border-outline-variant rounded-xl shadow-lg z-50 max-h-60 overflow-y-auto divide-y divide-outline-variant/30 text-xs"></div>
+          </div>
         </div>
         <div>
           <label class="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Quantity</label>
@@ -686,7 +701,7 @@
     </div>
   </div>
 
-  <!-- Big 4 Audit Report Modal -->
+  <!-- Assurance-Ready Report Modal -->
   <div id="big4Modal" class="modal-overlay">
     <div class="bg-white rounded-2xl p-8 max-w-4xl w-full max-h-[92vh] overflow-y-auto sci-shadow relative border border-outline-variant">
       <button onclick="closeBig4Modal()" class="absolute top-4 right-4 text-on-surface-variant hover:text-on-surface font-bold text-xl">✕</button>
@@ -3009,29 +3024,48 @@
       } catch (e) {
         console.error("API matched failed, falling back to local database:", e);
         // Fallback to local materialDB if API is asleep
+        
         let nameLower = String(name).toLowerCase();
         let bestMatch = materialDB[0];
+        let bestSim = 0;
         for (let m of materialDB) {
-          if (m.keywords && m.keywords.some(k => nameLower.includes(k.toLowerCase()))) {
+          let score = 0;
+          if (m.name.toLowerCase().includes(nameLower)) score += 0.8;
+          else if (nameLower.includes(m.name.toLowerCase())) score += 0.5;
+          if (m.keywords && m.keywords.some(k => nameLower.includes(k.toLowerCase()))) score += 0.2;
+          
+          if (score > bestSim) {
+            bestSim = score;
             bestMatch = m;
-            break;
           }
         }
+        
+        let targetGeo = document.getElementById('geoSelect') ? document.getElementById('geoSelect').value : 'IN';
+        let isIndiaToIndia = (targetGeo === 'IN' && (bestMatch.process.includes('- IN') || bestMatch.process.includes('India')));
+        let calculatedGer = isIndiaToIndia ? 1 : (bestMatch.ger || 2);
+        
+        let targetYear = 2024;
+        let vintageYear = 2022; // Assume 2022 as default vintage for static DB
+        let diffYears = Math.abs(targetYear - vintageYear);
+        let calculatedTir = diffYears <= 3 ? 1 : (diffYears <= 6 ? 2 : 3);
+
         return {
           process: bestMatch.process,
           ef: bestMatch.ef,
-          sim: bestMatch.sim,
+          sim: Math.min(bestSim, 0.99), // No artificial floor
           ter: bestMatch.ter || 1,
-          ger: bestMatch.ger || 1,
-          tir: bestMatch.tir || 1,
-          risk: bestMatch.sim > 0.8 ? 'LOW' : 'MEDIUM',
+          ger: calculatedGer, // Fix B: Geography DQR
+          tir: calculatedTir, // Fix C: Temporal DQR
+          risk: bestSim >= 0.8 ? 'LOW' : 'HIGH',
           scope: bestMatch.scope || 'Scope 3',
           status: 'Offline Fallback',
           matchUnit: bestMatch.unit || 'kg',
           result_tco2e: null,
           data_quality_status: 'Local',
-          audit_id: null
+          audit_id: null,
+          scenario: typeof currentScenario !== 'undefined' ? currentScenario : 'baseline'
         };
+
       }
     }
 
@@ -3039,6 +3073,67 @@
     function escapeHtml(str) {
       if (!str) return '';
       return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+
+    
+    // Autocomplete Logic
+    const filterDb = materialDB;
+    const acDropdown = document.getElementById('acDropdown');
+    const manualNameInput = document.getElementById('manualName');
+
+    if (manualNameInput && acDropdown) {
+      manualNameInput.addEventListener('input', (e) => {
+        const val = e.target.value.toLowerCase();
+        acDropdown.innerHTML = '';
+        if (!val) {
+          acDropdown.classList.add('hidden');
+          return;
+        }
+        
+        let matches = filterDb.map(m => {
+          let score = 0;
+          if (m.name.toLowerCase().includes(val)) score += 10;
+          if (m.keywords && m.keywords.some(k => k.toLowerCase().includes(val))) score += 5;
+          return { ...m, score };
+        }).filter(m => m.score > 0).sort((a,b) => b.score - a.score).slice(0, 5);
+
+        if (matches.length === 0) {
+          acDropdown.classList.add('hidden');
+          return;
+        }
+
+        acDropdown.classList.remove('hidden');
+        matches.forEach(m => {
+          const div = document.createElement('div');
+          div.className = "px-3 py-2 cursor-pointer hover:bg-surface-container-low text-on-surface";
+          div.innerHTML = `<div class="font-bold">${m.name}</div><div class="text-[10px] text-on-surface-variant opacity-75">${m.process}</div>`;
+          div.onclick = () => {
+            manualNameInput.value = m.name;
+            acDropdown.classList.add('hidden');
+          };
+          acDropdown.appendChild(div);
+        });
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('#acDropdown') && e.target !== manualNameInput) {
+          acDropdown.classList.add('hidden');
+        }
+      });
+    }
+
+    let currentScenario = 'baseline';
+    function setScenario(type) {
+      currentScenario = type;
+      if (document.getElementById('btnScenarioBaseline')) {
+        document.getElementById('btnScenarioBaseline').className = type === 'baseline' ? 'btn-sm bg-primary text-on-primary font-bold px-3 py-1 rounded' : 'btn-sm bg-surface-container-low text-on-surface-variant font-semibold px-3 py-1 rounded';
+      }
+      if (document.getElementById('btnScenarioProject')) {
+        document.getElementById('btnScenarioProject').className = type === 'project' ? 'btn-sm bg-primary text-on-primary font-bold px-3 py-1 rounded' : 'btn-sm bg-surface-container-low text-on-surface-variant font-semibold px-3 py-1 rounded';
+      }
+      if (document.getElementById('scenarioStatusNote')) {
+        document.getElementById('scenarioStatusNote').innerHTML = `Matching items for <strong>${type === 'baseline' ? 'Baseline' : 'Project'} Scenario</strong>`;
+      }
     }
 
     const CREDIT_RATE_INR = 2900; // ₹ per tCO₂e (Indian Carbon Market rate)
@@ -3051,7 +3146,7 @@
       { id: 5, name: "Structural Steel Enclosure Bracket", qty: 850, unit: "kg", process: "steel production, converter, unalloyed | cutoff, S - IN", ef: 1.85, sim: 0.88, ter: 2, ger: 2, tir: 1, risk: "MEDIUM", scope: "Scope 3", status: "Auto-Matched", approved: false }
     ];
 
-    let sampleBOM = [];
+    let currentBOM = [];
     let currentRiskFilter = "ALL";
 
     function renderTable() {
@@ -3061,16 +3156,16 @@
       let searchVal = document.getElementById("searchInput").value.toLowerCase();
       let minScore = parseInt(document.getElementById("scoreSlider").value) / 100;
 
-      let filtered = sampleBOM.filter(item => {
+      let filtered = currentBOM.filter(item => {
         if (currentRiskFilter !== "ALL" && item.risk !== currentRiskFilter) return false;
         if (searchVal && !item.name.toLowerCase().includes(searchVal) && !item.process.toLowerCase().includes(searchVal)) return false;
         if (item.sim < minScore) return false;
         return true;
       });
 
-      document.getElementById("table-subtitle").innerText = sampleBOM.length === 0 ? 
+      document.getElementById("table-subtitle").innerText = currentBOM.length === 0 ? 
         "Table is empty. Click 'Import BOM' or 'New BOM Analysis' to add items." : 
-        `Loaded ${filtered.length} of ${sampleBOM.length} materials in project queue.`;
+        `Loaded ${filtered.length} of ${currentBOM.length} materials in project queue.`;
 
       if (filtered.length === 0) {
         tbody.innerHTML = `
@@ -3268,7 +3363,7 @@
       let defaultQty = defaultUnit === "kWh" ? 1000 : defaultUnit === "Liters" ? 100 : 500;
       let itemName = mat.keywords[0].charAt(0).toUpperCase() + mat.keywords[0].slice(1) + " Component";
 
-      sampleBOM.unshift({
+      currentBOM.unshift({
         id: Date.now(),
         name: itemName,
         qty: defaultQty,
@@ -3313,7 +3408,7 @@
     }
 
     function approveRow(id) {
-      let item = sampleBOM.find(i => i.id === id);
+      let item = currentBOM.find(i => i.id === id);
       if (item) {
         item.approved = true;
         renderTable();
@@ -3321,30 +3416,30 @@
     }
 
     function approveAllLowRisk() {
-      sampleBOM.forEach(i => { if (i.risk === "LOW") i.approved = true; });
+      currentBOM.forEach(i => { if (i.risk === "LOW") i.approved = true; });
       renderTable();
     }
 
     function clearAllItems() {
       if (!confirm('Are you sure you want to clear ALL BOM items? This cannot be undone.')) return;
-      sampleBOM = [];
+      currentBOM = [];
       renderTable();
     }
 
     function deleteRow(id) {
-      let item = sampleBOM.find(i => i.id === id);
+      let item = currentBOM.find(i => i.id === id);
       if (!item) return;
       if (!confirm(`Delete "${item.name}" from BOM?`)) return;
-      sampleBOM = sampleBOM.filter(i => i.id !== id);
+      currentBOM = currentBOM.filter(i => i.id !== id);
       renderTable();
     }
 
     function loadSampleDemo() {
       // Append demo items that aren't already in the list
       demoItems.forEach(demo => {
-        let exists = sampleBOM.some(item => item.name === demo.name);
+        let exists = currentBOM.some(item => item.name === demo.name);
         if (!exists) {
-          sampleBOM.push({...demo, id: Date.now() + demo.id});
+          currentBOM.push({...demo, id: Date.now() + demo.id});
         }
       });
       renderTable();
@@ -3360,7 +3455,7 @@
     }
 
     function updateRowQty(id, newQty) {
-      let item = sampleBOM.find(i => i.id === id);
+      let item = currentBOM.find(i => i.id === id);
       let val = parseFloat(newQty);
       if (item && !isNaN(val) && val >= 0) {
         item.qty = val;
@@ -3382,15 +3477,15 @@
     }
 
     function updateKPIs() {
-      let totalCo2 = sampleBOM.reduce((sum, i) => sum + getValidCo2(i), 0);
-      let pending = sampleBOM.filter(i => !i.approved).length;
-      let approvedCount = sampleBOM.filter(i => i.approved).length;
-      let pct = sampleBOM.length > 0 ? Math.round((approvedCount / sampleBOM.length) * 100) : 0;
+      let totalCo2 = currentBOM.reduce((sum, i) => sum + getValidCo2(i), 0);
+      let pending = currentBOM.filter(i => !i.approved).length;
+      let approvedCount = currentBOM.filter(i => i.approved).length;
+      let pct = currentBOM.length > 0 ? Math.round((approvedCount / currentBOM.length) * 100) : 0;
       let creditVal = Math.round(totalCo2 * CREDIT_RATE_INR);
 
-      let scope1 = sampleBOM.filter(i => i.scope === "Scope 1").reduce((s, i) => s + getValidCo2(i), 0);
-      let scope2 = sampleBOM.filter(i => i.scope === "Scope 2").reduce((s, i) => s + getValidCo2(i), 0);
-      let scope3 = sampleBOM.filter(i => (i.scope || "Scope 3") === "Scope 3").reduce((s, i) => s + getValidCo2(i), 0);
+      let scope1 = currentBOM.filter(i => i.scope === "Scope 1").reduce((s, i) => s + getValidCo2(i), 0);
+      let scope2 = currentBOM.filter(i => i.scope === "Scope 2").reduce((s, i) => s + getValidCo2(i), 0);
+      let scope3 = currentBOM.filter(i => (i.scope || "Scope 3") === "Scope 3").reduce((s, i) => s + getValidCo2(i), 0);
 
       document.getElementById("kpi-total-co2").innerText = totalCo2.toFixed(3);
       document.getElementById("kpi-pending-count").innerText = pending;
@@ -3518,7 +3613,7 @@
       currentAuditor = { id: null, name: null, cert: null, authenticated: false, picture: null };
       currentProjectId = null;
       updateAuditorUiState();
-      sampleBOM = [];
+      currentBOM = [];
       renderTable();
     }
 
@@ -3591,10 +3686,10 @@
     function openBig4Modal() {
       let isReady = true;
       if (!currentAuditor.authenticated) isReady = false;
-      if (sampleBOM.length === 0) isReady = false;
-      if (sampleBOM.some(item => !item.approved)) isReady = false;
+      if (currentBOM.length === 0) isReady = false;
+      if (currentBOM.some(item => !item.approved)) isReady = false;
 
-      let totalFootprint = sampleBOM.reduce((acc, item) => acc + ((item.qty * item.ef) / 1000), 0);
+      let totalFootprint = currentBOM.reduce((acc, item) => acc + ((item.qty * item.ef) / 1000), 0);
       if (totalFootprint <= 0) isReady = false;
 
       let b4ReportStatus = document.getElementById("b4ReportStatus");
@@ -3608,9 +3703,9 @@
         if (b4ReportStatus) b4ReportStatus.innerText = "PASSED ASSURANCE AUDIT";
         if (b4Conclusion) b4Conclusion.innerHTML = `<strong>Practitioner Conclusion:</strong> Based on the audit procedures performed, nothing has come to our attention that causes us to believe that the quantified GHG Inventory footprint of <strong id="b4Total" class="text-primary font-mono-data font-bold">${totalFootprint.toFixed(3)} tCO₂e</strong> is not prepared in all material respects in accordance with GHG Protocol and ISO 14064-1:2018 requirements.`;
         
-        let avgTer = (sampleBOM.reduce((acc, item) => acc + (item.ter || 1), 0) / sampleBOM.length).toFixed(1);
-        let avgGer = (sampleBOM.reduce((acc, item) => acc + (item.ger || 1), 0) / sampleBOM.length).toFixed(1);
-        let avgTir = (sampleBOM.reduce((acc, item) => acc + (item.tir || 1), 0) / sampleBOM.length).toFixed(1);
+        let avgTer = (currentBOM.reduce((acc, item) => acc + (item.ter || 1), 0) / currentBOM.length).toFixed(1);
+        let avgGer = (currentBOM.reduce((acc, item) => acc + (item.ger || 1), 0) / currentBOM.length).toFixed(1);
+        let avgTir = (currentBOM.reduce((acc, item) => acc + (item.tir || 1), 0) / currentBOM.length).toFixed(1);
         let dqrAvg = (parseFloat(avgTer) + parseFloat(avgGer) + parseFloat(avgTir)) / 3;
         let uncertainty = (dqrAvg * 3.5).toFixed(1);
 
@@ -3631,7 +3726,7 @@
       let tbody = document.getElementById("b4TableBody");
       if (tbody) {
         tbody.innerHTML = "";
-        sampleBOM.forEach(item => {
+        currentBOM.forEach(item => {
           let co2e = ((item.qty * item.ef) / 1000).toFixed(3);
           let scopeClass = item.scope === "Scope 1" ? "bg-purple-100 text-purple-900 border-purple-300" :
                            item.scope === "Scope 2" ? "bg-blue-100 text-blue-900 border-blue-300" :
@@ -3675,7 +3770,7 @@
 
       let match = await matchMaterial(name, unit);
       if (!match) { alert("Error: Backend API is waking up or currently unavailable. Please try again in 30 seconds."); return; }
-      sampleBOM.unshift({
+      currentBOM.unshift({
         id: Date.now(),
         name: name,
         qty: qty,
@@ -3809,7 +3904,7 @@
         let match = await matchMaterial(item.rawName, item.unit);
         let finalEf = item.ef !== null ? item.ef : match.ef;
 
-        sampleBOM.unshift({
+        currentBOM.unshift({
           id: Date.now() + idx,
           name: item.rawName,
           qty: item.qty,
@@ -3833,7 +3928,7 @@
 
     function exportCSV() {
       let csvContent = "data:text/csv;charset=utf-8,Item,Quantity,Unit,Matched Process,Emission Factor,Risk,Footprint (tCO2e)\n";
-      sampleBOM.forEach(i => {
+      currentBOM.forEach(i => {
         let co2e = ((i.qty * i.ef) / 1000).toFixed(3);
         let safeName = String(i.name || '').replace(/"/g, '""');
         let safeUnit = String(i.unit || '').replace(/"/g, '""');
@@ -3851,7 +3946,7 @@
     }
 
     function changeRowLciProcess(id, value) {
-      let item = sampleBOM.find(i => i.id === id);
+      let item = currentBOM.find(i => i.id === id);
       if (!item) return;
 
       if (value === "custom") return;
@@ -3873,7 +3968,7 @@
     }
 
     function updateRowNotes(id, text) {
-      let item = sampleBOM.find(i => i.id === id);
+      let item = currentBOM.find(i => i.id === id);
       if (item) {
         item.auditorNotes = text;
         saveState();
@@ -3906,7 +4001,7 @@
     let saveTimeout = null;
     function saveState() {
       try {
-        localStorage.setItem('netzerocalc_bom', JSON.stringify(sampleBOM));
+        localStorage.setItem('netzerocalc_bom', JSON.stringify(currentBOM));
         let meta = {
           proj: document.getElementById("projectNameInput")?.value || '',
           comp: document.getElementById("companyNameInput")?.value || '',
@@ -3956,7 +4051,7 @@
           if (itemsError) throw itemsError;
           
           if (items && items.length > 0) {
-            sampleBOM = items.map(item => ({
+            currentBOM = items.map(item => ({
               id: item.id, // Keep UUID for Supabase
               name: item.name,
               qty: parseFloat(item.qty),
@@ -3994,7 +4089,7 @@
       }
       
       try {
-        let totalFootprint = sampleBOM.reduce((acc, item) => acc + ((item.qty * item.ef) / 1000), 0);
+        let totalFootprint = currentBOM.reduce((acc, item) => acc + ((item.qty * item.ef) / 1000), 0);
         let projData = {
           user_id: currentAuditor.id,
           project_name: document.getElementById("projectNameInput")?.value || 'EV Battery Assembly Line (India)',
@@ -4019,8 +4114,8 @@
         // Wipe existing BOM items and re-insert (simple sync)
         if (projectId) {
            await supabase.from('bom_items').delete().eq('project_id', projectId);
-           if (sampleBOM.length > 0) {
-             const itemsToInsert = sampleBOM.map(item => ({
+           if (currentBOM.length > 0) {
+             const itemsToInsert = currentBOM.map(item => ({
                 project_id: projectId,
                 name: item.name,
                 qty: item.qty,
@@ -4045,8 +4140,8 @@
            try {
              await db.collection('projects').doc(projectId).set(projData);
              const batch = db.batch();
-             if (sampleBOM.length > 0) {
-               sampleBOM.forEach(item => {
+             if (currentBOM.length > 0) {
+               currentBOM.forEach(item => {
                  let docRef = db.collection('projects').doc(projectId).collection('bom_items').doc(String(item.id));
                  batch.set(docRef, item);
                });
@@ -4077,7 +4172,7 @@
         let saved = localStorage.getItem('netzerocalc_bom');
         if (saved) {
           let parsed = JSON.parse(saved);
-          if (Array.isArray(parsed)) sampleBOM = parsed;
+          if (Array.isArray(parsed)) currentBOM = parsed;
         }
         let savedMeta = localStorage.getItem('netzerocalc_meta');
         if (savedMeta) {
@@ -4149,7 +4244,7 @@
           let qty = parseFloat(qtyInput.value);
           if (!isNaN(qty) && qty > 0) {
             // Add to BOM
-            sampleBOM.push({
+            currentBOM.push({
               id: Date.now() + Math.random(),
               name: `Imported from Master Sheet: ${item.process}`,
               qty: qty,

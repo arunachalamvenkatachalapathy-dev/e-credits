@@ -123,7 +123,7 @@ complete_netzerocalc_html = """<!DOCTYPE html>
       </button>
       <button onclick="openBig4Modal()" class="nav-link flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high font-medium text-sm rounded-xl transition-all text-left w-full">
         <span class="material-symbols-outlined text-xl">history_edu</span>
-        Big 4 Audit Report
+        Assurance-Ready Report
       </button>
       <button onclick="openCertModal()" class="nav-link flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high font-medium text-sm rounded-xl transition-all text-left w-full">
         <span class="material-symbols-outlined text-xl">workspace_premium</span>
@@ -514,7 +514,7 @@ complete_netzerocalc_html = """<!DOCTYPE html>
     </div>
   </div>
 
-  <!-- Big 4 Audit Report Modal -->
+  <!-- Assurance-Ready Report Modal -->
   <div id="big4Modal" class="modal-overlay">
     <div class="bg-white rounded-2xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto sci-shadow relative border border-outline-variant">
       <button onclick="closeBig4Modal()" class="absolute top-4 right-4 text-on-surface-variant hover:text-on-surface font-bold text-xl">✕</button>
