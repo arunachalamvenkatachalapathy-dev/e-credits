@@ -21,6 +21,31 @@ export default function GhgCalculatorView({ onSave, onCancel }) {
               console.error("Failed to read excel sheets");
               return;
             }
+            
+            // Fix luckyexcel missing calcChain issues to restore reactivity
+            exportJson.sheets.forEach(sheet => {
+              const calcChain = sheet.calcChain || [];
+              const existingSet = new Set(calcChain.map(c => `${c.r}_${c.c}`));
+              
+              if (sheet.data) {
+                for (let r = 0; r < sheet.data.length; r++) {
+                  const row = sheet.data[r];
+                  if (!row) continue;
+                  for (let c = 0; c < row.length; c++) {
+                    const cell = row[c];
+                    if (cell && cell.f) {
+                      const key = `${r}_${c}`;
+                      if (!existingSet.has(key)) {
+                        calcChain.push({ r, c, index: sheet.index });
+                        existingSet.add(key);
+                      }
+                    }
+                  }
+                }
+              }
+              sheet.calcChain = calcChain;
+            });
+
             setSheetData(exportJson.sheets);
             setLoading(false);
           },
