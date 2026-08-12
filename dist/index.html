@@ -78,7 +78,28 @@
     .dqr-2 { background: #CDE5FF; color: #001D32; }
     .dqr-3 { background: #FEF3C7; color: #92400E; }
     .dqr-4, .dqr-5 { background: #FFDAD6; color: #93000A; }
-  </style>
+  
+.ac-wrapper { position: relative; }
+.ac-dropdown {
+  display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+  max-height: 320px; overflow-y: auto; background: #fff;
+  border: 1px solid #E2E8F0; border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(15,23,42,0.12); z-index: 50;
+}
+.ac-dropdown.open { display: block; }
+.ac-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 9px 14px; cursor: pointer; font-size: 13px; color: #0F172A;
+  border-bottom: 1px solid #F1F5F9;
+}
+.ac-item:hover { background: #F8FAFC; }
+.ac-tag {
+  font-size: 10px; font-weight: 700; text-transform: uppercase; color: #64748B;
+  background: #F1F5F9; padding: 2px 7px; border-radius: 99px; margin-left: 10px;
+}
+.ac-empty { padding: 14px; font-size: 12.5px; color: #64748B; text-align: center; }
+
+</style>
 </head>
 
 <body class="text-on-surface flex min-h-screen overflow-hidden bg-surface">
@@ -164,7 +185,7 @@
       <div class="flex items-center gap-3">
         <div id="saveIndicator" class="hidden flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-surface-container-high text-on-surface-variant border border-outline-variant/50 transition-colors">
           <span class="material-symbols-outlined text-sm">cloud_done</span>
-          <span>Saved</span>
+          <span><span id="saveStatusEl">Saved</span></span>
         </div>
         
         <div id="backend-status-pill" class="flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-primary/10 text-primary border border-primary/20 transition-colors"></div>
@@ -200,7 +221,7 @@
           </div>
           <div class="flex-1">
             <label class="block text-[10px] font-extrabold text-on-surface-variant uppercase tracking-wider mb-0.5">Project Name</label>
-            <input id="projectNameInput" onchange="updateProjectHeader()" type="text" value="EV Battery Assembly Line (India)" class="w-full text-sm font-black text-primary bg-surface-container-low border border-outline-variant/60 rounded-lg px-2.5 py-1 outline-none focus:ring-1 focus:ring-primary"/>
+            <input id="projectNameInput" onchange="updateProjectHeader()" type="text" value="" class="w-full text-sm font-black text-primary bg-surface-container-low border border-outline-variant/60 rounded-lg px-2.5 py-1 outline-none focus:ring-1 focus:ring-primary"/>
           </div>
         </div>
 
@@ -289,7 +310,9 @@
             <h3 class="font-bold text-[11px] text-on-surface-variant uppercase tracking-wider mb-2">Estimated E-Credit Value</h3>
             <div class="flex items-end gap-2">
               <span id="kpi-credit-value" class="text-3xl font-extrabold text-primary font-mono-data">₹0</span>
-              <span class="text-xs font-bold text-primary mb-1">@ ₹2,900/tCO₂e</span>
+              <span class="text-xs font-bold text-primary mb-1">
+  @ <input type="number" id="pricePerTonne" value="2900" class="w-16 bg-transparent border-b border-primary text-primary outline-none" oninput="updateKPIs()" />/tCO₂e
+</span>
             </div>
           </div>
 
@@ -456,7 +479,7 @@
               </thead>
               <tbody class="divide-y divide-outline-variant/40 font-medium">
                 <tr class="hover:bg-surface-container-low">
-                  <td id="projTableTitle" class="px-4 py-3 font-bold text-primary">EV Battery Assembly Line (India)</td>
+                  <td id="projTableTitle" class="px-4 py-3 font-bold text-primary"></td>
                   <td id="projTableStd" class="px-4 py-3">ISO 14064-1 & GHG Protocol Scope 1-3</td>
                   <td class="px-4 py-3 font-mono-data">Active Project Queue</td>
                   <td class="px-4 py-3"><span class="px-2.5 py-0.5 rounded-full bg-primary/10 text-primary font-bold text-[10px] border border-primary/20">ACTIVE WORKSPACE</span></td>
@@ -520,7 +543,7 @@
                 <span id="simAvoided" class="font-bold text-sm text-primary font-mono-data">0.00 tCO₂e</span>
               </div>
               <div class="flex justify-between items-center text-xs pt-1">
-                <span class="text-on-surface-variant font-bold">Estimated E-Credit Valuation (@ ₹2,900/t)</span>
+                <span class="text-on-surface-variant font-bold">Estimated E-Credit Valuation (<span id="whatIfPriceLabel">@ ₹2,900/t</span>)</span>
                 <span id="simValuation" class="font-extrabold text-base text-tertiary font-mono-data">₹0</span>
               </div>
             </div>
@@ -623,12 +646,15 @@
 
       <!-- Manual Form -->
       <form onsubmit="addManualItem(event)" class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
-        <div class="md:col-span-3 relative">
-          <label class="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Item Description</label>
-          <div class="relative">
-            <input id="manualName" type="text" required placeholder="e.g. Recycled Copper Tubing 10mm" autocomplete="off" class="w-full text-xs font-semibold p-2 border border-outline-variant rounded-lg outline-none focus:ring-1 focus:ring-primary bg-white"/>
-            <div id="acDropdown" class="hidden absolute top-full left-0 right-0 mt-1 bg-white border border-outline-variant rounded-xl shadow-lg z-50 max-h-60 overflow-y-auto divide-y divide-outline-variant/30 text-xs"></div>
-          </div>
+        
+<div class="form-group md:col-span-3">
+  <label class="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Item Description</label>
+  <div class="ac-wrapper">
+    <input class="w-full text-xs font-semibold p-2 border border-outline-variant rounded-lg outline-none focus:ring-1 focus:ring-primary bg-white" id="manualName" placeholder="Click to browse all 60 materials, or type to search..." autocomplete="off">
+    <div class="ac-dropdown" id="acDropdown"></div>
+  </div>
+</div>
+
         </div>
         <div>
           <label class="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Quantity</label>
@@ -722,7 +748,7 @@
         </div>
 
         <div class="text-xs space-y-3 text-on-surface-variant leading-relaxed">
-          <p>We have performed an independent practitioner limited assurance engagement on the Carbon Footprint & GHG Inventory calculations for <strong id="b4Title" class="text-on-surface font-bold">EV Battery Assembly Line (India)</strong> (<strong id="b4Company" class="text-on-surface font-bold">Sample Manufacturing Co.</strong>) under <strong id="b4Std" class="text-on-surface font-bold">ISO 14064-1 & GHG Protocol Scope 1-3</strong> using <strong id="b4Db" class="text-on-surface font-bold">India GHG Factors v6</strong>.</p>
+          <p>We have performed an independent practitioner limited assurance engagement on the Carbon Footprint & GHG Inventory calculations for <strong id="b4Title" class="text-on-surface font-bold"></strong> (<strong id="b4Company" class="text-on-surface font-bold">Sample Manufacturing Co.</strong>) under <strong id="b4Std" class="text-on-surface font-bold">ISO 14064-1 & GHG Protocol Scope 1-3</strong> using <strong id="b4Db" class="text-on-surface font-bold">India GHG Factors v6</strong>.</p>
           
           <div id="b4Conclusion" class="p-4 bg-surface-container-low rounded-xl border border-outline-variant/60 font-medium">
             <strong>INSUFFICIENT DATA:</strong> Audit not performed.
@@ -794,8 +820,8 @@
       <div class="text-center space-y-4">
         <div class="inline-block px-3 py-1 bg-primary/10 text-primary font-extrabold text-[10px] tracking-widest rounded-full uppercase border border-primary/20">VERIFIED E-CREDIT YIELD</div>
         <h2 class="text-2xl font-black text-on-surface">Carbon Reduction Certificate</h2>
-        <p class="text-xs text-on-surface-variant">Issued to: <strong id="certProjectName" class="text-on-surface font-bold">EV Battery Assembly Line (India) (Sample Manufacturing Co.)</strong></p>
-        <p class="text-[10px] text-on-surface-variant font-mono-data font-bold">Certificate Serial: <span id="certSerialNo">NZC-2026-IN-8849201</span></p>
+        <p class="text-xs text-on-surface-variant">Issued to: <strong id="certProjectName" class="text-on-surface font-bold"> —</strong></p>
+        <p class="text-[10px] text-on-surface-variant font-mono-data font-bold">Certificate Serial: <span id="certSerialNo"><span id="certSerialDisplay">—</span></span></p>
 
         <div class="grid grid-cols-2 gap-4 p-6 bg-surface-container-low rounded-xl border border-outline-variant/60 my-4">
           <div>
@@ -3077,7 +3103,63 @@
 
     
     // Autocomplete Logic
-    const filterDb = materialDB;
+    
+const EMISSION_DB = [{"key": "Diesel_Fuel", "name": "Diesel fuel combustion", "unit": "L", "factor": 2.6558, "status": "uplifted", "keywords": ["diesel", "generator", "dg set", "genset", "backup power"]}, {"key": "Petrol_Fuel", "name": "Petrol / gasoline combustion", "unit": "L", "factor": 2.2836, "status": "uplifted", "keywords": ["petrol", "gasoline", "car", "vehicle"]}, {"key": "CNG_Fuel", "name": "CNG vehicle fuel", "unit": "kg", "factor": 2.686, "status": "uplifted", "keywords": ["cng", "compressed natural gas", "vehicle"]}, {"key": "LPG_Commercial", "name": "Commercial LPG cylinder", "unit": "kg", "factor": 2.9979, "status": "uplifted", "keywords": ["lpg", "cylinder", "cooking gas", "canteen"]}, {"key": "Coal_Indian", "name": "Indian coal (boiler)", "unit": "kg", "factor": 1.9919, "status": "uplifted", "keywords": ["coal", "boiler", "furnace"]}, {"key": "Furnace_Oil", "name": "Furnace oil (boiler)", "unit": "L", "factor": 3.1186, "status": "uplifted", "keywords": ["furnace oil", "boiler", "heating"]}, {"key": "Natural_Gas", "name": "Natural gas", "unit": "scm", "factor": 1.8913, "status": "uplifted", "keywords": ["natural gas", "gas", "scm"]}, {"key": "Acetylene_Welding", "name": "Acetylene welding gas", "unit": "kg", "factor": 3.4003, "status": "uplifted", "keywords": ["acetylene", "welding", "gas cutting"]}, {"key": "Fire_Extinguisher_CO2", "name": "CO2 fire extinguisher discharge", "unit": "kg", "factor": 1, "status": "clean", "keywords": ["fire extinguisher", "co2 extinguisher", "fire safety"]}, {"key": "Refrig_R32", "name": "Refrigerant R-32 top-up", "unit": "kg", "factor": 675, "status": "clean", "keywords": ["refrigerant", "refrigerator", "fridge", "ac", "air conditioner", "split ac", "cooling", "r32", "freon"]}, {"key": "Refrig_R410A", "name": "Refrigerant R-410A top-up", "unit": "kg", "factor": 2088, "status": "clean", "keywords": ["refrigerant", "refrigerator", "fridge", "ac", "air conditioner", "r410a", "cooling", "freon"]}, {"key": "Refrig_R22", "name": "Refrigerant R-22 top-up", "unit": "kg", "factor": 1810, "status": "clean", "keywords": ["refrigerant", "refrigerator", "fridge", "ac", "window ac", "old ac", "r22", "cooling", "freon"]}, {"key": "Grid_India_CEA", "name": "Grid electricity, location-based (CEA)", "unit": "kWh", "factor": 0.7314, "status": "uplifted", "keywords": ["electricity", "grid", "power", "office electricity", "factory electricity"]}, {"key": "Grid_MarketBased_Default", "name": "Grid electricity, market-based / residual mix", "unit": "kWh", "factor": 0.7314, "status": "uplifted", "keywords": ["electricity", "market based", "supplier", "residual mix"]}, {"key": "REC_Backed_Electricity", "name": "Renewable Energy Certificate (REC) backed electricity", "unit": "kWh", "factor": 0, "status": "clean", "keywords": ["renewable electricity", "rec", "solar", "wind", "green power", "ppa"]}, {"key": "Purchased_Steam", "name": "Purchased steam", "unit": "kg", "factor": 0.1811, "status": "uplifted", "keywords": ["steam", "purchased steam", "process heat"]}, {"key": "Transport_Truck_tkm", "name": "Trucking, diesel (tonne-km)", "unit": "tonne-km", "factor": 0.09, "status": "clean", "keywords": ["trucking", "freight", "logistics", "diesel truck", "tonne-km"]}, {"key": "Transport_LCV_km", "name": "Light commercial vehicle delivery", "unit": "km", "factor": 0.45, "status": "clean", "keywords": ["delivery van", "tempo", "lcv", "light commercial vehicle"]}, {"key": "Transport_HGV_km", "name": "Heavy goods vehicle delivery", "unit": "km", "factor": 0.85, "status": "clean", "keywords": ["heavy truck", "lorry", "hgv", "large truck"]}, {"key": "Rail_Freight", "name": "Rail freight", "unit": "tonne-km", "factor": 0.015, "status": "clean", "keywords": ["rail freight", "goods train", "railway cargo"]}, {"key": "Rail_Passenger", "name": "Rail passenger travel", "unit": "p-km", "factor": 0.01, "status": "clean", "keywords": ["train travel", "railway", "passenger rail"]}, {"key": "Air_Domestic", "name": "Domestic flight", "unit": "p-km", "factor": 0.12, "status": "clean", "keywords": ["domestic flight", "airplane", "air travel"]}, {"key": "Air_International", "name": "International flight", "unit": "p-km", "factor": 0.117, "status": "clean", "keywords": ["international flight", "overseas travel", "air travel"]}, {"key": "Air_Freight_Cargo", "name": "Air freight cargo", "unit": "tonne-km", "factor": 1.58, "status": "clean", "keywords": ["air cargo", "air freight", "courier"]}, {"key": "Taxi_Diesel", "name": "Taxi travel", "unit": "km", "factor": 0.14, "status": "clean", "keywords": ["taxi", "cab", "ride"]}, {"key": "Commute_2Wheeler", "name": "Two-wheeler commute", "unit": "km", "factor": 0.04, "status": "clean", "keywords": ["bike", "scooter", "two wheeler", "motorcycle commute"]}, {"key": "Commute_Car_Avg", "name": "Car commute, average", "unit": "km", "factor": 0.14, "status": "clean", "keywords": ["car commute", "employee car"]}, {"key": "Commute_Car_Small", "name": "Car commute, small segment", "unit": "km", "factor": 0.11, "status": "clean", "keywords": ["small car", "hatchback commute"]}, {"key": "Commute_Car_Large", "name": "Car commute, large segment", "unit": "km", "factor": 0.17, "status": "clean", "keywords": ["large car", "suv commute"]}, {"key": "Commute_Bus", "name": "Bus commute", "unit": "p-km", "factor": 0.03, "status": "clean", "keywords": ["bus", "staff bus", "public transport"]}, {"key": "Metro_Rail", "name": "Metro rail commute", "unit": "p-km", "factor": 0.015, "status": "clean", "keywords": ["metro", "subway", "urban rail"]}, {"key": "Waste_Landfill", "name": "Waste to landfill", "unit": "kg", "factor": 0.85, "status": "clean", "keywords": ["landfill", "waste disposal", "garbage"]}, {"key": "Waste_Recycle", "name": "Waste recycled", "unit": "kg", "factor": 0.021, "status": "clean", "keywords": ["recycling", "recycled waste"]}, {"key": "Waste_Incineration", "name": "Waste incinerated", "unit": "kg", "factor": 0.4, "status": "clean", "keywords": ["incineration", "burning waste"]}, {"key": "Wastewater_Treatment", "name": "Wastewater treated", "unit": "m3", "factor": 0.708, "status": "clean", "keywords": ["wastewater", "sewage", "effluent treatment"]}, {"key": "Water_Supply", "name": "Municipal water supply", "unit": "m3", "factor": 0.31, "status": "proxy", "keywords": ["water", "municipal water", "tap water"]}, {"key": "Paper_Virgin", "name": "Virgin paper procurement", "unit": "kg", "factor": 0.92, "status": "clean", "keywords": ["paper", "virgin paper", "office paper"]}, {"key": "Paper_Recycled", "name": "Recycled paper procurement", "unit": "kg", "factor": 0.6, "status": "clean", "keywords": ["recycled paper"]}, {"key": "Plastic_Packaging", "name": "Plastic packaging procurement", "unit": "kg", "factor": 2.5, "status": "clean", "keywords": ["plastic", "packaging", "plastic wrap"]}, {"key": "Construction_Steel", "name": "Structural / construction steel", "unit": "kg", "factor": 2.33, "status": "clean", "keywords": ["steel", "construction steel", "structural steel", "rebar"]}, {"key": "Cement_Portland", "name": "Portland cement", "unit": "kg", "factor": 0.9, "status": "clean", "keywords": ["cement", "concrete", "portland cement"]}, {"key": "Spend_IT", "name": "IT / professional services spend", "unit": "INR", "factor": 0.005, "status": "clean", "keywords": ["it services", "software", "professional services"]}, {"key": "Spend_Construction", "name": "Construction / repairs spend", "unit": "INR", "factor": 0.012, "status": "clean", "keywords": ["construction spend", "repairs", "renovation"]}, {"key": "Spend_Generic_Services", "name": "Generic purchased services spend", "unit": "INR", "factor": 0.003, "status": "clean", "keywords": ["services", "generic spend", "consulting"]}, {"key": "Laptop_Unit", "name": "Laptop, embodied carbon", "unit": "unit", "factor": 250, "status": "clean", "keywords": ["laptop", "notebook computer"]}, {"key": "Desktop_Unit", "name": "Desktop computer, embodied carbon", "unit": "unit", "factor": 350, "status": "clean", "keywords": ["desktop", "pc", "computer"]}, {"key": "Smartphone_Unit", "name": "Smartphone, embodied carbon", "unit": "unit", "factor": 65, "status": "clean", "keywords": ["smartphone", "mobile phone"]}, {"key": "Furniture", "name": "Office furniture", "unit": "kg", "factor": 3.5, "status": "clean", "keywords": ["furniture", "office furniture", "desk", "chair"]}, {"key": "Grid_TD_Loss", "name": "Grid transmission & distribution loss", "unit": "kWh", "factor": 0.1459, "status": "uplifted", "keywords": ["transmission loss", "grid loss", "td loss"]}, {"key": "WTT_Diesel", "name": "Well-to-tank, diesel upstream", "unit": "L", "factor": 0.5835, "status": "uplifted", "keywords": ["diesel upstream", "well to tank diesel"]}, {"key": "WTT_Petrol", "name": "Well-to-tank, petrol upstream", "unit": "L", "factor": 0.4628, "status": "uplifted", "keywords": ["petrol upstream", "well to tank petrol"]}, {"key": "Hotel_5Star", "name": "Hotel stay, 5-star", "unit": "night", "factor": 75.5, "status": "clean", "keywords": ["hotel", "5 star hotel", "luxury hotel stay"]}, {"key": "Hotel_Budget", "name": "Hotel stay, budget", "unit": "night", "factor": 25, "status": "clean", "keywords": ["budget hotel", "hotel stay"]}, {"key": "Product_Use_Phase_Energy", "name": "Product use-phase energy (Cat.11)", "unit": "unit sold", "factor": 0, "status": "placeholder", "keywords": ["product use phase", "use phase energy"]}, {"key": "Product_EndOfLife", "name": "Product end-of-life treatment (Cat.12)", "unit": "unit sold", "factor": 0, "status": "placeholder", "keywords": ["end of life", "disposal", "product disposal"]}, {"key": "Investment_Equity_Share", "name": "Equity-share investee emissions (Cat.15)", "unit": "INR invested", "factor": 0, "status": "placeholder", "keywords": ["investment", "equity", "financed emissions"]}, {"key": "Franchise_Estimate", "name": "Franchise operations (Cat.14)", "unit": "franchise", "factor": 0, "status": "placeholder", "keywords": ["franchise"]}, {"key": "Leased_Asset_Downstream", "name": "Downstream leased asset energy (Cat.13)", "unit": "unit", "factor": 0, "status": "placeholder", "keywords": ["leased asset", "downstream lease"]}, {"key": "Financed_Emissions_Passthrough", "name": "Financed emissions, direct pass-through (Cat.15)", "unit": "tCO2e reported", "factor": 1, "status": "clean", "keywords": ["financed emissions", "portfolio emissions"]}, {"key": "Processing_Sold_Products_Proxy", "name": "Third-party processing of sold products (Cat.10)", "unit": "unit", "factor": 0, "status": "placeholder", "keywords": ["processing", "third party processing"]}];
+
+
+    // Autocomplete UI logic from spec
+    const acInput = document.getElementById('manualName');
+    const acDropdown = document.getElementById('acDropdown');
+
+    if (acInput && acDropdown) {
+      acInput.addEventListener('click', () => renderDropdown(acInput.value));
+      acInput.addEventListener('input', () => renderDropdown(acInput.value));
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.ac-wrapper')) acDropdown.classList.remove('open');
+      });
+    }
+
+    function renderDropdown(query) {
+      acDropdown.innerHTML = '';
+      const q = query.toLowerCase().trim();
+
+      const pool = q === ''
+        ? EMISSION_DB
+        : EMISSION_DB.filter(e =>
+            e.name.toLowerCase().includes(q) ||
+            (e.keywords && e.keywords.some(k => k.toLowerCase().includes(q)))
+          );
+
+      if (pool.length === 0) {
+        acDropdown.innerHTML = '<div class="ac-empty">No match — try a different word</div>';
+        acDropdown.classList.add('open');
+        return;
+      }
+
+      pool.forEach(entry => {
+        const item = document.createElement('div');
+        item.className = 'ac-item';
+        item.innerHTML = `<span>${entry.name}</span><span class="ac-tag">${entry.unit}</span>`;
+        item.onclick = () => {
+          acInput.value = entry.name;
+          acInput.dataset.selectedKey = entry.key;
+          acInput.dataset.selectedFactor = entry.factor;
+          const unitSelect = document.getElementById('manualUnit');
+          if (unitSelect) {
+            let found = Array.from(unitSelect.options).some(opt => opt.value === entry.unit);
+            if(found) unitSelect.value = entry.unit;
+          }
+          acDropdown.classList.remove('open');
+          document.getElementById('manualQty')?.focus();
+        };
+        acDropdown.appendChild(item);
+      });
+
+      acDropdown.classList.add('open');
+    }
+
+// old block
+
     const acDropdown = document.getElementById('acDropdown');
     const manualNameInput = document.getElementById('manualName');
 
@@ -3136,7 +3218,24 @@
       }
     }
 
-    const CREDIT_RATE_INR = 2900; // ₹ per tCO₂e (Indian Carbon Market rate)
+    
+    const CREDIT_RATE_INR = 2900;
+    function updateSaveStatus(status) {
+      const el = document.getElementById('saveStatusEl');
+      if(el) el.innerText = status;
+    }
+    
+    async function pingHealth() {
+      try {
+        let res = await fetch('http://localhost:8000/health');
+        if(res.ok) document.getElementById('apiHealthIndicator').className = 'text-green-500 font-bold';
+      } catch(e) {
+        document.getElementById('apiHealthIndicator').className = 'text-red-500 font-bold';
+      }
+    }
+    setInterval(pingHealth, 30000);
+    setTimeout(pingHealth, 1000);
+ // ₹ per tCO₂e (Indian Carbon Market rate)
 
     const demoItems = [
       { id: 1, name: "Aluminum Sheet, 5052-H32", qty: 1450, unit: "kg", process: "aluminium alloy production, AlMg3 | cutoff, S - IN", ef: 14.2, sim: 0.98, ter: 1, ger: 2, tir: 1, risk: "LOW", scope: "Scope 3", status: "Auto-Matched", approved: true },
@@ -3477,16 +3576,43 @@
     }
 
     function updateKPIs() {
-      let totalCo2 = currentBOM.reduce((sum, i) => sum + getValidCo2(i), 0);
+      let approvedItems = currentBOM.filter(i => i.approved);
+      let totalCo2 = approvedItems.reduce((sum, i) => sum + getValidCo2(i), 0); // User Spec 4: sum of approved matched items
       let pending = currentBOM.filter(i => !i.approved).length;
-      let approvedCount = currentBOM.filter(i => i.approved).length;
+      let approvedCount = approvedItems.length;
       let pct = currentBOM.length > 0 ? Math.round((approvedCount / currentBOM.length) * 100) : 0;
-      let creditVal = Math.round(totalCo2 * CREDIT_RATE_INR);
+      
+      let rateInput = document.getElementById('pricePerTonne');
+      let currentRate = rateInput ? parseFloat(rateInput.value) || 0 : CREDIT_RATE_INR;
+      let creditVal = Math.round(totalCo2 * currentRate);
+      
+      if(document.getElementById('whatIfPriceLabel')) {
+        document.getElementById('whatIfPriceLabel').innerText = "@ ₹" + currentRate.toLocaleString('en-IN') + "/t";
+      }
 
-      let scope1 = currentBOM.filter(i => i.scope === "Scope 1").reduce((s, i) => s + getValidCo2(i), 0);
-      let scope2 = currentBOM.filter(i => i.scope === "Scope 2").reduce((s, i) => s + getValidCo2(i), 0);
-      let scope3 = currentBOM.filter(i => (i.scope || "Scope 3") === "Scope 3").reduce((s, i) => s + getValidCo2(i), 0);
+      // User Spec 5: each shows real summed tCO2e per scope from matched + approved items
+      let scope1 = approvedItems.filter(i => i.scope === "Scope 1").reduce((s, i) => s + getValidCo2(i), 0);
+      let scope2 = approvedItems.filter(i => i.scope === "Scope 2").reduce((s, i) => s + getValidCo2(i), 0);
+      let scope3 = approvedItems.filter(i => (i.scope || "Scope 3") === "Scope 3").reduce((s, i) => s + getValidCo2(i), 0);
 
+            // Update Assurance Report DQR Ratings
+      let approvedMatched = approvedItems.filter(i => i.dqr);
+      if (approvedMatched.length > 0) {
+          let avgTeR = approvedMatched.reduce((s, i) => s + (i.dqr.TeR || 0), 0) / approvedMatched.length;
+          let avgGeR = approvedMatched.reduce((s, i) => s + (i.dqr.GeR || 0), 0) / approvedMatched.length;
+          let avgTiR = approvedMatched.reduce((s, i) => s + (i.dqr.TiR || 0), 0) / approvedMatched.length;
+          let combined = ((avgTeR + avgGeR + avgTiR) / 3).toFixed(1);
+          
+          if(document.getElementById('displayTer')) document.getElementById('displayTer').innerText = avgTeR.toFixed(1) + "/5";
+          if(document.getElementById('displayGer')) document.getElementById('displayGer').innerText = avgGeR.toFixed(1) + "/5";
+          if(document.getElementById('displayTir')) document.getElementById('displayTir').innerText = avgTiR.toFixed(1) + "/5";
+          if(document.getElementById('displayUncertainty')) document.getElementById('displayUncertainty').innerText = "±" + (combined * 3).toFixed(1) + "%";
+      } else {
+          if(document.getElementById('displayTer')) document.getElementById('displayTer').innerText = "—";
+          if(document.getElementById('displayGer')) document.getElementById('displayGer').innerText = "—";
+          if(document.getElementById('displayTir')) document.getElementById('displayTir').innerText = "—";
+          if(document.getElementById('displayUncertainty')) document.getElementById('displayUncertainty').innerText = "—";
+      }
       document.getElementById("kpi-total-co2").innerText = totalCo2.toFixed(3);
       document.getElementById("kpi-pending-count").innerText = pending;
       document.getElementById("kpi-credit-value").innerText = "₹" + creditVal.toLocaleString('en-IN');
@@ -3976,7 +4102,7 @@
     }
 
     function updateProjectHeader() {
-      let proj = document.getElementById("projectNameInput").value.trim() || "EV Battery Assembly Line (India)";
+      let proj = document.getElementById("projectNameInput").value.trim() || "";
       let comp = document.getElementById("companyNameInput").value.trim() || "ACME Corporation (Sample)";
       let std = document.getElementById("standardSelect").value;
 
@@ -4092,7 +4218,7 @@
         let totalFootprint = currentBOM.reduce((acc, item) => acc + ((item.qty * item.ef) / 1000), 0);
         let projData = {
           user_id: currentAuditor.id,
-          project_name: document.getElementById("projectNameInput")?.value || 'EV Battery Assembly Line (India)',
+          project_name: document.getElementById("projectNameInput")?.value || '',
           company_name: document.getElementById("companyNameInput")?.value || 'ACME Corporation (Sample)',
           standard: document.getElementById("standardSelect")?.value || 'ISO 14064-1 & GHG Protocol Scope 1-3',
           total_footprint: totalFootprint,
@@ -4155,7 +4281,7 @@
         
          if (indicator) {
            indicator.className = "flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 transition-colors";
-           indicator.innerHTML = '<span class="material-symbols-outlined text-sm">cloud_done</span><span>Saved</span>';
+           indicator.innerHTML = '<span class="material-symbols-outlined text-sm">cloud_done</span><span><span id="saveStatusEl">Saved</span></span>';
            setTimeout(() => { if(indicator) indicator.classList.add("hidden"); }, 2000);
         }
       } catch(e) {
