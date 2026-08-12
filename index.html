@@ -729,43 +729,67 @@
         <div class="flex-grow border-t border-outline-variant"></div>
       </div>
 
-      <!-- Manual Form -->
-      <form onsubmit="addManualItem(event)" class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
-        
-<div class="form-group md:col-span-3">
-  <label class="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Item Description</label>
-  <div class="ac-wrapper">
-    <input class="w-full text-xs font-semibold p-2 border border-outline-variant rounded-lg outline-none focus:ring-1 focus:ring-primary bg-white" id="manualName" placeholder="Click to browse all 60 materials, or type to search..." autocomplete="off">
-    <div class="ac-dropdown" id="acDropdown"></div>
-  </div>
-</div>
+        <!-- Manual Form with Preset Dropdown -->
+        <form onsubmit="addManualItem(event)" class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+          <div class="form-group md:col-span-3">
+            <label class="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Select Preset Material / Fuel (Dropdown)</label>
+            <select id="manualSelectDropdown" onchange="handlePresetSelect(this.value)" class="w-full text-xs font-semibold p-2 border border-outline-variant rounded-lg outline-none focus:ring-1 focus:ring-primary bg-white mb-2">
+              <option value="">-- Choose from 60 Verified India GHG Factors & LCI Presets --</option>
+              <optgroup label="⛽ Scope 1: Direct Fuels & Thermal">
+                <option value="Diesel Fuel|Liters|2.6558|Scope 1">Diesel Fuel (DG Sets & Generators) — 2.656 kgCO₂e/L</option>
+                <option value="CNG Fuel|kg|2.6860|Scope 1">CNG Fuel (Commercial Fleet) — 2.686 kgCO₂e/kg</option>
+                <option value="Coal Thermal Combustion|kg|2.4200|Scope 1">Coal Thermal Combustion — 2.420 kgCO₂e/kg</option>
+                <option value="Petrol / Gasoline|Liters|2.3100|Scope 1">Petrol / Gasoline Vehicles — 2.310 kgCO₂e/L</option>
+                <option value="LPG Industrial Gas|kg|2.9830|Scope 1">LPG Industrial Gas — 2.983 kgCO₂e/kg</option>
+              </optgroup>
+              <optgroup label="⚡ Scope 2: Purchased Electricity">
+                <option value="Grid Electricity (CEA India 2024)|kWh|0.7160|Scope 2">Grid Electricity (CEA India Grid Mix 2024) — 0.716 kgCO₂e/kWh</option>
+                <option value="Solar PPA Green Power|kWh|0.0000|Scope 2">Solar PPA Zero-Carbon Power — 0.000 kgCO₂e/kWh</option>
+                <option value="Wind PPA Green Power|kWh|0.0000|Scope 2">Wind PPA Zero-Carbon Power — 0.000 kgCO₂e/kWh</option>
+              </optgroup>
+              <optgroup label="📦 Scope 3: Raw Materials & Logistics">
+                <option value="Aluminum Sheet, 5052-H32|kg|14.2000|Scope 3">Primary Aluminum Sheet — 14.200 kgCO₂e/kg</option>
+                <option value="Secondary Recycled Aluminum|kg|1.8000|Scope 3">Secondary Recycled Aluminum — 1.800 kgCO₂e/kg</option>
+                <option value="Structural Steel Converter|kg|1.8500|Scope 3">Structural Steel Bracket — 1.850 kgCO₂e/kg</option>
+                <option value="Copper Wire, 12 AWG|kg|6.5000|Scope 3">Copper Wire Drawing — 6.500 kgCO₂e/kg</option>
+                <option value="Polyurethane Foam Insert|pcs|4.8000|Scope 3">Polyurethane Flexible Foam — 4.800 kgCO₂e/pcs</option>
+                <option value="Heavy Freight Logistics|tonne-km|0.1250|Scope 3">Heavy Freight Transport — 0.125 kgCO₂e/t-km</option>
+                <option value="Passenger Taxi Travel|km|0.1400|Scope 3">Passenger Taxi Travel — 0.140 kgCO₂e/km</option>
+              </optgroup>
+            </select>
 
-        </div>
-        <div>
-          <label class="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Quantity</label>
-          <input id="manualQty" type="number" required value="100" min="0.01" step="any" class="w-full text-xs font-semibold p-2 border border-outline-variant rounded-lg outline-none focus:ring-1 focus:ring-primary bg-white"/>
-        </div>
-        <div>
-          <label class="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Unit</label>
-          <select id="manualUnit" class="w-full text-xs font-semibold p-2 border border-outline-variant rounded-lg outline-none focus:ring-1 focus:ring-primary bg-white">
-            <option value="kg">kg</option>
-            <option value="Liters">Liters</option>
-            <option value="kWh">kWh</option>
-            <option value="km">km</option>
-            <option value="pcs">pcs</option>
-            <option value="INR">INR</option>
-            <option value="tonne-km">tonne-km</option>
-            <option value="p-km">p-km</option>
-            <option value="m3">m3</option>
-            <option value="m">m</option>
-            <option value="Units">Units</option>
-            <option value="Nights">Nights</option>
-          </select>
-        </div>
-        <div class="flex items-end">
-          <button type="submit" class="w-full py-2 bg-primary text-white font-bold text-xs rounded-lg hover:bg-primary-container transition-colors shadow-sm">Add Item</button>
-        </div>
-      </form>
+            <label class="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wider mb-1 mt-2">Or Custom Item Name / Search</label>
+            <div class="ac-wrapper">
+              <input class="w-full text-xs font-semibold p-2 border border-outline-variant rounded-lg outline-none focus:ring-1 focus:ring-primary bg-white" id="manualName" placeholder="Type to search or enter custom material..." autocomplete="off">
+              <div class="ac-dropdown" id="acDropdown"></div>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Quantity</label>
+            <input id="manualQty" type="number" required value="100" min="0.01" step="any" class="w-full text-xs font-semibold p-2 border border-outline-variant rounded-lg outline-none focus:ring-1 focus:ring-primary bg-white"/>
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Unit</label>
+            <select id="manualUnit" class="w-full text-xs font-semibold p-2 border border-outline-variant rounded-lg outline-none focus:ring-1 focus:ring-primary bg-white">
+              <option value="kg">kg</option>
+              <option value="Liters">Liters</option>
+              <option value="kWh">kWh</option>
+              <option value="km">km</option>
+              <option value="pcs">pcs</option>
+              <option value="INR">INR</option>
+              <option value="tonne-km">tonne-km</option>
+              <option value="p-km">p-km</option>
+              <option value="m3">m3</option>
+              <option value="m">m</option>
+              <option value="Units">Units</option>
+              <option value="Nights">Nights</option>
+            </select>
+          </div>
+          <div class="flex items-end">
+            <button type="submit" class="w-full py-2 bg-primary text-white font-bold text-xs rounded-lg hover:bg-primary-container transition-colors shadow-sm">Add Item</button>
+          </div>
+        </form>
 
       <div class="flex justify-end gap-2 pt-4 border-t border-outline-variant">
         <button onclick="closeImportModal()" class="px-4 py-2 border border-outline-variant rounded-lg font-bold text-xs">Cancel</button>
@@ -4147,16 +4171,56 @@ const EMISSION_DB = [{"key": "Diesel_Fuel", "name": "Diesel fuel combustion", "u
 
     function closeCertModal() { document.getElementById("certModal").classList.remove("open"); }
 
+    function handlePresetSelect(val) {
+      if (!val) return;
+      let parts = val.split('|');
+      if (parts.length >= 3) {
+        let name = parts[0];
+        let unit = parts[1];
+        let ef = parseFloat(parts[2]);
+        let scope = parts[3] || 'Scope 3';
+
+        document.getElementById("manualName").value = name;
+        let unitSelect = document.getElementById("manualUnit");
+        if (unitSelect) {
+          let found = Array.from(unitSelect.options).some(opt => opt.value === unit);
+          if (found) unitSelect.value = unit;
+        }
+        document.getElementById("manualName").dataset.presetEf = ef;
+        document.getElementById("manualName").dataset.presetScope = scope;
+      }
+    }
+
     async function addManualItem(evt) {
       if (evt) evt.preventDefault();
-      let name = document.getElementById("manualName").value.trim();
+      let nameInput = document.getElementById("manualName");
+      let name = nameInput.value.trim();
       let qty = parseFloat(document.getElementById("manualQty").value);
       let unit = document.getElementById("manualUnit").value;
 
       if (!name || isNaN(qty) || qty <= 0) return;
 
-      let match = await matchMaterial(name, unit);
-      if (!match) { alert("Error: Backend API is waking up or currently unavailable. Please try again in 30 seconds."); return; }
+      let presetEf = nameInput.dataset.presetEf ? parseFloat(nameInput.dataset.presetEf) : null;
+      let presetScope = nameInput.dataset.presetScope || null;
+
+      let match = null;
+      if (presetEf !== null && !isNaN(presetEf)) {
+        match = {
+          process: 'Preset: ' + name,
+          ef: presetEf,
+          sim: 1.0,
+          ter: 1, ger: 1, tir: 1,
+          risk: 'LOW',
+          scope: presetScope || (name.toLowerCase().includes('diesel') || name.toLowerCase().includes('cng') ? 'Scope 1' : name.toLowerCase().includes('electricity') ? 'Scope 2' : 'Scope 3'),
+          status: 'Preset Verified',
+          matchUnit: unit
+        };
+      } else {
+        match = await matchMaterial(name, unit);
+      }
+
+      if (!match) { alert("Error: Could not match material. Please check input."); return; }
+
       currentBOM.unshift({
         id: Date.now(),
         name: name,
@@ -4164,14 +4228,18 @@ const EMISSION_DB = [{"key": "Diesel_Fuel", "name": "Diesel fuel combustion", "u
         unit: unit,
         process: match.process,
         ef: match.ef,
-        sim: match.sim,
-        ter: match.ter, ger: match.ger, tir: match.tir,
-        risk: match.risk,
-        status: match.status,
-        approved: false
+        sim: match.sim || 0.95,
+        ter: match.ter || 1, ger: match.ger || 1, tir: match.tir || 1,
+        risk: match.risk || 'LOW',
+        scope: match.scope || 'Scope 3',
+        status: match.status || 'Auto-Matched',
+        approved: true
       });
 
-      document.getElementById("manualName").value = "";
+      nameInput.value = "";
+      delete nameInput.dataset.presetEf;
+      delete nameInput.dataset.presetScope;
+      if (document.getElementById("manualSelectDropdown")) document.getElementById("manualSelectDropdown").value = "";
       closeImportModal();
       renderTable();
     }
