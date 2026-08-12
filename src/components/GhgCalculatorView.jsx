@@ -165,6 +165,14 @@ export default function GhgCalculatorView({ onSave, onCancel }) {
             } else if (dataQuality.toLowerCase().includes('fair')) {
                 risk = 'MEDIUM';
             }
+            
+            const ef = Number(colD) || 0;
+            let result_tco2e = Number(colF) || 0;
+            
+            // Fallback: If FortuneSheet formula engine failed to evaluate (F column still 0 despite qty > 0)
+            if (result_tco2e === 0 && qty > 0 && ef > 0) {
+                result_tco2e = (qty * ef) / 1000;
+            }
 
             importedBOM.push({
                 id: `ghg_sheet_${r}`,
@@ -222,9 +230,45 @@ export default function GhgCalculatorView({ onSave, onCancel }) {
           <Workbook 
             ref={workbookRef} 
             data={sheetData} 
-            onChange={() => {
-              if (workbookRef.current) {
+            onChange={(data) => {
+              if (!workbookRef.current) return;
+              
+              // 1. Try native calculation
+              try {
                 workbookRef.current.calculateFormula();
+              } catch (e) {
+                console.warn('Native formula calculation failed', e);
+              }
+
+              // 2. Bulletproof manual override for result_tco2e (Column F)
+              const calcSheet = data.find(s => s.name === 'GHG_Master_Calculator');
+              if (calcSheet && calcSheet.data) {
+                for (let r = 0; r < calcSheet.data.length; r++) {
+                  const row = calcSheet.data[r];
+                  if (!row || !row[0]) continue;
+                  
+                  const colA = String(row[0].m || row[0].v || '').trim();
+                  if (colA.toUpperCase().includes('GRAND TOTAL')) continue;
+
+                  const qtyRaw = row[1] ? (row[1].v !== undefined ? row[1].v : row[1].m) : null;
+                  const efRaw = row[3] ? (row[3].v !== undefined ? row[3].v : row[3].m) : null;
+                  const resultRaw = row[5] ? (row[5].v !== undefined ? row[5].v : row[5].m) : null;
+
+                  const qty = Number(qtyRaw);
+                  const ef = Number(efRaw);
+                  const currentResult = Number(resultRaw) || 0;
+
+                  // If this row has a formula in F (col 5)
+                  if (!isNaN(qty) && !isNaN(ef) && row[5] && row[5].f) {
+                     const expectedResult = (qty * ef) / 1000;
+                     // Only update if it differs to prevent infinite onChange loops
+                     if (Math.abs(currentResult - expectedResult) > 0.0001) {
+                         // Force set value directly to ensure UI updates
+                         workbookRef.current.setCellFormat(r, 5, 'v', expectedResult);
+                         workbookRef.current.setCellFormat(r, 5, 'm', String(expectedResult));
+                     }
+                  }
+                }
               }
             }}
           />
