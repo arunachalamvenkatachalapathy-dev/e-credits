@@ -4355,7 +4355,8 @@ const EMISSION_DB = [{"key": "Diesel_Fuel", "name": "Diesel fuel combustion", "u
         return;
       }
 
-      for (let [idx, item] of itemsToImport.entries()) {
+      currentBOM = [];
+  for (let [idx, item] of itemsToImport.entries()) {
         let match = await matchMaterial(item.rawName, item.unit);
         let finalEf = item.ef !== null ? item.ef : match.ef;
 
