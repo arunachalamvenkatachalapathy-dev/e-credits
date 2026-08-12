@@ -9,7 +9,7 @@ export default function GhgCalculatorView({ onSave, onCancel }) {
   const workbookRef = useRef(null);
 
   useEffect(() => {
-    fetch('/GHG_Calculator_RECTIFIED_v6.xlsx')
+    fetch(`${import.meta.env.BASE_URL}GHG_Calculator_RECTIFIED_v6.xlsx`)
       .then(res => res.arrayBuffer())
       .then(buffer => {
         const file = new File([buffer], "GHG_Calculator_RECTIFIED_v6.xlsx", { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
