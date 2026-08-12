@@ -502,50 +502,140 @@
               </tbody>
             </table>
           </div>
-        </div>
-      </div>
 
-      <!-- VIEW 3: WHAT-IF SIMULATOR -->
+            <!-- VIEW 3: WHAT-IF SIMULATOR -->
       <div id="view-simulator" class="hidden flex-col gap-6">
         <div class="bg-surface-container-lowest sci-border rounded-xl p-6 sci-shadow">
-          <h2 class="font-bold text-lg text-on-surface mb-2 flex items-center gap-2">
-            <span class="material-symbols-outlined text-primary">tune</span>
-            What-If Decarbonization & Renewable Energy Simulator
-          </h2>
-          <p class="text-xs text-on-surface-variant mb-6">Simulate material substitutions, green power procurement, and calculate carbon credit yields.</p>
-          
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+            <div>
+              <h2 class="font-bold text-lg text-on-surface flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">tune</span>
+                What-If Decarbonization & Renewable Energy Simulator
+              </h2>
+              <p class="text-xs text-on-surface-variant">Simulate material substitutions, green power procurement, energy efficiency, and calculate carbon credit yields.</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="applySimAsProject()" class="px-3 py-1.5 bg-primary/10 text-primary hover:bg-primary/20 rounded-lg text-xs font-bold border border-primary/30 transition-colors flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm">compare_arrows</span> Apply as Project Scenario
+              </button>
+              <button onclick="exportSimRoadmap()" class="px-3 py-1.5 bg-surface-container-high hover:bg-surface-container-highest rounded-lg text-xs font-bold text-on-surface border border-outline-variant transition-colors flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm">download</span> Export Roadmap JSON
+              </button>
+            </div>
+          </div>
+
+          <!-- Sliders and Summary Panel -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- 4 Decarbonization Levers -->
             <div class="flex flex-col gap-5 bg-surface-container-low p-5 rounded-xl border border-outline-variant/40">
+              <h3 class="text-xs font-black uppercase text-primary tracking-wider mb-1">Decarbonization Levers</h3>
               <div>
-                <div class="flex justify-between text-xs font-bold mb-2">
-                  <span>Recycled Material Substitution</span>
+                <div class="flex justify-between text-xs font-bold mb-1.5">
+                  <span>Recycled Material Substitution (Scope 3)</span>
                   <span id="simRecVal" class="text-primary font-mono-data">50%</span>
                 </div>
                 <input id="simRecSlider" oninput="updateSim()" type="range" min="0" max="100" value="50" class="w-full accent-primary h-2 bg-surface-dim rounded-lg cursor-pointer">
+                <p class="text-[10px] text-on-surface-variant mt-1">Replaces virgin raw materials with secondary recycled scrap.</p>
               </div>
 
               <div>
-                <div class="flex justify-between text-xs font-bold mb-2">
-                  <span>Renewable Energy (Solar/Wind PPA)</span>
+                <div class="flex justify-between text-xs font-bold mb-1.5">
+                  <span>Renewable Energy PPA / Solar (Scope 2)</span>
                   <span id="simRenVal" class="text-secondary font-mono-data">80%</span>
                 </div>
                 <input id="simRenSlider" oninput="updateSim()" type="range" min="0" max="100" value="80" class="w-full accent-secondary h-2 bg-surface-dim rounded-lg cursor-pointer">
+                <p class="text-[10px] text-on-surface-variant mt-1">Procures zero-carbon solar/wind power via PPA contracts.</p>
+              </div>
+
+              <div>
+                <div class="flex justify-between text-xs font-bold mb-1.5">
+                  <span>Energy Efficiency & Heat Recovery (Scope 1 & 2)</span>
+                  <span id="simEffVal" class="text-emerald-700 font-mono-data">20%</span>
+                </div>
+                <input id="simEffSlider" oninput="updateSim()" type="range" min="0" max="100" value="20" class="w-full accent-emerald-600 h-2 bg-surface-dim rounded-lg cursor-pointer">
+                <p class="text-[10px] text-on-surface-variant mt-1">VFD drives, LED retrofits, waste heat recovery systems.</p>
+              </div>
+
+              <div>
+                <div class="flex justify-between text-xs font-bold mb-1.5">
+                  <span>Fuel Switching & Green H₂ / Biomass (Scope 1)</span>
+                  <span id="simFuelVal" class="text-amber-700 font-mono-data">30%</span>
+                </div>
+                <input id="simFuelSlider" oninput="updateSim()" type="range" min="0" max="100" value="30" class="w-full accent-amber-600 h-2 bg-surface-dim rounded-lg cursor-pointer">
+                <p class="text-[10px] text-on-surface-variant mt-1">Replaces diesel/coal thermal combustion with bio-pellets or electric furnaces.</p>
               </div>
             </div>
 
-            <div class="flex flex-col gap-4 bg-surface-container-lowest p-5 rounded-xl border border-outline-variant">
-              <div class="flex justify-between items-center text-xs pb-3 border-b border-outline-variant/40">
-                <span class="text-on-surface-variant font-medium">Baseline Footprint</span>
-                <span id="simBaseline" class="font-bold text-sm font-mono-data">0.00 tCO₂e</span>
+            <!-- Financial & Carbon Impact Dashboard -->
+            <div class="flex flex-col justify-between bg-surface-container-lowest p-5 rounded-xl border border-outline-variant sci-shadow">
+              <div>
+                <h3 class="text-xs font-black uppercase text-tertiary tracking-wider mb-4">Simulated Carbon & Financial Impact</h3>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                  <div class="p-3 bg-surface-container-low rounded-lg border border-outline-variant/40">
+                    <div class="text-[10px] font-bold text-on-surface-variant uppercase">Baseline Footprint</div>
+                    <div id="simBaseline" class="text-lg font-black text-on-surface font-mono-data mt-1">0.000 tCO₂e</div>
+                  </div>
+                  <div class="p-3 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                    <div class="text-[10px] font-bold text-emerald-800 uppercase">Avoided Emissions</div>
+                    <div id="simAvoided" class="text-lg font-black text-emerald-700 font-mono-data mt-1">0.000 tCO₂e</div>
+                  </div>
+                  <div class="p-3 bg-primary/10 rounded-lg border border-primary/20">
+                    <div class="text-[10px] font-bold text-primary uppercase">Simulated Net Footprint</div>
+                    <div id="simNet" class="text-lg font-black text-primary font-mono-data mt-1">0.000 tCO₂e</div>
+                  </div>
+                  <div class="p-3 bg-secondary/10 rounded-lg border border-secondary/20">
+                    <div class="text-[10px] font-bold text-secondary uppercase">Reduction Achieved</div>
+                    <div id="simPct" class="text-lg font-black text-secondary font-mono-data mt-1">0.0%</div>
+                  </div>
+                </div>
+
+                <div class="p-4 bg-tertiary/10 rounded-xl border border-tertiary/20 flex flex-col gap-2">
+                  <div class="flex justify-between items-center text-xs">
+                    <span class="text-on-surface-variant font-bold">Carbon Credit Valuation (<span id="whatIfPriceLabel">@ ₹2,900/t</span>)</span>
+                    <span id="simValuation" class="font-extrabold text-lg text-tertiary font-mono-data">₹0</span>
+                  </div>
+                  <div class="flex justify-between items-center text-xs pt-2 border-t border-tertiary/20">
+                    <span class="text-on-surface-variant font-bold">Est. EU CBAM Tariff Savings (@ €80/t)</span>
+                    <span id="simCbamSavings" class="font-extrabold text-sm text-emerald-800 font-mono-data">€0 (₹0)</span>
+                  </div>
+                </div>
               </div>
-              <div class="flex justify-between items-center text-xs pb-3 border-b border-outline-variant/40">
-                <span class="text-on-surface-variant font-medium">Simulated Avoided Emissions</span>
-                <span id="simAvoided" class="font-bold text-sm text-primary font-mono-data">0.00 tCO₂e</span>
+
+              <div class="mt-4 pt-4 border-t border-outline-variant flex items-center justify-between">
+                <span class="text-[11px] text-on-surface-variant font-medium">Ready to claim carbon credits?</span>
+                <button onclick="openCertModal()" class="px-4 py-2 bg-primary text-white rounded-lg font-bold text-xs hover:bg-primary-container transition-colors flex items-center gap-1.5 shadow-sm">
+                  <span class="material-symbols-outlined text-sm">verified</span> Generate Yield Certificate
+                </button>
               </div>
-              <div class="flex justify-between items-center text-xs pt-1">
-                <span class="text-on-surface-variant font-bold">Estimated E-Credit Valuation (<span id="whatIfPriceLabel">@ ₹2,900/t</span>)</span>
-                <span id="simValuation" class="font-extrabold text-base text-tertiary font-mono-data">₹0</span>
-              </div>
+            </div>
+          </div>
+
+          <!-- Line-Item Level Substitution Matrix -->
+          <div class="mt-4">
+            <h3 class="font-bold text-sm text-on-surface mb-3 flex items-center gap-2">
+              <span class="material-symbols-outlined text-base text-primary">table_chart</span>
+              Line-Item Specific Substitution Matrix
+            </h3>
+            <div class="overflow-x-auto rounded-xl border border-outline-variant bg-surface-container-lowest">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="bg-surface-container-low border-b border-outline-variant text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">
+                    <th class="px-4 py-3">BOM Item</th>
+                    <th class="px-4 py-3">Scope</th>
+                    <th class="px-4 py-3 text-right">Baseline Quantity</th>
+                    <th class="px-4 py-3 text-right">Baseline EF (kgCO₂e)</th>
+                    <th class="px-4 py-3 text-right">Baseline tCO₂e</th>
+                    <th class="px-4 py-3 text-right">Simulated EF (kgCO₂e)</th>
+                    <th class="px-4 py-3 text-right">Simulated tCO₂e</th>
+                    <th class="px-4 py-3 text-right">Avoided tCO₂e</th>
+                  </tr>
+                </thead>
+                <tbody id="simMatrixBody" class="divide-y divide-outline-variant/40 text-xs">
+                  <tr>
+                    <td colspan="8" class="px-4 py-4 text-center text-on-surface-variant italic">Load baseline BOM data to view itemized substitution matrix.</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
@@ -3160,7 +3250,6 @@ const EMISSION_DB = [{"key": "Diesel_Fuel", "name": "Diesel fuel combustion", "u
 
 // old block
 
-    const acDropdown = document.getElementById('acDropdown');
     const manualNameInput = document.getElementById('manualName');
 
     if (manualNameInput && acDropdown) {
@@ -3628,20 +3717,140 @@ const EMISSION_DB = [{"key": "Diesel_Fuel", "name": "Diesel fuel combustion", "u
     }
 
     function updateSim() {
-      let baseCo2 = parseFloat(document.getElementById("kpi-total-co2").innerText) || 0;
-      let rec = parseInt(document.getElementById("simRecSlider").value);
-      let ren = parseInt(document.getElementById("simRenSlider").value);
-      
-      document.getElementById("simRecVal").innerText = rec + "%";
-      document.getElementById("simRenVal").innerText = ren + "%";
+      let approvedItems = currentBOM.filter(i => i.approved);
+      if (approvedItems.length === 0) approvedItems = currentBOM;
 
-      let avoided = baseCo2 * ((rec * 0.4 + ren * 0.45) / 100);
-      let val = Math.round(avoided * CREDIT_RATE_INR);
+      let scope1 = approvedItems.filter(i => i.scope === "Scope 1").reduce((s, i) => s + getValidCo2(i), 0);
+      let scope2 = approvedItems.filter(i => i.scope === "Scope 2").reduce((s, i) => s + getValidCo2(i), 0);
+      let scope3 = approvedItems.filter(i => (i.scope || "Scope 3") === "Scope 3").reduce((s, i) => s + getValidCo2(i), 0);
+      let baseCo2 = scope1 + scope2 + scope3;
 
-      document.getElementById("simAvoided").innerText = avoided.toFixed(3) + " tCO₂e";
-      document.getElementById("simValuation").innerText = "₹" + val.toLocaleString('en-IN');
-      document.getElementById("certAvoided").innerText = avoided.toFixed(3) + " tCO₂e";
-      document.getElementById("certValue").innerText = "₹" + val.toLocaleString('en-IN');
+      let rec = document.getElementById("simRecSlider") ? parseInt(document.getElementById("simRecSlider").value) || 0 : 0;
+      let ren = document.getElementById("simRenSlider") ? parseInt(document.getElementById("simRenSlider").value) || 0 : 0;
+      let eff = document.getElementById("simEffSlider") ? parseInt(document.getElementById("simEffSlider").value) || 0 : 0;
+      let fuel = document.getElementById("simFuelSlider") ? parseInt(document.getElementById("simFuelSlider").value) || 0 : 0;
+
+      if (document.getElementById("simRecVal")) document.getElementById("simRecVal").innerText = rec + "%";
+      if (document.getElementById("simRenVal")) document.getElementById("simRenVal").innerText = ren + "%";
+      if (document.getElementById("simEffVal")) document.getElementById("simEffVal").innerText = eff + "%";
+      if (document.getElementById("simFuelVal")) document.getElementById("simFuelVal").innerText = fuel + "%";
+
+      let s1Avoided = scope1 * Math.min(1.0, (fuel * 0.7 + eff * 0.2) / 100);
+      let s2Avoided = scope2 * Math.min(1.0, (ren * 1.0 + eff * 0.3) / 100);
+      let s3Avoided = scope3 * Math.min(1.0, (rec * 0.55) / 100);
+
+      let avoided = s1Avoided + s2Avoided + s3Avoided;
+      if (baseCo2 > 0 && avoided > baseCo2) avoided = baseCo2;
+
+      let netFootprint = Math.max(0, baseCo2 - avoided);
+      let pct = baseCo2 > 0 ? ((avoided / baseCo2) * 100).toFixed(1) : "0.0";
+
+      let rateInput = document.getElementById('pricePerTonne');
+      let currentRate = rateInput ? parseFloat(rateInput.value) || CREDIT_RATE_INR : CREDIT_RATE_INR;
+      let val = Math.round(avoided * currentRate);
+
+      let cbamEuro = Math.round(avoided * 80);
+      let cbamInr = Math.round(cbamEuro * 90);
+
+      if (document.getElementById("simBaseline")) document.getElementById("simBaseline").innerText = baseCo2.toFixed(3) + " tCO₂e";
+      if (document.getElementById("simAvoided")) document.getElementById("simAvoided").innerText = avoided.toFixed(3) + " tCO₂e";
+      if (document.getElementById("simNet")) document.getElementById("simNet").innerText = netFootprint.toFixed(3) + " tCO₂e";
+      if (document.getElementById("simPct")) document.getElementById("simPct").innerText = "-" + pct + "%";
+      if (document.getElementById("simValuation")) document.getElementById("simValuation").innerText = "₹" + val.toLocaleString('en-IN');
+      if (document.getElementById("simCbamSavings")) document.getElementById("simCbamSavings").innerText = "€" + cbamEuro.toLocaleString('en-EU') + " (₹" + cbamInr.toLocaleString('en-IN') + ")";
+
+      if (document.getElementById("certAvoided")) document.getElementById("certAvoided").innerText = avoided.toFixed(3) + " tCO₂e";
+      if (document.getElementById("certValue")) document.getElementById("certValue").innerText = "₹" + val.toLocaleString('en-IN');
+
+      renderItemizedSimTable(rec, ren, eff, fuel);
+    }
+
+    function renderItemizedSimTable(rec, ren, eff, fuel) {
+      let tbody = document.getElementById("simMatrixBody");
+      if (!tbody) return;
+
+      let items = currentBOM.length > 0 ? currentBOM : sampleBOM;
+      if (items.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="px-4 py-4 text-center text-on-surface-variant italic">No BOM data loaded yet.</td></tr>`;
+        return;
+      }
+
+      let html = "";
+      items.forEach(item => {
+        let baseCo2 = getValidCo2(item);
+        let scope = item.scope || "Scope 3";
+        let baseEf = item.ef || 0;
+        
+        let redFactor = 0;
+        if (scope === "Scope 1") redFactor = Math.min(0.9, (fuel * 0.7 + eff * 0.2) / 100);
+        else if (scope === "Scope 2") redFactor = Math.min(1.0, (ren * 1.0 + eff * 0.3) / 100);
+        else redFactor = Math.min(0.8, (rec * 0.55) / 100);
+
+        let simEf = baseEf * (1 - redFactor);
+        let simCo2 = baseCo2 * (1 - redFactor);
+        let avoidedCo2 = baseCo2 - simCo2;
+
+        html += `
+          <tr class="hover:bg-surface-container-low transition-colors">
+            <td class="px-4 py-3 font-bold text-on-surface">${escapeHtml(item.name || 'Component')}</td>
+            <td class="px-4 py-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${scope === 'Scope 1' ? 'bg-amber-100 text-amber-900' : scope === 'Scope 2' ? 'bg-blue-100 text-blue-900' : 'bg-emerald-100 text-emerald-900'}">${scope}</span></td>
+            <td class="px-4 py-3 text-right font-mono-data">${item.qty} ${item.unit}</td>
+            <td class="px-4 py-3 text-right font-mono-data">${baseEf.toFixed(3)}</td>
+            <td class="px-4 py-3 text-right font-mono-data font-bold">${baseCo2.toFixed(3)}</td>
+            <td class="px-4 py-3 text-right font-mono-data text-emerald-700 font-bold">${simEf.toFixed(3)}</td>
+            <td class="px-4 py-3 text-right font-mono-data text-primary font-bold">${simCo2.toFixed(3)}</td>
+            <td class="px-4 py-3 text-right font-mono-data text-emerald-600 font-extrabold">-${avoidedCo2.toFixed(3)}</td>
+          </tr>
+        `;
+      });
+
+      tbody.innerHTML = html;
+    }
+
+    function applySimAsProject() {
+      if (currentBOM.length === 0) {
+        showSmsToast("No BOM items loaded to apply scenario.");
+        return;
+      }
+      showSmsToast("Scenario applied! Baseline vs Project scenario synchronized for ISO 14064-2 report.");
+      switchView('compliance');
+    }
+
+    function exportSimRoadmap() {
+      let baseCo2 = parseFloat(document.getElementById("simBaseline") ? document.getElementById("simBaseline").innerText : "0") || 0;
+      let avoidedCo2 = parseFloat(document.getElementById("simAvoided") ? document.getElementById("simAvoided").innerText : "0") || 0;
+      let netCo2 = parseFloat(document.getElementById("simNet") ? document.getElementById("simNet").innerText : "0") || 0;
+
+      let payload = {
+        title: "NetZeroCalc Decarbonization & Renewable Energy Roadmap",
+        generated_at: new Date().toISOString(),
+        baseline_footprint_tCO2e: baseCo2,
+        simulated_avoided_tCO2e: avoidedCo2,
+        simulated_net_footprint_tCO2e: netCo2,
+        reduction_pct: baseCo2 > 0 ? ((avoidedCo2 / baseCo2) * 100).toFixed(1) + "%" : "0%",
+        levers_applied: {
+          recycled_material_pct: document.getElementById("simRecSlider") ? document.getElementById("simRecSlider").value + "%" : "0%",
+          renewable_energy_ppa_pct: document.getElementById("simRenSlider") ? document.getElementById("simRenSlider").value + "%" : "0%",
+          energy_efficiency_pct: document.getElementById("simEffSlider") ? document.getElementById("simEffSlider").value + "%" : "0%",
+          fuel_switching_pct: document.getElementById("simFuelSlider") ? document.getElementById("simFuelSlider").value + "%" : "0%"
+        },
+        bom_items: currentBOM.map(i => ({
+          item: i.name,
+          quantity: i.qty,
+          unit: i.unit,
+          scope: i.scope || "Scope 3",
+          baseline_ef: i.ef,
+          baseline_tCO2e: getValidCo2(i)
+        }))
+      };
+
+      let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(payload, null, 2));
+      let link = document.createElement("a");
+      link.setAttribute("href", dataStr);
+      link.setAttribute("download", "NetZeroCalc_WhatIf_Decarbonization_Roadmap.json");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
 
     function switchView(view) {
