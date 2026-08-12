@@ -22,30 +22,6 @@ export default function GhgCalculatorView({ onSave, onCancel }) {
               return;
             }
             
-            // Fix luckyexcel missing calcChain issues to restore reactivity
-            exportJson.sheets.forEach(sheet => {
-              const calcChain = sheet.calcChain || [];
-              const existingSet = new Set(calcChain.map(c => `${c.r}_${c.c}`));
-              
-              if (sheet.data) {
-                for (let r = 0; r < sheet.data.length; r++) {
-                  const row = sheet.data[r];
-                  if (!row) continue;
-                  for (let c = 0; c < row.length; c++) {
-                    const cell = row[c];
-                    if (cell && cell.f) {
-                      const key = `${r}_${c}`;
-                      if (!existingSet.has(key)) {
-                        calcChain.push({ r, c, index: sheet.index });
-                        existingSet.add(key);
-                      }
-                    }
-                  }
-                }
-              }
-              sheet.calcChain = calcChain;
-            });
-
             setSheetData(exportJson.sheets);
             setLoading(false);
           },
@@ -233,14 +209,7 @@ export default function GhgCalculatorView({ onSave, onCancel }) {
             onChange={(data) => {
               if (!workbookRef.current) return;
               
-              // 1. Try native calculation
-              try {
-                workbookRef.current.calculateFormula();
-              } catch (e) {
-                console.warn('Native formula calculation failed', e);
-              }
-
-              // 2. Bulletproof manual override for result_tco2e (Column F) with debounce to avoid freezing
+              // Bulletproof manual override for result_tco2e (Column F) with debounce to avoid freezing
               setTimeout(() => {
                   if (!workbookRef.current) return;
                   const calcSheet = data.find(s => s.name === 'GHG_Master_Calculator');
