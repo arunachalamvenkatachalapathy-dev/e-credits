@@ -486,14 +486,14 @@
                   <td class="px-4 py-3 text-right font-mono-data">2026-08-08</td>
                 </tr>
                 <tr class="hover:bg-surface-container-low">
-                  <td class="px-4 py-3 font-bold text-on-surface">Solar Array Decarbonization Project</td>
+                  <td class="px-4 py-3 font-bold text-on-surface">Solar Array Decarbonization Project (SAMPLE DATA)</td>
                   <td class="px-4 py-3">ISO 14064-2:2019 Project Accounting</td>
                   <td class="px-4 py-3 font-mono-data">14 / 14 Items (100%)</td>
                   <td class="px-4 py-3"><span class="px-2.5 py-0.5 rounded-full bg-secondary/10 text-secondary font-bold text-[10px] border border-secondary/20">VERIFIED</span></td>
                   <td class="px-4 py-3 text-right font-mono-data">2026-08-01</td>
                 </tr>
                 <tr class="hover:bg-surface-container-low">
-                  <td class="px-4 py-3 font-bold text-on-surface">Aluminium Casting Line Phase 2</td>
+                  <td class="px-4 py-3 font-bold text-on-surface">Aluminium Casting Line Phase 2 (SAMPLE DATA)</td>
                   <td class="px-4 py-3">EU CBAM & DPP Disclosure</td>
                   <td class="px-4 py-3 font-mono-data">8 / 12 Items (67%)</td>
                   <td class="px-4 py-3"><span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 font-bold text-[10px] border border-amber-300">IN REVIEW</span></td>
@@ -563,7 +563,7 @@
               <p class="text-xs text-on-surface-variant leading-relaxed">Carbon Border Adjustment Mechanism embedded carbon disclosure for imports into the European Union.</p>
             </div>
             <div class="mt-6 pt-4 border-t border-outline-variant">
-              <span class="px-3 py-1 rounded-full bg-primary/10 text-primary font-bold text-xs border border-primary/20">Data Ready for Export</span>
+              <button onclick="exportCSV()" class="px-3 py-1 rounded-full bg-primary/10 hover:bg-primary/20 text-primary font-bold text-xs border border-primary/20 transition-colors">Export CBAM CSV</button>
             </div>
           </div>
 
@@ -589,7 +589,7 @@
               <p class="text-xs text-on-surface-variant leading-relaxed">Material traceability, recycled content disclosure, and carbon footprint per unit.</p>
             </div>
             <div class="mt-6 pt-4 border-t border-outline-variant">
-              <span class="px-3 py-1 rounded-full bg-tertiary/10 text-tertiary font-bold text-xs border border-tertiary/20">DPP JSON Export Available</span>
+              <button onclick="exportDPP()" class="px-3 py-1 rounded-full bg-tertiary/10 hover:bg-tertiary/20 text-tertiary font-bold text-xs border border-tertiary/20 transition-colors">Export DPP JSON</button>
             </div>
           </div>
         </div>
@@ -737,7 +737,7 @@
           <div>
             <div class="text-[10px] font-extrabold text-primary uppercase tracking-widest">GLOBAL SUSTAINABILITY ASSURANCE PRACTICE</div>
             <h1 class="text-xl font-black text-on-surface mt-1">INDEPENDENT PRACTITIONER'S ASSURANCE REPORT</h1>
-            <p class="text-xs text-on-surface-variant font-medium">ISAE 3410 & ISO 14064-3:2019 Compliance Statement</p>
+            <p class="text-xs text-on-surface-variant font-medium">Assurance-Ready Structure (Supports ISAE 3410 & ISO 14064-3)</p>
           </div>
           <div class="text-right">
             <span id="b4ReportStatus" class="bg-primary/10 text-primary border border-primary/20 px-3 py-1.5 rounded-lg text-xs font-extrabold font-mono-data inline-block mb-1">
@@ -795,7 +795,7 @@
               <p id="b4SignerName" class="text-[11px] font-bold text-primary">Not yet signed</p>
               <p id="b4SignerBody" class="text-[10px] text-on-surface-variant">-</p>
             </div>
-            <div class="text-[9px] text-emerald-800 font-extrabold flex items-center gap-1 mt-2">
+            <div id="b4SignatureBadge" class="text-[9px] text-emerald-800 font-extrabold flex items-center gap-1 mt-2 hidden">
               <span class="w-2 h-2 rounded-full bg-emerald-600"></span> Google OAuth Verified Signature
             </div>
           </div>
@@ -3786,6 +3786,7 @@ const EMISSION_DB = [{"key": "Diesel_Fuel", "name": "Diesel fuel combustion", "u
             btn.classList.remove("bg-surface-container-high", "text-on-surface", "hover:bg-surface-container-highest");
             btn.onclick = signOutUser;
         }
+        document.getElementById("b4SignatureBadge").classList.remove("hidden");
       } else {
         if (btnText) btnText.innerText = "Auditor / User Login";
         if (btn) {
@@ -3793,6 +3794,7 @@ const EMISSION_DB = [{"key": "Diesel_Fuel", "name": "Diesel fuel combustion", "u
             btn.classList.add("bg-surface-container-high", "text-on-surface", "hover:bg-surface-container-highest");
             btn.onclick = signInWithGoogle;
         }
+        document.getElementById("b4SignatureBadge").classList.add("hidden");
       }
 
       // Update Report Signatures
@@ -4078,24 +4080,64 @@ const EMISSION_DB = [{"key": "Diesel_Fuel", "name": "Diesel fuel combustion", "u
       renderTable();
     }
 
-    function exportCSV() {
-      let csvContent = "data:text/csv;charset=utf-8,Item,Quantity,Unit,Matched Process,Emission Factor,Risk,Footprint (tCO2e)\n";
-      currentBOM.forEach(i => {
-        let co2e = ((i.qty * i.ef) / 1000).toFixed(3);
-        let safeName = String(i.name || '').replace(/"/g, '""');
-        let safeUnit = String(i.unit || '').replace(/"/g, '""');
-        let safeProc = String(i.process || '').replace(/"/g, '""');
-        let safeRisk = String(i.risk || '').replace(/"/g, '""');
-        csvContent += `"${safeName}",${i.qty},"${safeUnit}","${safeProc}",${i.ef},"${safeRisk}",${co2e}\n`;
-      });
-      let encodedUri = encodeURI(csvContent);
-      let link = document.createElement("a");
-      link.setAttribute("href", encodedUri);
-      link.setAttribute("download", "NetZeroCalc_BOM_Export.csv");
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
+function exportCSV() {
+  if (currentBOM.length === 0) {
+    showSmsToast("Export blocked: No data to export.");
+    return;
+  }
+  if (currentBOM.some(i => !i.approved)) {
+    showSmsToast("Export blocked: All rows must be approved before export.");
+    return;
+  }
+  let csvContent = "data:text/csv;charset=utf-8,Item,Quantity,Unit,Matched Process,Emission Factor,Risk,Footprint (tCO2e)\n";
+  currentBOM.forEach(i => {
+    let co2e = ((i.qty * i.ef) / 1000).toFixed(3);
+    let safeName = String(i.name || '').replace(/"/g, '""');
+    let safeUnit = String(i.unit || '').replace(/"/g, '""');
+    let safeProc = String(i.process || '').replace(/"/g, '""');
+    let safeRisk = String(i.risk || '').replace(/"/g, '""');
+    csvContent += `"${safeName}",${i.qty},"${safeUnit}","${safeProc}",${i.ef},"${safeRisk}",${co2e}\n`;
+  });
+  let encodedUri = encodeURI(csvContent);
+  let link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", "NetZeroCalc_BOM_Export.csv");
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+function exportDPP() {
+  if (currentBOM.length === 0) {
+    showSmsToast("Export blocked: No data to export.");
+    return;
+  }
+  if (currentBOM.some(i => !i.approved)) {
+    showSmsToast("Export blocked: All rows must be approved before export.");
+    return;
+  }
+  let totalCo2e = currentBOM.reduce((acc, i) => acc + ((i.qty * i.ef) / 1000), 0).toFixed(3);
+  let payload = {
+    product: "Digital Product Passport Export",
+    total_footprint_tCO2e: totalCo2e,
+    certification: document.getElementById("certSerialDisplay") ? document.getElementById("certSerialDisplay").innerText : "—",
+    components: currentBOM.map(i => ({
+      item: i.name,
+      quantity: i.qty,
+      unit: i.unit,
+      matched_process: i.process,
+      emission_factor: i.ef,
+      footprint_tCO2e: ((i.qty * i.ef) / 1000).toFixed(3)
+    }))
+  };
+  let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(payload, null, 2));
+  let link = document.createElement("a");
+  link.setAttribute("href", dataStr);
+  link.setAttribute("download", "NetZeroCalc_DPP_Export.json");
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
 
     function changeRowLciProcess(id, value) {
       let item = currentBOM.find(i => i.id === id);

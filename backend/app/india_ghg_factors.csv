@@ -1,0 +1,61 @@
+Lookup Key,Emission Factor,Source / Notes
+Diesel_Fuel,2.6558,"India GHG Program base CO2 factor (2.64) + ~0.6% CH4/N2O uplift per US EPA GHG Equivalencies methodology (2024) = 2.6558 kgCO2e -- uplift is a documented approximation (CO2 is >99% of combustion CO2e per EPA), not an India-specific measured N2O/CH4 split"
+Petrol_Fuel,2.2836,"India GHG Program base CO2 factor (2.27) + ~0.6% CH4/N2O uplift per US EPA GHG Equivalencies methodology (2024) = 2.2836 kgCO2e -- uplift is a documented approximation (CO2 is >99% of combustion CO2e per EPA), not an India-specific measured N2O/CH4 split"
+CNG_Fuel,2.686,"India GHG Program base CO2 factor (2.67) + ~0.6% CH4/N2O uplift per US EPA GHG Equivalencies methodology (2024) = 2.686 kgCO2e -- uplift is a documented approximation (CO2 is >99% of combustion CO2e per EPA), not an India-specific measured N2O/CH4 split"
+LPG_Commercial,2.9979,"India GHG Program base CO2 factor (2.98) + ~0.6% CH4/N2O uplift per US EPA GHG Equivalencies methodology (2024) = 2.9979 kgCO2e -- uplift is a documented approximation (CO2 is >99% of combustion CO2e per EPA), not an India-specific measured N2O/CH4 split"
+Coal_Indian,1.9919,"India GHG Program base CO2 factor (1.98) + ~0.6% CH4/N2O uplift per US EPA GHG Equivalencies methodology (2024) = 1.9919 kgCO2e -- uplift is a documented approximation (CO2 is >99% of combustion CO2e per EPA), not an India-specific measured N2O/CH4 split"
+Furnace_Oil,3.1186,"India GHG Program base CO2 factor (3.1) + ~0.6% CH4/N2O uplift per US EPA GHG Equivalencies methodology (2024) = 3.1186 kgCO2e -- uplift is a documented approximation (CO2 is >99% of combustion CO2e per EPA), not an India-specific measured N2O/CH4 split"
+Natural_Gas,1.8913,"India GHG Program base CO2 factor (1.88) + ~0.6% CH4/N2O uplift per US EPA GHG Equivalencies methodology (2024) = 1.8913 kgCO2e -- uplift is a documented approximation (CO2 is >99% of combustion CO2e per EPA), not an India-specific measured N2O/CH4 split"
+Acetylene_Welding,3.4003,"India GHG Program base CO2 factor (3.38) + ~0.6% CH4/N2O uplift per US EPA GHG Equivalencies methodology (2024) = 3.4003 kgCO2e -- uplift is a documented approximation (CO2 is >99% of combustion CO2e per EPA), not an India-specific measured N2O/CH4 split"
+Fire_Extinguisher_CO2,1.0,"GWP of CO2 = 1, all AR vintages (kgCO2e/kg)"
+Refrig_R32,675.0,IPCC AR4 GWP-100 (kgCO2e/kg) -- verify vintage required by your framework
+Refrig_R410A,2088.0,IPCC AR4 GWP-100 (kgCO2e/kg) -- verify vintage required by your framework
+Refrig_R22,1810.0,IPCC AR4 GWP-100 (kgCO2e/kg) -- verify vintage required by your framework
+Grid_India_CEA,0.7314,"India GHG Program base CO2 factor (0.727) + ~0.6% CH4/N2O uplift per US EPA GHG Equivalencies methodology (2024) = 0.7314 kgCO2e -- uplift is a documented approximation (CO2 is >99% of combustion CO2e per EPA), not an India-specific measured N2O/CH4 split"
+Grid_MarketBased_Default,0.7314,"India GHG Program base CO2 factor (0.727) + ~0.6% CH4/N2O uplift per US EPA GHG Equivalencies methodology (2024) = 0.7314 kgCO2e -- uplift is a documented approximation (CO2 is >99% of combustion CO2e per EPA), not an India-specific measured N2O/CH4 split"
+REC_Backed_Electricity,0.0,"Renewable Energy Certificate / PPA-backed electricity, zero-rated per market-based method (kgCO2/kWh) -- confirm REC is unbundled and not double-counted"
+Purchased_Steam,0.1811,"India GHG Program base CO2 factor (0.18) + ~0.6% CH4/N2O uplift per US EPA GHG Equivalencies methodology (2024) = 0.1811 kgCO2e -- uplift is a documented approximation (CO2 is >99% of combustion CO2e per EPA), not an India-specific measured N2O/CH4 split"
+Transport_Truck_tkm,0.09,India Road Logistics (kgCO2/tonne-km)
+Transport_LCV_km,0.45,Light Commercial Vehicle (kgCO2/km)
+Transport_HGV_km,0.85,Heavy Goods Vehicle (kgCO2/km)
+Rail_Freight,0.015,Indian Railways Freight (kgCO2/tonne-km)
+Rail_Passenger,0.01,Indian Railways Passenger (kgCO2/p-km)
+Air_Domestic,0.12,Domestic Flights India (kgCO2/p-km)
+Air_International,0.117,"DEFRA/DESNZ 2025 UK Government GHG Conversion Factors -- long-haul economy, with radiative forcing (kgCO2e/passenger-km)"
+Air_Freight_Cargo,1.58,India GHG Program (kgCO2/tonne-km)
+Taxi_Diesel,0.14,India GHG Program (kgCO2/km)
+Commute_2Wheeler,0.04,Scooter/Bike Avg (kgCO2/km)
+Commute_Car_Avg,0.14,Avg Small Car (kgCO2/km)
+Commute_Car_Small,0.11,Small Car Segment (kgCO2/km)
+Commute_Car_Large,0.17,Large Car Segment (kgCO2/km)
+Commute_Bus,0.03,City Bus Service (kgCO2/p-km)
+Metro_Rail,0.015,Metro Rail (kgCO2/p-km)
+Waste_Landfill,0.85,Indian Landfill Methane (kgCO2e/kg waste)
+Waste_Recycle,0.021,Transport energy only (kgCO2/kg)
+Waste_Incineration,0.4,India GHG Program estimate (kgCO2e/kg) -- verify locally
+Wastewater_Treatment,0.708,India GHG Program (kgCO2/m3)
+Water_Supply,0.31,"Cross-validated against international benchmarks: NZ Water Sector 2020/21 national methodology (~1.6-2.8 MJ/m3 energy intensity) and US LCA estimates (0.34-0.46 kgCO2/m3) both converge near this value -- no India-specific published factor exists; treat as an international proxy, not an India-measured figure"
+Paper_Virgin,0.92,India GHG Program (kgCO2/kg)
+Paper_Recycled,0.6,India GHG Program (kgCO2/kg)
+Plastic_Packaging,2.5,India GHG Program (kgCO2/kg)
+Construction_Steel,2.33,"World Steel Association -- integrated mill (BOF) production route (kgCO2e/kg); India's steel sector is majority BOF/integrated-mill with lower recycled content than EU/UK, so integrated-mill figure is the more representative default -- verify against specific supplier EPD where available"
+Cement_Portland,0.9,India GHG Program (kgCO2/kg)
+Spend_IT,0.005,Proxy: 5 tCO2 per Million INR spend
+Spend_Construction,0.012,Proxy: 12 tCO2 per Million INR spend
+Spend_Generic_Services,0.003,Proxy: 3 tCO2 per Million INR spend -- use only where no better data exists
+Laptop_Unit,250.0,Embodied carbon per unit (kgCO2e/unit)
+Desktop_Unit,350.0,Embodied carbon per unit (kgCO2e/unit)
+Smartphone_Unit,65.0,Embodied carbon per unit (kgCO2e/unit)
+Furniture,3.5,Office furniture (kgCO2/kg)
+Grid_TD_Loss,0.1459,"India GHG Program base CO2 factor (0.145) + ~0.6% CH4/N2O uplift per US EPA GHG Equivalencies methodology (2024) = 0.1459 kgCO2e -- uplift is a documented approximation (CO2 is >99% of combustion CO2e per EPA), not an India-specific measured N2O/CH4 split"
+WTT_Diesel,0.5835,"India GHG Program base CO2 factor (0.58) + ~0.6% CH4/N2O uplift per US EPA GHG Equivalencies methodology (2024) = 0.5835 kgCO2e -- uplift is a documented approximation (CO2 is >99% of combustion CO2e per EPA), not an India-specific measured N2O/CH4 split"
+WTT_Petrol,0.4628,"India GHG Program base CO2 factor (0.46) + ~0.6% CH4/N2O uplift per US EPA GHG Equivalencies methodology (2024) = 0.4628 kgCO2e -- uplift is a documented approximation (CO2 is >99% of combustion CO2e per EPA), not an India-specific measured N2O/CH4 split"
+Hotel_5Star,75.5,India GHG Program (kgCO2e/night)
+Hotel_Budget,25.0,India GHG Program (kgCO2e/night)
+Product_Use_Phase_Energy,0.0,PLACEHOLDER -- Category 11 (Use of Sold Products); populate with product-specific energy-use profile (kgCO2e/unit sold)
+Product_EndOfLife,0.0,PLACEHOLDER -- Category 12 (End-of-Life); populate with disposal-method-weighted factor (kgCO2e/unit sold)
+Investment_Equity_Share,0.0,PLACEHOLDER -- Category 15 (Investments); populate with equity-share-weighted investee emissions (kgCO2e/INR invested)
+Franchise_Estimate,0.0,PLACEHOLDER -- Category 14 (Franchises); populate with franchise-reported or estimated emissions (kgCO2e/franchise)
+Leased_Asset_Downstream,0.0,PLACEHOLDER -- Category 13 (Downstream Leased Assets); populate with lessee-reported energy use (kgCO2e/unit)
+Financed_Emissions_Passthrough,1.0,Direct pass-through of reported financed emissions (tCO2e/tCO2e)
+Processing_Sold_Products_Proxy,0.0,PLACEHOLDER -- Category 10 (Processing of Sold Products); relevant only if selling intermediate goods for further processing; populate with downstream processor energy data (kgCO2e/unit sold)
