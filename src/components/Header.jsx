@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldCheck, UserCheck, LogIn, ChevronDown, Database, Award } from 'lucide-react';
+import { ShieldCheck, UserCheck, LogIn, ChevronDown, Database, Award, Activity } from 'lucide-react';
 
 export default function Header({ 
   currentAuditor, 
@@ -19,12 +19,14 @@ export default function Header({
         
         {/* Brand & Project Identity */}
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-black text-xl shadow-inner">
-            N
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-md bg-emerald-500 flex items-center justify-center">
+              <Activity className="text-slate-900 w-4 h-4" />
+            </div>
+            <h1 className="font-extrabold text-base tracking-tight text-white">ScopeMetric</h1>
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="font-extrabold text-base tracking-tight text-white">NetZeroCalc</h1>
               <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                 v2.0 Enterprise
               </span>

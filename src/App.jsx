@@ -9,6 +9,7 @@ import ComplianceView from './components/ComplianceView.jsx';
 import ImportModal from './components/ImportModal.jsx';
 import GoogleSheetsModal from './components/GoogleSheetsModal.jsx';
 import GhgCalculatorView from './components/GhgCalculatorView.jsx';
+import LandingPage from './components/LandingPage.jsx';
 import { INDIA_GHG_FACTORS } from './data/indiaGhgFactors.js';
 
 // Default Initial Items
@@ -31,6 +32,9 @@ const INITIAL_PROJECTS = [
 ];
 
 export default function App() {
+  const [showLanding, setShowLanding] = useState(() => {
+    return localStorage.getItem('scopemetric_has_visited') !== 'true';
+  });
   const [activeTab, setActiveTab] = useState('workbench');
   const [projects, setProjects] = useState(() => {
     const saved = localStorage.getItem('netzerocalc_projects');
@@ -50,7 +54,7 @@ export default function App() {
     return saved ? JSON.parse(saved) : {
       authenticated: false,
       name: 'Unauthenticated User',
-      email: 'internal.draft@netzerocalc.io',
+      email: 'internal.draft@scopemetric.io',
       cert: 'Self-Reported Internal Calculation'
     };
   });
@@ -173,6 +177,15 @@ export default function App() {
     showToast("Scenario applied! Baseline vs Project scenario synchronized for ISO 14064-2 report.");
     setActiveTab('compliance');
   };
+
+  const handleLaunchDemo = () => {
+    setShowLanding(false);
+    localStorage.setItem('scopemetric_has_visited', 'true');
+  };
+
+  if (showLanding) {
+    return <LandingPage onLaunchDemo={handleLaunchDemo} />;
+  }
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900 font-sans antialiased pb-12">
