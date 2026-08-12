@@ -665,7 +665,7 @@
               <p class="text-xs text-on-surface-variant leading-relaxed">Goal, scope, inventory analysis, and impact assessment standard for Life Cycle Assessment.</p>
             </div>
             <div class="mt-6 pt-4 border-t border-outline-variant">
-              <span class="px-3 py-1 rounded-full bg-secondary/10 text-secondary font-bold text-xs border border-secondary/20">ISO Standards Aligned</span>
+              <button onclick="showLcaAlignmentStatus()" class="px-3 py-1 rounded-full bg-secondary/10 hover:bg-secondary/20 text-secondary font-bold text-xs border border-secondary/20 transition-colors">Check ISO Standards Alignment</button>
             </div>
           </div>
 
@@ -3894,12 +3894,52 @@ const EMISSION_DB = [{"key": "Diesel_Fuel", "name": "Diesel fuel combustion", "u
       tbody.innerHTML = html;
     }
 
+    function showLcaAlignmentStatus() {
+      // Real check against actual app state, not a decorative badge --
+      // ISO 14040/44 has 4 stages: Goal & Scope, Inventory Analysis,
+      // Impact Assessment, Interpretation. Check each against what the
+      // user has actually done, don't just claim "Aligned" unconditionally.
+      let projectName = document.getElementById("projectNameInput") ? document.getElementById("projectNameInput").value : "";
+      let goalScopeDone = !!projectName && projectName.trim().length > 0;
+      let inventoryCount = currentBOM.length;
+      let inventoryDone = inventoryCount > 0;
+      let approvedCount = currentBOM.filter(i => i.approved).length;
+      let impactDone = approvedCount > 0 && approvedCount === inventoryCount;
+
+      let msg = "ISO 14040/44 Alignment — "
+        + (goalScopeDone ? "✓" : "✗") + " Goal & Scope defined, "
+        + (inventoryDone ? "✓ " + inventoryCount + " items in inventory" : "✗ no inventory data") + ", "
+        + (impactDone ? "✓ impact assessment complete" : "✗ " + (inventoryCount - approvedCount) + " items pending review");
+
+      showSmsToast(msg);
+    }
+
     function applySimAsProject() {
       if (currentBOM.length === 0) {
         showSmsToast("No BOM items loaded to apply scenario.");
         return;
       }
-      showSmsToast("Scenario applied! Baseline vs Project scenario synchronized for ISO 14064-2 report.");
+      // Persist the actual current simulator output -- previously this only
+      // showed a success toast and switched tabs with no real data written
+      // anywhere, falsely implying ISO 14064-2 baseline/project sync that
+      // didn't exist. Now it stores real values a report can actually read.
+      let rec = document.getElementById("simRecSlider") ? parseInt(document.getElementById("simRecSlider").value) || 0 : 0;
+      let ren = document.getElementById("simRenSlider") ? parseInt(document.getElementById("simRenSlider").value) || 0 : 0;
+      let eff = document.getElementById("simEffSlider") ? parseInt(document.getElementById("simEffSlider").value) || 0 : 0;
+      let fuel = document.getElementById("simFuelSlider") ? parseInt(document.getElementById("simFuelSlider").value) || 0 : 0;
+      let baseline = document.getElementById("simBaseline") ? document.getElementById("simBaseline").innerText : "0.000 tCO₂e";
+      let avoided = document.getElementById("simAvoided") ? document.getElementById("simAvoided").innerText : "0.000 tCO₂e";
+      let net = document.getElementById("simNet") ? document.getElementById("simNet").innerText : "0.000 tCO₂e";
+
+      window.appliedProjectScenario = {
+        appliedAt: new Date().toISOString(),
+        levers: { recycledPct: rec, renewablePct: ren, efficiencyPct: eff, fuelSwitchPct: fuel },
+        baselineFootprint: baseline,
+        avoidedEmissions: avoided,
+        netFootprint: net
+      };
+
+      showSmsToast("Scenario values saved for this session.");
       switchView('compliance');
     }
 
