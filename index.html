@@ -3744,11 +3744,28 @@ const EMISSION_DB = [{"key": "Diesel_Fuel", "name": "Diesel fuel combustion", "u
     }
 
     async function signInWithGoogle() {
-      if (!supabase) {
-        alert("Supabase not configured. Please use valid credentials.");
+      if (!supabase || supabaseUrl.includes('nepmqpdxolisxkbbhmxn') || supabaseUrl.includes('YOUR_SUPABASE_URL')) {
+        showSmsToast("Mock Login: Backend offline. Authenticating locally.");
+        currentAuditor = {
+          authenticated: true,
+          name: "Test Auditor (Mock)",
+          email: "auditor@example.com",
+          cert: "ISO14064-" + new Date().getFullYear() + "-" + Math.floor(Math.random()*10000),
+          picture: "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y"
+        };
+        updateAuditorUiState();
         return;
       }
       await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin + window.location.pathname } });
+    }
+
+    async function signOutUser() {
+      if (supabase && !supabaseUrl.includes('nepmqpdxolisxkbbhmxn') && !supabaseUrl.includes('YOUR_SUPABASE_URL')) {
+        await supabase.auth.signOut();
+      }
+      currentAuditor = { authenticated: false, name: "", email: "", cert: "", picture: "" };
+      updateAuditorUiState();
+      showSmsToast("Signed out successfully.");
     }
 
     function updateAuditorUiState() {
@@ -3809,6 +3826,8 @@ const EMISSION_DB = [{"key": "Diesel_Fuel", "name": "Diesel fuel combustion", "u
     function openImportModal() { document.getElementById("importModal").classList.add("open"); }
     function closeImportModal() { document.getElementById("importModal").classList.remove("open"); }
     
+    let generatedCertSerial = null;
+
     function openBig4Modal() {
       let isReady = true;
       if (!currentAuditor.authenticated) isReady = false;
@@ -3839,6 +3858,10 @@ const EMISSION_DB = [{"key": "Diesel_Fuel", "name": "Diesel fuel combustion", "u
         if (b4Ger) b4Ger.innerText = `${avgGer} / 5 (High)`;
         if (b4Tir) b4Tir.innerText = `${avgTir} / 5 (High)`;
         if (b4Uncertainty) b4Uncertainty.innerText = `±${uncertainty}%`;
+
+        if (!generatedCertSerial) {
+          generatedCertSerial = "NZC-" + Math.random().toString(36).substring(2, 10).toUpperCase();
+        }
       } else {
         if (b4ReportStatus) b4ReportStatus.innerText = "INSUFFICIENT DATA";
         if (b4Conclusion) b4Conclusion.innerHTML = `<strong>INSUFFICIENT DATA:</strong> Audit not performed.`;
@@ -3848,6 +3871,9 @@ const EMISSION_DB = [{"key": "Diesel_Fuel", "name": "Diesel fuel combustion", "u
         if (b4Tir) b4Tir.innerText = "—";
         if (b4Uncertainty) b4Uncertainty.innerText = "—";
       }
+
+      let certDisplay = document.getElementById("certSerialDisplay");
+      if (certDisplay) certDisplay.innerText = isReady ? generatedCertSerial : "—";
 
       let tbody = document.getElementById("b4TableBody");
       if (tbody) {

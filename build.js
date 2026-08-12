@@ -31,8 +31,8 @@ if (fs.existsSync(sourceHtml)) {
   }
 
   // Inject variables from process.env (Cloudflare) or local .env
-  htmlContent = htmlContent.replace('{{SUPABASE_URL}}', process.env.SUPABASE_URL || env.SUPABASE_URL || 'YOUR_SUPABASE_URL');
-  htmlContent = htmlContent.replace('{{SUPABASE_ANON_KEY}}', process.env.SUPABASE_ANON_KEY || env.SUPABASE_ANON_KEY || 'YOUR_SUPABASE_ANON_KEY');
+  htmlContent = htmlContent.replace('https://nepmqpdxolisxkbbhmxn.supabase.co', process.env.SUPABASE_URL || env.SUPABASE_URL || 'https://nepmqpdxolisxkbbhmxn.supabase.co');
+  htmlContent = htmlContent.replace('sb_publishable_3_jOVeUeMgKc0iIHTBXikQ_BjzeV4lE', process.env.SUPABASE_ANON_KEY || env.SUPABASE_ANON_KEY || 'sb_publishable_3_jOVeUeMgKc0iIHTBXikQ_BjzeV4lE');
   
   htmlContent = htmlContent.replace('{{FIREBASE_API_KEY}}', process.env.FIREBASE_API_KEY || env.FIREBASE_API_KEY || 'YOUR_FIREBASE_API_KEY');
   htmlContent = htmlContent.replace('{{FIREBASE_AUTH_DOMAIN}}', process.env.FIREBASE_AUTH_DOMAIN || env.FIREBASE_AUTH_DOMAIN || 'YOUR_FIREBASE_AUTH_DOMAIN');
