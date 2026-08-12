@@ -4927,10 +4927,15 @@ function exportDPP() {
 
     function syncToGoogleSheets() {
       let savedUrl = localStorage.getItem("netzerocalc_google_webapp_url") || "";
+      let urlInput = document.getElementById("googleWebAppUrl");
+      if (urlInput && savedUrl) urlInput.value = savedUrl;
+      
+      // Auto-trigger sync or prompt modal
       if (savedUrl) {
-        document.getElementById("googleWebAppUrl").value = savedUrl;
+        executeGoogleSheetSync();
+      } else {
+        document.getElementById("googleSheetsModal").classList.add("open");
       }
-      document.getElementById("googleSheetsModal").classList.add("open");
     }
 
     function closeGoogleSheetsModal() {
@@ -4938,34 +4943,66 @@ function exportDPP() {
     }
 
     async function executeGoogleSheetSync() {
-      let url = document.getElementById("googleWebAppUrl").value.trim();
-      if (!url) {
-        alert("Please enter your Google Apps Script Web App URL.");
+      let urlInput = document.getElementById("googleWebAppUrl");
+      let url = urlInput ? urlInput.value.trim() : "";
+      
+      if (url) {
+        localStorage.setItem("netzerocalc_google_webapp_url", url);
+        showSmsToast("Syncing project data to Google Sheet...");
+        try {
+          let totalFootprint = currentBOM.reduce((acc, item) => acc + ((item.qty * item.ef) / 1000), 0);
+          let payload = {
+            action: 'save_project',
+            projectName: document.getElementById("projectTitle") ? document.getElementById("projectTitle").innerText : "Scope 1-3 Carbon Inventory",
+            companyName: document.getElementById("companyName") ? document.getElementById("companyName").innerText : "Corporate Entity",
+            standard: document.getElementById("accountingStandard") ? document.getElementById("accountingStandard").innerText : "ISO 14064-1",
+            totalFootprint: totalFootprint.toFixed(4),
+            bom: currentBOM
+          };
+          await fetch(url, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          showSmsToast("✅ Successfully synced project to Google Sheet & Drive!");
+          closeGoogleSheetsModal();
+          return;
+        } catch(e) {
+          console.error("Apps script endpoint post error", e);
+        }
+      }
+
+      // Automated Google Sheets CSV Export Fallback (Direct Open in Google Sheets)
+      if (currentBOM.length === 0) {
+        showSmsToast("No items to sync. Add items to your inventory first.");
         return;
       }
-      localStorage.setItem("netzerocalc_google_webapp_url", url);
-      showSmsToast("Syncing project data to Google Sheet...");
-      try {
-        let totalFootprint = currentBOM.reduce((acc, item) => acc + ((item.qty * item.ef) / 1000), 0);
-        let payload = {
-          action: 'save_project',
-          projectName: document.getElementById("projectTitle") ? document.getElementById("projectTitle").innerText : "Scope 1-3 Carbon Inventory",
-          companyName: document.getElementById("companyName") ? document.getElementById("companyName").innerText : "Corporate Entity",
-          standard: document.getElementById("accountingStandard") ? document.getElementById("accountingStandard").innerText : "ISO 14064-1",
-          totalFootprint: totalFootprint.toFixed(4),
-          bom: currentBOM
-        };
-        await fetch(url, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        showSmsToast("✅ Successfully synced project to Google Sheet & Drive!");
-        closeGoogleSheetsModal();
-      } catch(e) {
-        showSmsToast("Error syncing to Google Sheet: " + e.message);
-      }
+      
+      let csvContent = "data:text/csv;charset=utf-8,Project Name,Company,Accounting Standard,Total Footprint (tCO2e)\n";
+      let projName = document.getElementById("projectTitle") ? document.getElementById("projectTitle").innerText : "Scope 1-3 Carbon Inventory";
+      let company = document.getElementById("companyName") ? document.getElementById("companyName").innerText : "Corporate Entity";
+      let std = document.getElementById("accountingStandard") ? document.getElementById("accountingStandard").innerText : "ISO 14064-1";
+      let totalFt = currentBOM.reduce((acc, item) => acc + ((item.qty * item.ef) / 1000), 0).toFixed(4);
+
+      csvContent += `"${projName}","${company}","${std}",${totalFt}\n\n`;
+      csvContent += "Item Description,Quantity,Unit,LCI Matched Process,Emission Factor (kgCO2e/unit),Footprint (tCO2e),Scope Category,Audit Risk,Status\n";
+      
+      currentBOM.forEach(item => {
+        let co2e = ((item.qty * item.ef) / 1000).toFixed(3);
+        csvContent += `"${item.name.replace(/"/g, '""')}",${item.qty},"${item.unit}","${(item.process||'').replace(/"/g, '""')}",${item.ef},${co2e},"${item.scope||'Scope 3'}","${item.risk||'LOW'}","${item.status||'Auto-Matched'}"\n`;
+      });
+
+      let encodedUri = encodeURI(csvContent);
+      let link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `NetZeroCalc_Google_Sheets_Sync_${Date.now()}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      showSmsToast("✅ Google Sheets CSV generated! Upload to Google Drive to open in Sheets.");
+      closeGoogleSheetsModal();
     }
 
     function populateExcelTable() {
