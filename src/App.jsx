@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Header from './components/Header.jsx';
 import NavigationTabs from './components/NavigationTabs.jsx';
 import WorkbenchView from './components/WorkbenchView.jsx';
+import LciSearchTab from './components/LciSearchTab.jsx';
 import SimulatorView from './components/SimulatorView.jsx';
 import ProjectsView from './components/ProjectsView.jsx';
 import ComplianceView from './components/ComplianceView.jsx';
@@ -181,6 +182,13 @@ export default function App() {
             setCurrentBOM={setCurrentBOM}
             onOpenImportModal={() => setIsImportModalOpen(true)}
             onOpenGoogleSheetsModal={() => setIsGoogleSheetsModalOpen(true)}
+            showToast={showToast}
+          />
+        )}
+
+        {activeTab === 'lci-search' && (
+          <LciSearchTab 
+            onAddFactorToBOM={handleImportItems}
             showToast={showToast}
           />
         )}

@@ -1,9 +1,10 @@
 import React from 'react';
-import { Table, Sliders, FolderKanban, FileCheck } from 'lucide-react';
+import { Table, Sliders, FolderKanban, FileCheck, Search } from 'lucide-react';
 
 export default function NavigationTabs({ activeTab, setActiveTab }) {
   const tabs = [
     { id: 'workbench', label: 'LCA Audit Workbench', icon: Table },
+    { id: 'lci-search', label: 'Global LCI Factor Engine', icon: Search },
     { id: 'simulator', label: 'What-If Decarbonization', icon: Sliders },
     { id: 'projects', label: 'Project Workspaces', icon: FolderKanban },
     { id: 'compliance', label: 'ISO 14064 Assurance Report', icon: FileCheck },
