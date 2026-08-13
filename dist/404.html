@@ -51,12 +51,24 @@
         .print\:hidden {
           display: none !important;
         }
-      }
     </style>
-    <script type="module" crossorigin src="./assets/index-BDQPDbHk.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-DzjiTq0c.css">
+    <script>
+      // Ensure trailing slash for GitHub Pages relative subpath resolution
+      if (window.location.pathname.endsWith('/e-credits')) {
+        window.location.replace(window.location.pathname + '/' + window.location.search + window.location.hash);
+      }
+    </script>
+    <script type="module" crossorigin src="/e-credits/assets/index-D1WkbcBp.js"></script>
+    <link rel="stylesheet" crossorigin href="/e-credits/assets/index-DzjiTq0c.css">
   </head>
   <body class="bg-slate-100">
-    <div id="root"></div>
+    <div id="root">
+      <div style="min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #F8FAFC; color: #0F172A; font-family: 'Helvetica Neue', Helvetica, sans-serif;">
+        <div style="width: 48px; height: 48px; border: 4px solid #E2E8F0; border-top-color: #059669; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+        <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
+        <h2 style="margin-top: 16px; font-size: 18px; font-weight: 800; color: #0F172A; letter-spacing: -0.5px;">NetZeroCalc</h2>
+        <p style="font-size: 12px; color: #64748B; margin-top: 4px; font-weight: 600;">Loading ISO 14064 Audit Engine...</p>
+      </div>
+    </div>
   </body>
 </html>
