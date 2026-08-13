@@ -10,7 +10,7 @@ export default function LandingPage({ onLaunchDemo }) {
           <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.5)]">
             <Activity className="text-slate-950 w-5 h-5" />
           </div>
-          <span className="font-bold text-xl tracking-tight text-white">ScopeMetric</span>
+          <span className="font-bold text-xl tracking-tight text-white">NetZeroCalc</span>
         </div>
         <div className="hidden md:flex gap-8 text-sm font-medium text-slate-400">
           <a href="#methodology" className="hover:text-white transition-colors">Methodology</a>
@@ -41,7 +41,7 @@ export default function LandingPage({ onLaunchDemo }) {
           </h1>
           
           <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed">
-            ScopeMetric provides enterprise-grade carbon accounting. Bypass generic ERP modules with a purpose-built engine compliant with the GHG Protocol Corporate Standard.
+            NetZeroCalc provides enterprise-grade carbon accounting. Bypass generic ERP modules with a purpose-built engine compliant with the GHG Protocol Corporate Standard.
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6">
@@ -149,7 +149,7 @@ export default function LandingPage({ onLaunchDemo }) {
 
       {/* Footer */}
       <footer className="py-8 border-t border-slate-900 text-center text-slate-600 text-sm">
-        <p>© {new Date().getFullYear()} ScopeMetric. A technical prototype demonstration.</p>
+        <p>© {new Date().getFullYear()} NetZeroCalc. A technical prototype demonstration.</p>
       </footer>
     </div>
   );

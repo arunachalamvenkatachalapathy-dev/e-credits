@@ -33,7 +33,7 @@ const INITIAL_PROJECTS = [
 
 export default function App() {
   const [showLanding, setShowLanding] = useState(() => {
-    return localStorage.getItem('scopemetric_has_visited') !== 'true';
+    return localStorage.getItem('netzerocalc_has_visited') !== 'true';
   });
   const [activeTab, setActiveTab] = useState('workbench');
   const [projects, setProjects] = useState(() => {
@@ -54,7 +54,7 @@ export default function App() {
     return saved ? JSON.parse(saved) : {
       authenticated: false,
       name: 'Unauthenticated User',
-      email: 'internal.draft@scopemetric.io',
+      email: 'internal.draft@netzerocalc.io',
       cert: 'Self-Reported Internal Calculation'
     };
   });
@@ -180,7 +180,7 @@ export default function App() {
 
   const handleLaunchDemo = () => {
     setShowLanding(false);
-    localStorage.setItem('scopemetric_has_visited', 'true');
+    localStorage.setItem('netzerocalc_has_visited', 'true');
   };
 
   if (showLanding) {

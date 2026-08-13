@@ -23,7 +23,7 @@ export default function Header({
             <div className="w-6 h-6 rounded-md bg-emerald-500 flex items-center justify-center">
               <Activity className="text-slate-900 w-4 h-4" />
             </div>
-            <h1 className="font-extrabold text-base tracking-tight text-white">ScopeMetric</h1>
+            <h1 className="font-extrabold text-base tracking-tight text-white">NetZeroCalc</h1>
           </div>
           <div>
             <div className="flex items-center gap-2">
