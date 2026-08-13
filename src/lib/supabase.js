@@ -1,13 +1,13 @@
 import { createClient } from '@supabase/supabase-js';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://xyzcompany.supabase.co';
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.dummy_key';
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://nepmqpdxolisxkbbhmxn.supabase.co';
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_3_jOVeUeMgKc0iIHTBXikQ_BjzeV4lE';
 
 export const isSupabaseConfigured = () => {
   return Boolean(
-    import.meta.env.VITE_SUPABASE_URL && 
-    import.meta.env.VITE_SUPABASE_ANON_KEY &&
-    !import.meta.env.VITE_SUPABASE_URL.includes('xyzcompany')
+    SUPABASE_URL && 
+    SUPABASE_ANON_KEY &&
+    !SUPABASE_URL.includes('xyzcompany')
   );
 };
 
