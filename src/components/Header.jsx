@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { ShieldCheck, UserCheck, LogIn, ChevronDown, Database, Award, Activity, Edit3, Check, X } from 'lucide-react';
+import { ShieldCheck, UserCheck, LogIn, ChevronDown, Database, Award, Activity, Edit3, Check, X, Server } from 'lucide-react';
+import { checkBackendHealth } from '../services/api.js';
 
 export default function Header({ 
   currentAuditor, 
@@ -18,6 +19,11 @@ export default function Header({
   const [isEditing, setIsEditing] = useState(false);
   const [companyName, setCompanyName] = useState(activeProject?.companyName || 'ACME Corp');
   const [projectName, setProjectName] = useState(activeProject?.projectName || 'Scope 1-3 Carbon Inventory');
+  const [backendStatus, setBackendStatus] = useState({ checked: false, online: false });
+
+  useEffect(() => {
+    checkBackendHealth().then(status => setBackendStatus({ checked: true, online: status.online }));
+  }, []);
 
   useEffect(() => {
     if (activeProject) {
@@ -105,6 +111,16 @@ export default function Header({
         {/* Controls & Standards Selector */}
         <div className="flex flex-wrap items-center gap-2.5">
           
+          {/* Backend Status Badge */}
+          <div className={`px-3 py-1.5 rounded-xl border text-xs font-bold flex items-center gap-2 shadow-xs ${
+            backendStatus.online 
+              ? 'bg-emerald-50 border-emerald-300 text-emerald-800' 
+              : 'bg-amber-50 border-amber-200 text-amber-800'
+          }`}>
+            <Server className={`w-3.5 h-3.5 ${backendStatus.online ? 'text-emerald-600' : 'text-amber-600'}`} />
+            <span>{backendStatus.online ? 'FastAPI API: Online' : 'FastAPI: Standby'}</span>
+          </div>
+
           {/* LCI Database Badge */}
           <div className="px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 flex items-center gap-2 shadow-xs">
             <Database className="w-3.5 h-3.5 text-emerald-600" />
