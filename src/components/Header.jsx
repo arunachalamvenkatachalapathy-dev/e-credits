@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { ShieldCheck, UserCheck, LogIn, ChevronDown, Database, Award, Activity, Edit3, Check, X, Server } from 'lucide-react';
+import { ShieldCheck, UserCheck, LogIn, ChevronDown, Database, Award, Activity, Edit3, Check, X, Server, Cloud } from 'lucide-react';
 import { checkBackendHealth } from '../services/api.js';
+import { isSupabaseConfigured } from '../lib/supabase.js';
 
 export default function Header({ 
   currentAuditor, 
@@ -111,6 +112,16 @@ export default function Header({
         {/* Controls & Standards Selector */}
         <div className="flex flex-wrap items-center gap-2.5">
           
+          {/* Supabase Status Badge */}
+          <div className={`px-3 py-1.5 rounded-xl border text-xs font-bold flex items-center gap-2 shadow-xs ${
+            isSupabaseConfigured()
+              ? 'bg-emerald-50 border-emerald-300 text-emerald-800' 
+              : 'bg-blue-50 border-blue-200 text-blue-800'
+          }`}>
+            <Cloud className={`w-3.5 h-3.5 ${isSupabaseConfigured() ? 'text-emerald-600' : 'text-blue-600'}`} />
+            <span>{isSupabaseConfigured() ? 'Supabase: Connected' : 'Supabase Client Ready'}</span>
+          </div>
+
           {/* Backend Status Badge */}
           <div className={`px-3 py-1.5 rounded-xl border text-xs font-bold flex items-center gap-2 shadow-xs ${
             backendStatus.online 
