@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Search, Globe, Filter, Plus, Database, Sparkles, CheckCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, Globe, Filter, Plus, Database, Sparkles, CheckCircle, Save } from 'lucide-react';
 import { GLOBAL_LCI_DATABASE } from '../data/globalLciDatabase.js';
 
 export default function LciSearchTab({ onAddFactorToBOM, showToast }) {
@@ -7,6 +7,25 @@ export default function LciSearchTab({ onAddFactorToBOM, showToast }) {
   const [selectedCategory, setSelectedCategory] = useState('ALL');
   const [selectedRegion, setSelectedRegion] = useState('ALL');
   const [injectedIds, setInjectedIds] = useState([]);
+
+  // Custom Factor States
+  const [customFactors, setCustomFactors] = useState(() => {
+    const saved = localStorage.getItem('netzerocalc_custom_factors');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [showCustomForm, setShowCustomForm] = useState(false);
+  const [customForm, setCustomForm] = useState({
+    name: '',
+    ef: '',
+    unit: 'kg',
+    scope: 'Scope 3',
+    category: 'ALL',
+    notes: 'User defined custom factor'
+  });
+
+  useEffect(() => {
+    localStorage.setItem('netzerocalc_custom_factors', JSON.stringify(customFactors));
+  }, [customFactors]);
 
   const categories = [
     'ALL',
@@ -21,7 +40,8 @@ export default function LciSearchTab({ onAddFactorToBOM, showToast }) {
   const regions = ['ALL', 'IN', 'US', 'UK / EU', 'GLO'];
 
   // Filter Factors
-  const filteredFactors = GLOBAL_LCI_DATABASE.filter(f => {
+  const allFactors = [...customFactors, ...GLOBAL_LCI_DATABASE];
+  const filteredFactors = allFactors.filter(f => {
     const matchesSearch = searchTerm.trim() === '' || 
       f.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
       f.source.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -32,6 +52,24 @@ export default function LciSearchTab({ onAddFactorToBOM, showToast }) {
 
     return matchesSearch && matchesCategory && matchesRegion;
   });
+
+  const handleAddCustomFactor = () => {
+    const newFactor = {
+      id: `custom_${Date.now()}`,
+      category: customForm.category,
+      name: customForm.name,
+      ef: parseFloat(customForm.ef),
+      unit: customForm.unit,
+      scope: customForm.scope,
+      source: 'Custom / User Defined',
+      region: 'GLO',
+      notes: customForm.notes
+    };
+    
+    setCustomFactors([newFactor, ...customFactors]);
+    setCustomForm({ ...customForm, name: '', ef: '' }); // reset some fields
+    showToast(`Added custom factor: ${newFactor.name}`);
+  };
 
   const handleInject = (factor) => {
     const newItem = {
@@ -103,23 +141,102 @@ export default function LciSearchTab({ onAddFactorToBOM, showToast }) {
             ))}
           </div>
 
-          {/* Region Selector */}
-          <div className="flex items-center gap-2">
-            <span className="text-slate-400 font-bold">Region:</span>
-            <select 
-              value={selectedRegion}
-              onChange={(e) => setSelectedRegion(e.target.value)}
-              className="bg-slate-800 text-slate-200 font-bold border border-slate-700 rounded-lg px-3 py-1.5 outline-none focus:border-emerald-500"
+          {/* Region Selector and Custom Button */}
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <span className="text-slate-400 font-bold">Region:</span>
+              <select 
+                value={selectedRegion}
+                onChange={(e) => setSelectedRegion(e.target.value)}
+                className="bg-slate-800 text-slate-200 font-bold border border-slate-700 rounded-lg px-3 py-1.5 outline-none focus:border-emerald-500"
+              >
+                {regions.map(r => (
+                  <option key={r} value={r}>{r === 'ALL' ? 'All Regions' : r}</option>
+                ))}
+              </select>
+            </div>
+            
+            <button 
+              onClick={() => setShowCustomForm(!showCustomForm)}
+              className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg font-bold transition-colors"
             >
-              {regions.map(r => (
-                <option key={r} value={r}>{r === 'ALL' ? 'All Regions' : r}</option>
-              ))}
-            </select>
+              <Plus className="w-3.5 h-3.5" />
+              Custom Factor
+            </button>
           </div>
 
         </div>
 
       </div>
+
+      {/* Custom Factor Form */}
+      {showCustomForm && (
+        <div className="bg-slate-800 border border-emerald-500/30 rounded-xl p-5 shadow-lg space-y-4">
+          <div className="flex justify-between items-center">
+            <h3 className="text-white font-bold text-sm flex items-center gap-2">
+              <Database className="w-4 h-4 text-emerald-400" />
+              Add Custom Emission Factor
+            </h3>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-slate-400">Product / Activity Name</label>
+              <input 
+                type="text" 
+                value={customForm.name}
+                onChange={(e) => setCustomForm({...customForm, name: e.target.value})}
+                placeholder="e.g. Recycled Steel"
+                className="w-full bg-slate-900 text-white text-sm border border-slate-700 rounded-lg px-3 py-2 outline-none focus:border-emerald-500"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-slate-400">Emission Factor (kgCO₂e)</label>
+              <input 
+                type="number" 
+                step="0.0001"
+                value={customForm.ef}
+                onChange={(e) => setCustomForm({...customForm, ef: e.target.value})}
+                placeholder="e.g. 1.25"
+                className="w-full bg-slate-900 text-white text-sm border border-slate-700 rounded-lg px-3 py-2 outline-none focus:border-emerald-500"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-slate-400">Per Unit</label>
+              <input 
+                type="text" 
+                value={customForm.unit}
+                onChange={(e) => setCustomForm({...customForm, unit: e.target.value})}
+                placeholder="e.g. kg, L, kWh"
+                className="w-full bg-slate-900 text-white text-sm border border-slate-700 rounded-lg px-3 py-2 outline-none focus:border-emerald-500"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-slate-400">Scope</label>
+              <select 
+                value={customForm.scope}
+                onChange={(e) => setCustomForm({...customForm, scope: e.target.value})}
+                className="w-full bg-slate-900 text-white text-sm border border-slate-700 rounded-lg px-3 py-2 outline-none focus:border-emerald-500"
+              >
+                <option value="Scope 1">Scope 1</option>
+                <option value="Scope 2">Scope 2</option>
+                <option value="Scope 3">Scope 3</option>
+              </select>
+            </div>
+          </div>
+          
+          <div className="flex justify-end pt-2">
+            <button 
+              onClick={handleAddCustomFactor}
+              disabled={!customForm.name || !customForm.ef || !customForm.unit}
+              className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white px-4 py-2 rounded-lg font-bold text-xs transition-colors"
+            >
+              <Save className="w-4 h-4" />
+              Save to My Factors
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Results Count Banner */}
       <div className="flex justify-between items-center text-xs font-bold text-slate-600 px-1">
