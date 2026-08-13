@@ -142,7 +142,7 @@ export default function WorkbenchView({
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
         {/* Total Carbon Footprint Card */}
-        <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-emerald-950/50 rounded-2xl p-5 border border-emerald-500/30 shadow-2xl shadow-emerald-500/10 relative overflow-hidden group">
+        <div className="bg-gradient-to-br from-emerald-900 via-slate-900 to-emerald-950 text-white rounded-2xl p-5 border border-emerald-500/30 shadow-xl shadow-emerald-900/20 relative overflow-hidden group">
           <div className="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-1 flex items-center justify-between">
             <span>Total Footprint (Location-Based)</span>
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -150,39 +150,39 @@ export default function WorkbenchView({
           <div className="text-4xl font-black text-white font-mono my-2 tracking-tight">
             {grandTotal.toFixed(3)} <span className="text-sm font-bold text-emerald-400">tCO₂e</span>
           </div>
-          <div className="text-[10px] text-slate-400 font-mono">
-            GWP Standard: <strong className="text-emerald-300">IPCC AR6 (100-yr Horizon)</strong>
+          <div className="text-[10px] text-emerald-200/80 font-mono">
+            GWP Standard: <strong className="text-white">IPCC AR6 (100-yr Horizon)</strong>
           </div>
-          <div className="mt-4 text-[11px] text-slate-400 font-medium flex items-center justify-between pt-3 border-t border-slate-800/80">
+          <div className="mt-4 text-[11px] text-emerald-100/70 font-medium flex items-center justify-between pt-3 border-t border-emerald-800/60">
             <span>Items Mapped: <strong className="text-white font-bold">{currentBOM.length}</strong></span>
             <span>Approved: <strong className="text-emerald-400 font-bold">{currentBOM.filter(i => i.approved).length} / {currentBOM.length}</strong></span>
           </div>
         </div>
 
         {/* Scope 1 Card */}
-        <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl p-5 border border-slate-800/80 shadow-xl">
+        <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-md hover:border-emerald-300 transition-all">
           <div className="flex justify-between items-start">
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Scope 1: Direct Fuels</span>
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-purple-500/10 text-purple-400 border border-purple-500/30">Scope 1</span>
+            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Scope 1: Direct Fuels</span>
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-purple-50 text-purple-700 border border-purple-200">Scope 1</span>
           </div>
-          <div className="text-2xl font-black text-white font-mono mt-3">
-            {scope1Total.toFixed(3)} <span className="text-xs font-bold text-slate-400">tCO₂e</span>
+          <div className="text-2xl font-black text-slate-900 font-mono mt-3">
+            {scope1Total.toFixed(3)} <span className="text-xs font-bold text-slate-500">tCO₂e</span>
           </div>
-          <div className="text-[11px] text-slate-400 mt-2 font-medium">
+          <div className="text-[11px] text-slate-500 mt-2 font-medium">
             Stationary & Mobile Direct Fuel Combustion
           </div>
         </div>
 
         {/* Scope 2 Dual Reporting Card */}
-        <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl p-5 border border-slate-800/80 shadow-xl">
+        <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-md hover:border-emerald-300 transition-all">
           <div className="flex justify-between items-start">
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Scope 2 Dual Reporting</span>
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-blue-500/10 text-blue-400 border border-blue-500/30">Scope 2</span>
+            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Scope 2 Dual Reporting</span>
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-blue-50 text-blue-700 border border-blue-200">Scope 2</span>
           </div>
-          <div className="text-xl font-black text-white font-mono mt-2">
-            {scope2LocationTotal.toFixed(3)} <span className="text-xs font-bold text-slate-400">tCO₂e (Location)</span>
+          <div className="text-xl font-black text-slate-900 font-mono mt-2">
+            {scope2LocationTotal.toFixed(3)} <span className="text-xs font-bold text-slate-500">tCO₂e (Location)</span>
           </div>
-          <div className="text-xs font-bold text-emerald-400 font-mono mt-2 pt-2 border-t border-slate-800/80">
+          <div className="text-xs font-bold text-emerald-700 font-mono mt-2 pt-2 border-t border-slate-100">
             {scope2MarketTotal.toFixed(3)} tCO₂e (Market-Based PPA)
           </div>
           <div className="text-[10px] text-slate-400 mt-1">
@@ -191,15 +191,15 @@ export default function WorkbenchView({
         </div>
 
         {/* Scope 3 Card */}
-        <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl p-5 border border-slate-800/80 shadow-xl">
+        <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-md hover:border-emerald-300 transition-all">
           <div className="flex justify-between items-start">
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Scope 3: Value Chain</span>
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-500/10 text-amber-400 border border-amber-500/30">Scope 3</span>
+            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Scope 3: Value Chain</span>
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-50 text-amber-800 border border-amber-200">Scope 3</span>
           </div>
-          <div className="text-2xl font-black text-white font-mono mt-3">
-            {scope3Total.toFixed(3)} <span className="text-xs font-bold text-slate-400">tCO₂e</span>
+          <div className="text-2xl font-black text-slate-900 font-mono mt-3">
+            {scope3Total.toFixed(3)} <span className="text-xs font-bold text-slate-500">tCO₂e</span>
           </div>
-          <div className="text-[11px] text-slate-400 mt-2 font-medium">
+          <div className="text-[11px] text-slate-500 mt-2 font-medium">
             Categorized across GHG Protocol Scope 3 (Cats 1-15)
           </div>
         </div>
@@ -207,17 +207,17 @@ export default function WorkbenchView({
       </div>
 
       {/* Preset Quick Add Toolbar */}
-      <div className="bg-slate-900/90 backdrop-blur-xl text-white rounded-2xl p-4 border border-slate-800/80 shadow-xl flex flex-wrap items-center justify-between gap-3">
+      <div className="bg-white text-slate-900 rounded-2xl p-4 border border-slate-200/80 shadow-md flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-emerald-400" />
-          <span className="text-xs font-black uppercase tracking-wider text-slate-300">Quick Add India GHG Factor (Preset Dropdown):</span>
+          <Sparkles className="w-4 h-4 text-emerald-600" />
+          <span className="text-xs font-black uppercase tracking-wider text-slate-700">Quick Add India GHG Factor (Preset Dropdown):</span>
         </div>
 
         <div className="flex flex-wrap items-center gap-2 flex-1 min-w-[300px]">
           <select 
             value={quickPreset} 
             onChange={(e) => setQuickPreset(e.target.value)}
-            className="flex-1 text-xs font-semibold p-2.5 bg-slate-950 text-slate-100 border border-slate-800 rounded-xl outline-none focus:border-emerald-500/60"
+            className="flex-1 text-xs font-semibold p-2.5 bg-slate-50 text-slate-800 border border-slate-200 rounded-xl outline-none focus:border-emerald-500"
           >
             <option value="">-- Choose from 60 Verified India GHG Factor Presets --</option>
             {INDIA_GHG_FACTORS.map(f => (
@@ -232,12 +232,12 @@ export default function WorkbenchView({
             value={quickQty}
             onChange={(e) => setQuickQty(e.target.value)}
             placeholder="Qty"
-            className="w-24 text-xs font-semibold p-2.5 bg-slate-950 text-slate-100 border border-slate-800 rounded-xl outline-none focus:border-emerald-500/60 font-mono"
+            className="w-24 text-xs font-semibold p-2.5 bg-slate-50 text-slate-800 border border-slate-200 rounded-xl outline-none focus:border-emerald-500 font-mono"
           />
 
           <button 
             onClick={handleAddPreset}
-            className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs px-4 py-2.5 rounded-xl transition-all shadow-lg shadow-emerald-500/20 active:scale-95 flex items-center gap-1.5 cursor-pointer"
+            className="bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs px-4 py-2.5 rounded-xl transition-all shadow-md shadow-emerald-600/20 active:scale-95 flex items-center gap-1.5 cursor-pointer"
           >
             <Plus className="w-4 h-4 stroke-[3]" />
             <span>Add Item</span>
@@ -246,13 +246,13 @@ export default function WorkbenchView({
       </div>
 
       {/* Main Inventory Workbench Table Container */}
-      <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl border border-slate-800/80 overflow-hidden shadow-2xl">
+      <div className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-xl">
         
         {/* Table Toolbar Header */}
-        <div className="p-4 border-b border-slate-800/80 flex flex-wrap justify-between items-center gap-3 bg-slate-950/60">
+        <div className="p-4 border-b border-slate-200/80 flex flex-wrap justify-between items-center gap-3 bg-slate-50/80">
           <div>
-            <h2 className="font-black text-sm text-white">BOM & Activity Data Inventory Table</h2>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <h2 className="font-black text-sm text-slate-900">BOM & Activity Data Inventory Table</h2>
+            <p className="text-xs text-slate-500 mt-0.5">
               Edit quantities, verify factor categories, and approve rows for internal audit preparation.
             </p>
           </div>
@@ -260,22 +260,22 @@ export default function WorkbenchView({
           <div className="flex flex-wrap items-center gap-2">
             
             {/* Risk Filter Buttons */}
-            <div className="flex items-center bg-slate-950 p-1 rounded-xl text-xs font-bold border border-slate-800">
+            <div className="flex items-center bg-slate-200/80 p-1 rounded-xl text-xs font-bold border border-slate-300/60">
               <button 
                 onClick={() => setRiskFilter('ALL')}
-                className={`px-3 py-1 rounded-lg transition-all ${riskFilter === 'ALL' ? 'bg-emerald-500 text-slate-950 font-black shadow-md' : 'text-slate-400 hover:text-white'}`}
+                className={`px-3 py-1 rounded-lg transition-all ${riskFilter === 'ALL' ? 'bg-emerald-600 text-white font-black shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
               >
                 All ({currentBOM.length})
               </button>
               <button 
                 onClick={() => setRiskFilter('LOW')}
-                className={`px-3 py-1 rounded-lg transition-all ${riskFilter === 'LOW' ? 'bg-emerald-500 text-slate-950 font-black shadow-md' : 'text-slate-400 hover:text-white'}`}
+                className={`px-3 py-1 rounded-lg transition-all ${riskFilter === 'LOW' ? 'bg-emerald-600 text-white font-black shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
               >
                 Low Risk
               </button>
               <button 
                 onClick={() => setRiskFilter('HIGH')}
-                className={`px-3 py-1 rounded-lg transition-all ${riskFilter === 'HIGH' ? 'bg-rose-500 text-white font-black shadow-md' : 'text-slate-400 hover:text-white'}`}
+                className={`px-3 py-1 rounded-lg transition-all ${riskFilter === 'HIGH' ? 'bg-rose-600 text-white font-black shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
               >
                 High Risk
               </button>
@@ -283,7 +283,7 @@ export default function WorkbenchView({
 
             <button 
               onClick={handleApproveAllLowRisk}
-              className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-black px-3 py-2 rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-emerald-500/10 cursor-pointer"
+              className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black px-3 py-2 rounded-xl transition-all flex items-center gap-1.5 shadow-sm cursor-pointer"
             >
               <CheckCircle2 className="w-3.5 h-3.5 stroke-[2.5]" />
               Approve All Low Risk
@@ -291,7 +291,7 @@ export default function WorkbenchView({
 
             <button 
               onClick={handleClearTable}
-              className="border border-rose-500/30 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 text-xs font-bold px-3 py-2 rounded-xl transition-colors flex items-center gap-1 cursor-pointer"
+              className="border border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100 text-xs font-bold px-3 py-2 rounded-xl transition-colors flex items-center gap-1 cursor-pointer"
             >
               <Trash2 className="w-3.5 h-3.5" />
               Clear Table
@@ -299,7 +299,7 @@ export default function WorkbenchView({
 
             <button 
               onClick={handleLoadSampleDemo}
-              className="border border-slate-800 bg-slate-900 text-slate-300 hover:bg-slate-800 text-xs font-bold px-3 py-2 rounded-xl transition-colors flex items-center gap-1 cursor-pointer"
+              className="border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 text-xs font-bold px-3 py-2 rounded-xl transition-colors flex items-center gap-1 cursor-pointer"
             >
               <RefreshCw className="w-3.5 h-3.5" />
               Load Sample Demo
@@ -307,7 +307,7 @@ export default function WorkbenchView({
 
             <button 
               onClick={onOpenImportModal}
-              className="bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition-colors flex items-center gap-1.5 shadow-sm border border-slate-700 cursor-pointer"
+              className="bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition-colors flex items-center gap-1.5 shadow-sm cursor-pointer"
             >
               <Upload className="w-3.5 h-3.5 text-emerald-400" />
               Import BOM / Excel
@@ -315,15 +315,15 @@ export default function WorkbenchView({
 
             <button 
               onClick={onOpenGoogleSheetsModal}
-              className="bg-emerald-950/60 hover:bg-emerald-900/60 text-emerald-300 border border-emerald-500/40 text-xs font-bold px-3 py-2 rounded-xl transition-colors flex items-center gap-1.5 shadow-sm cursor-pointer"
+              className="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-bold px-3 py-2 rounded-xl transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer"
             >
-              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
+              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
               Sync Google Sheet
             </button>
 
             <button 
               onClick={handleExportCSV}
-              className="border border-slate-800 bg-slate-900 text-slate-300 hover:bg-slate-800 text-xs font-bold px-3 py-2 rounded-xl transition-colors flex items-center gap-1 cursor-pointer"
+              className="border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 text-xs font-bold px-3 py-2 rounded-xl transition-colors flex items-center gap-1 cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
               Export CBAM CSV
@@ -335,7 +335,7 @@ export default function WorkbenchView({
         {/* Data Table */}
         <div className="overflow-x-auto">
           <table className="w-full text-xs text-left">
-            <thead className="bg-slate-950/90 text-slate-400 font-black uppercase text-[10px] tracking-wider border-b border-slate-800">
+            <thead className="bg-slate-100/80 text-slate-700 font-black uppercase text-[10px] tracking-wider border-b border-slate-200">
               <tr>
                 <th className="p-3.5">Approved</th>
                 <th className="p-3.5">Item Description</th>
@@ -349,7 +349,7 @@ export default function WorkbenchView({
                 <th className="p-3.5 text-center">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60 font-medium text-slate-200">
+            <tbody className="divide-y divide-slate-100 font-medium text-slate-800">
               {filteredItems.length === 0 ? (
                 <tr>
                   <td colSpan="10" className="p-8 text-center text-slate-500">

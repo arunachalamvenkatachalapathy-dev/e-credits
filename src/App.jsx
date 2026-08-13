@@ -188,8 +188,8 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#090D16] text-slate-100 font-sans antialiased pb-16 selection:bg-emerald-500 selection:text-slate-950 relative">
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(16,185,129,0.08),rgba(255,255,255,0))] pointer-events-none z-0"></div>
+    <div className="min-h-screen bg-slate-50/80 text-slate-900 font-sans antialiased pb-16 selection:bg-emerald-500 selection:text-white relative">
+      <div className="fixed inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(16,185,129,0.12),rgba(255,255,255,0))] pointer-events-none z-0"></div>
       
       {/* Toast Banner */}
       {toastMsg && (
