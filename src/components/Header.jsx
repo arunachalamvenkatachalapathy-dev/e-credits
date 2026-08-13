@@ -11,7 +11,8 @@ export default function Header({
   accountingStandard, 
   setAccountingStandard,
   geography,
-  setGeography
+  setGeography,
+  onGoHome
 }) {
   return (
     <header className="bg-slate-900 text-white-b sticky top-0 z-40 shadow-md">
@@ -19,12 +20,16 @@ export default function Header({
         
         {/* Brand & Project Identity */}
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-md bg-emerald-500 flex items-center justify-center">
+          <button 
+            onClick={onGoHome}
+            className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer group"
+            title="Return to Landing Page"
+          >
+            <div className="w-6 h-6 rounded-md bg-emerald-500 flex items-center justify-center group-hover:scale-105 transition-transform">
               <Activity className="text-slate-900 w-4 h-4" />
             </div>
             <h1 className="font-extrabold text-base tracking-tight text-white">NetZeroCalc</h1>
-          </div>
+          </button>
           <div>
             <div className="flex items-center gap-2">
               <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">

@@ -210,6 +210,7 @@ export default function App() {
         setAccountingStandard={setAccountingStandard}
         geography={geography}
         setGeography={setGeography}
+        onGoHome={() => setShowLanding(true)}
       />
 
       {/* Navigation Bar */}
