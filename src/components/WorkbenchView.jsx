@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
   Plus, Upload, Trash2, CheckCircle2, AlertTriangle, Download, 
-  RefreshCw, FileSpreadsheet, Sparkles, Filter, Check, Info, ExternalLink 
+  RefreshCw, FileSpreadsheet, Sparkles, Filter, Check, Info, ExternalLink, Search, Shield, FileCheck 
 } from 'lucide-react';
 import { INDIA_GHG_FACTORS } from '../data/indiaGhgFactors.js';
 
@@ -15,8 +15,30 @@ export default function WorkbenchView({
   const [riskFilter, setRiskFilter] = useState('ALL');
   const [quickPreset, setQuickPreset] = useState('');
   const [quickQty, setQuickQty] = useState(100);
+  const [quickSearchTerm, setQuickSearchTerm] = useState('');
 
-  const calcTCO2e = (item) => (item.result_tco2e !== undefined && item.result_tco2e !== null) ? item.result_tco2e : (item.qty * item.ef / 1000);
+  // Filter Quick Add Presets dynamically by user search query
+  const filteredPresets = INDIA_GHG_FACTORS.filter(f => {
+    if (!quickSearchTerm.trim()) return true;
+    const term = quickSearchTerm.toLowerCase();
+    return (
+      f.name.toLowerCase().includes(term) ||
+      f.scope.toLowerCase().includes(term) ||
+      f.unit.toLowerCase().includes(term) ||
+      (f.notes && f.notes.toLowerCase().includes(term))
+    );
+  });
+
+  // Lead Auditor Pre-Verification Metrics (ISO 14064-1 & EU CBAM)
+  const totalItemsCount = currentBOM.length;
+  const approvedItemsCount = currentBOM.filter(i => i.approved).length;
+  const unassignedScope3Count = currentBOM.filter(i => i.scope === 'Scope 3' && (!i.scope3Category || i.scope3Category.includes('N/A'))).length;
+  const avgTer = totalItemsCount ? (currentBOM.reduce((acc, i) => acc + (i.ter || 1), 0) / totalItemsCount).toFixed(1) : '1.0';
+  const avgGer = totalItemsCount ? (currentBOM.reduce((acc, i) => acc + (i.ger || 1), 0) / totalItemsCount).toFixed(1) : '1.0';
+  const avgTir = totalItemsCount ? (currentBOM.reduce((acc, i) => acc + (i.tir || 1), 0) / totalItemsCount).toFixed(1) : '1.0';
+  const overallDqr = ((parseFloat(avgTer) + parseFloat(avgGer) + parseFloat(avgTir)) / 3).toFixed(1);
+  const primaryDataPercent = totalItemsCount ? Math.round((currentBOM.filter(i => i.sim === 1.0 || i.status === 'Preset Verified').length / totalItemsCount) * 100) : 100;
+  const isAuditReady = unassignedScope3Count === 0 && approvedItemsCount === totalItemsCount && totalItemsCount > 0;
 
   // Scope 1, 2 Location-Based, Scope 2 Market-Based, and Scope 3 Totals
   const scope1Total = currentBOM.filter(i => i.scope === 'Scope 1').reduce((acc, i) => acc + calcTCO2e(i), 0);
@@ -207,37 +229,60 @@ export default function WorkbenchView({
       </div>
 
       {/* Preset Quick Add Toolbar */}
-      <div className="bg-white text-slate-900 rounded-2xl p-4 border border-slate-200/80 shadow-md flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-emerald-600" />
-          <span className="text-xs font-black uppercase tracking-wider text-slate-700">Quick Add India GHG Factor (Preset Dropdown):</span>
+      <div className="bg-white text-slate-900 rounded-2xl p-4 border border-slate-200/80 shadow-md space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-emerald-600" />
+            <span className="text-xs font-black uppercase tracking-wider text-slate-800">Quick Add India GHG Factor (Preset Search & Select):</span>
+          </div>
+          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800 border border-emerald-300">
+            {filteredPresets.length} Factors Available
+          </span>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 flex-1 min-w-[300px]">
+        <div className="flex flex-wrap items-center gap-2.5">
+          {/* Live Search Filter Input */}
+          <div className="relative flex-1 min-w-[200px]">
+            <Search className="w-3.5 h-3.5 absolute left-3 top-3 text-slate-400" />
+            <input 
+              type="text"
+              value={quickSearchTerm}
+              onChange={(e) => setQuickSearchTerm(e.target.value)}
+              placeholder="Search factors (e.g. Diesel, Grid, Coal, Transport...)"
+              className="w-full text-xs font-semibold pl-9 pr-3 py-2.5 bg-slate-50 text-slate-800 border border-slate-200 rounded-xl outline-none focus:border-emerald-500 focus:bg-white transition-all"
+            />
+          </div>
+
+          {/* Select Dropdown with Explicit Option Styling */}
           <select 
             value={quickPreset} 
             onChange={(e) => setQuickPreset(e.target.value)}
-            className="flex-1 text-xs font-semibold p-2.5 bg-slate-50 text-slate-800 border border-slate-200 rounded-xl outline-none focus:border-emerald-500"
+            className="flex-1 min-w-[260px] text-xs font-bold p-2.5 bg-slate-50 text-slate-900 border border-slate-200 rounded-xl outline-none focus:border-emerald-500 cursor-pointer"
           >
-            <option value="">-- Choose from 60 Verified India GHG Factor Presets --</option>
-            {INDIA_GHG_FACTORS.map(f => (
-              <option key={f.key} value={f.key}>
+            <option value="" className="bg-white text-slate-900 font-semibold p-2">
+              -- Select Verified Factor ({filteredPresets.length} options) --
+            </option>
+            {filteredPresets.map(f => (
+              <option key={f.key} value={f.key} className="bg-white text-slate-900 font-semibold p-2">
                 {f.name} ({f.ef} kgCO₂e/{f.unit}) — [{f.scope}]
               </option>
             ))}
           </select>
 
+          {/* Quantity Input */}
           <input 
             type="number"
             value={quickQty}
             onChange={(e) => setQuickQty(e.target.value)}
             placeholder="Qty"
-            className="w-24 text-xs font-semibold p-2.5 bg-slate-50 text-slate-800 border border-slate-200 rounded-xl outline-none focus:border-emerald-500 font-mono"
+            className="w-24 text-xs font-bold p-2.5 bg-slate-50 text-slate-900 border border-slate-200 rounded-xl outline-none focus:border-emerald-500 font-mono text-center"
           />
 
+          {/* Add Button */}
           <button 
             onClick={handleAddPreset}
-            className="bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs px-4 py-2.5 rounded-xl transition-all shadow-md shadow-emerald-600/20 active:scale-95 flex items-center gap-1.5 cursor-pointer"
+            disabled={!quickPreset}
+            className="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-black text-xs px-4 py-2.5 rounded-xl transition-all shadow-md shadow-emerald-600/20 active:scale-95 flex items-center gap-1.5 cursor-pointer"
           >
             <Plus className="w-4 h-4 stroke-[3]" />
             <span>Add Item</span>
@@ -245,7 +290,47 @@ export default function WorkbenchView({
         </div>
       </div>
 
-      {/* Main Inventory Workbench Table Container */}
+      {/* Lead Auditor Pre-Verification Shield & Quality Assurance Bar */}
+      <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-emerald-950 text-white rounded-2xl p-4 border border-slate-700 shadow-xl flex flex-wrap items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className={`p-2.5 rounded-xl ${isAuditReady ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'}`}>
+            <Shield className="w-5 h-5" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-black uppercase tracking-wider text-emerald-400">ISO 14064 & EU CBAM Lead Auditor Pre-Verification Shield</span>
+              <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${isAuditReady ? 'bg-emerald-500 text-slate-950' : 'bg-amber-500 text-slate-950'}`}>
+                {isAuditReady ? '100% AUDIT READY' : 'PRE-VERIFICATION IN PROGRESS'}
+              </span>
+            </div>
+            <p className="text-xs text-slate-300 mt-0.5">
+              Assesses data quality ratings (DQR), primary data ratio, and Scope 3 boundary completeness for third-party verifiers.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-4 text-xs font-bold">
+          {/* DQR Score */}
+          <div className="bg-slate-800/80 px-3 py-1.5 rounded-xl border border-slate-700">
+            <span className="text-slate-400 block text-[10px] uppercase tracking-wider">Overall DQR Score</span>
+            <span className="text-emerald-400 font-mono text-sm font-black">{overallDqr} / 5.0</span>
+          </div>
+
+          {/* Primary Data Ratio */}
+          <div className="bg-slate-800/80 px-3 py-1.5 rounded-xl border border-slate-700">
+            <span className="text-slate-400 block text-[10px] uppercase tracking-wider">Primary Data Ratio</span>
+            <span className="text-emerald-400 font-mono text-sm font-black">{primaryDataPercent}%</span>
+          </div>
+
+          {/* Scope 3 Gaps */}
+          <div className="bg-slate-800/80 px-3 py-1.5 rounded-xl border border-slate-700">
+            <span className="text-slate-400 block text-[10px] uppercase tracking-wider">Scope 3 Gaps</span>
+            <span className={`font-mono text-sm font-black ${unassignedScope3Count > 0 ? 'text-amber-400' : 'text-emerald-400'}`}>
+              {unassignedScope3Count} Unassigned
+            </span>
+          </div>
+        </div>
+      </div>
       <div className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-xl">
         
         {/* Table Toolbar Header */}
