@@ -211,6 +211,7 @@ export default function App() {
         geography={geography}
         setGeography={setGeography}
         onGoHome={() => setShowLanding(true)}
+        onUpdateProject={updateActiveProject}
       />
 
       {/* Navigation Bar */}
